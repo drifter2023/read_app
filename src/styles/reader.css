@@ -12,7 +12,9 @@
 .rd-probe {
   position: absolute; top: 0; left: 34px; visibility: hidden; pointer-events: none;
   white-space: normal; overflow-wrap: anywhere;
+  contain: layout paint style; /* each measurement relayouts only the probe, not the reader */
 }
+.rd-chapter { content-visibility: auto; } /* off-screen chapters are skipped; the engine sets their exact height */
 .rd-line, .rd-blank { height: var(--lh, 34px); white-space: pre; position: relative; }
 .rd-head {
   font: 400 11px/var(--lh, 34px) 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .14em;

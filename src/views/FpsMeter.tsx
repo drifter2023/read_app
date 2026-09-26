@@ -3,7 +3,7 @@ import { useEffect, useState, type RefObject } from 'react';
 import type { ReaderEngine } from '../core/reader/engine.ts';
 import { summarise } from '../core/reader/probe.ts';
 
-/** Dev overlay: fps, dropped-frame ratio and last paint cost, refreshed twice a second. */
+/** Dev overlay: fps, worst frame, dropped-frame ratio and last paint cost, refreshed twice a second. */
 export function FpsMeter({ engine }: { engine: RefObject<ReaderEngine | null> }) {
   const [text, setText] = useState('');
   useEffect(() => {
@@ -15,9 +15,12 @@ export function FpsMeter({ engine }: { engine: RefObject<ReaderEngine | null> })
       if (last) deltas.push(ts - last);
       last = ts;
       if (ts - since >= 500 && deltas.length) {
-        const r = summarise(deltas.splice(0), []);
+        const batch = deltas.splice(0);
+        const r = summarise(batch, []);
         const fps = Math.round((r.frames * 1000) / (ts - since));
-        setText(`${fps} fps · drop ${(r.ratio * 100).toFixed(1)}% · paint ${(engine.current?.stats.lastPaintMs ?? 0).toFixed(2)}ms`);
+        // The worst frame shows a single freeze that an average hides.
+        const worst = Math.round(Math.max(...batch));
+        setText(`${fps} fps · worst ${worst}ms · drop ${(r.ratio * 100).toFixed(1)}% · paint ${(engine.current?.stats.lastPaintMs ?? 0).toFixed(2)}ms`);
         since = ts;
       }
       raf = requestAnimationFrame(loop);

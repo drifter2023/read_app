@@ -4,7 +4,7 @@ import { paragraphText } from '../ingest/text.ts';
 import type { Anchor, ChapterData, Paragraph } from '../types.ts';
 import { lineOffset, lineRange, renderLine, type Footnote } from './decorate.ts';
 import { bandFor, blurPx, opacityFor, tFor, withSentencePenalty } from './focus.ts';
-import { layoutChapter, type LineMeta } from './layout.ts';
+import { ChapterLayout, type LineMeta } from './layout.ts';
 import { wordBounds, wordContext } from './words.ts';
 
 export interface EngineBook { id: string; wordCount: number; chapters: ChapterData[] }
@@ -30,6 +30,8 @@ export interface Highlight { chapter: number; para: number; start: number; end: 
 
 const SIDE = 34;
 const IDLE_MS = 180;
+/** Background layout works in slices this long, so a frame is never blocked (R-01). */
+const SLICE_MS = 5;
 
 /** First index i with arr[i] >= x. */
 function lowerBound(arr: Float64Array, x: number): number {
@@ -63,6 +65,7 @@ export class ReaderEngine {
   #win: [number, number] = [0, 0];
   #H = 0;
   #W = 0;
+  #pad = 0;
   #lh = 34;
   #raf = 0;
   #idle = 0;
@@ -78,6 +81,10 @@ export class ReaderEngine {
   #gapHost: HTMLElement | null = null;
   #gapLine = -1;
   #gap = 0;
+  /** Chapters being laid out in the background, ahead of need. */
+  #prepared = new Map<number, ChapterLayout>();
+  #jobTimer = 0;
+  #lastScroll = 0;
 
   constructor(scroller: HTMLElement, book: EngineBook, prefs: Prefs, cb: EngineCallbacks = {}) {
     this.#scroller = scroller;
@@ -304,6 +311,8 @@ export class ReaderEngine {
     this.#ro.disconnect();
     cancelAnimationFrame(this.#raf);
     clearTimeout(this.#idle);
+    clearTimeout(this.#jobTimer);
+    this.#prepared.clear();
     this.#content.remove();
     this.#probe.remove();
     this.#blocks.clear();
@@ -352,6 +361,7 @@ export class ReaderEngine {
   }
 
   #onScroll = (): void => {
+    this.#lastScroll = performance.now();
     if (!this.#raf) this.#raf = requestAnimationFrame(() => { this.#raf = 0; this.paintNow(); });
     clearTimeout(this.#idle);
     this.#idle = window.setTimeout(this.#onIdle, IDLE_MS);
@@ -359,17 +369,51 @@ export class ReaderEngine {
 
   #onIdle = (): void => {
     if (this.#gapHost) return; // the drawer is open: keep the DOM still until it closes
-    const centreLine = this.#lines[this.#lineAt(this.#scroller.scrollTop + this.#H / 2)];
-    if (centreLine) {
-      const c = centreLine.chapter;
-      const want = [c - 1, c, c + 1].filter((x) => x >= 0 && x < this.#book.chapters.length);
-      if (want.some((x) => !this.#blocks.has(x)) || this.#blocks.size !== want.length) {
-        this.#setWindow(c);
-        this.paintNow();
-      }
-    }
+    this.#syncWindow();
     this.#cb.onAnchor?.(this.currentAnchor());
   };
+
+  /**
+   * At a scroll pause: attach chapters that are ready and drop far ones (cheap), then keep laying
+   * out missing neighbours in the background. Never lays out a whole chapter here.
+   */
+  #syncWindow(): void {
+    const centreLine = this.#lines[this.#lineAt(this.#scroller.scrollTop + this.#H / 2)];
+    if (!centreLine) return;
+    const c = centreLine.chapter;
+    const want = this.#wanted(c);
+    if (want.some((x) => !this.#blocks.has(x)) || this.#blocks.size !== want.length) {
+      this.#setWindow(c, false);
+      this.paintNow();
+    }
+    for (const idx of this.#prepared.keys()) if (!want.includes(idx)) this.#prepared.delete(idx);
+    this.#scheduleLayout(c);
+  }
+
+  #wanted(c: number): number[] {
+    return [c - 1, c, c + 1].filter((x) => x >= 0 && x < this.#book.chapters.length);
+  }
+
+  /** Lays out the next missing neighbour of chapter `c` a slice at a time, yielding between slices. */
+  #scheduleLayout(c: number): void {
+    if (this.#jobTimer) return;
+    const idx = [c + 1, c - 1, c].find((x) => x >= 0 && x < this.#book.chapters.length && !this.#blocks.has(x) && !this.#prepared.get(x)?.done);
+    if (idx === undefined) return;
+    let job = this.#prepared.get(idx);
+    if (!job) this.#prepared.set(idx, (job = new ChapterLayout(this.#probe, this.#book.chapters[idx]!)));
+    const slice = (): void => {
+      this.#jobTimer = 0;
+      if (this.#destroyed || this.#prepared.get(idx) !== job) return;
+      if (!job.step(performance.now() + SLICE_MS)) {
+        this.#jobTimer = window.setTimeout(slice, 0);
+        return;
+      }
+      // Attach now if the reader is paused; otherwise the next scroll pause attaches it.
+      if (performance.now() - this.#lastScroll >= IDLE_MS && !this.#gapHost) this.#syncWindow();
+      else this.#scheduleLayout(c);
+    };
+    this.#jobTimer = window.setTimeout(slice, 0);
+  }
 
   #onResize = (): void => {
     if (!this.#mounted) return;
@@ -402,12 +446,16 @@ export class ReaderEngine {
     this.#H = this.#scroller.clientHeight;
     this.#W = this.#scroller.clientWidth;
     const pad = Math.max(0, this.#H / 2 - this.#lh / 2);
+    this.#pad = pad;
     this.#scroller.style.paddingTop = `${pad}px`;
     this.#scroller.style.paddingBottom = `${pad}px`;
     this.#probe.style.width = `${this.#W - 2 * SIDE}px`;
   }
 
   #relayout(a: Anchor): void {
+    clearTimeout(this.#jobTimer);
+    this.#jobTimer = 0;
+    this.#prepared.clear(); // measured at the old font size or width
     this.#gapHost = null;
     this.#gapLine = -1;
     this.#gap = 0;
@@ -423,9 +471,13 @@ export class ReaderEngine {
     this.#cb.onRelayout?.();
   }
 
-  /** Mounts chapters centre±1, removes the rest, and keeps the text under the reader still. */
-  #setWindow(centre: number): void {
-    const want = new Set([centre - 1, centre, centre + 1].filter((x) => x >= 0 && x < this.#book.chapters.length));
+  /**
+   * Mounts chapters centre±1, removes the rest, and keeps the text under the reader still.
+   * `sync` lays out missing chapters on the spot (opening a book, jumps); otherwise only chapters
+   * already prepared in the background are attached.
+   */
+  #setWindow(centre: number, sync = true): void {
+    const want = new Set(this.#wanted(centre));
     const refIdx = this.#lines.length ? this.#lineAt(this.#scroller.scrollTop + this.#H / 2) : -1;
     const ref = refIdx >= 0 ? this.#lines[refIdx] : undefined;
     const refTop = ref ? this.#top[refIdx]! : 0;
@@ -440,29 +492,48 @@ export class ReaderEngine {
     }
     for (const idx of [...want].sort((x, y) => x - y)) {
       if (this.#blocks.has(idx)) continue;
-      const laid = layoutChapter(this.#probe, this.#book.chapters[idx]!);
+      const laid = this.#prepared.get(idx) ?? new ChapterLayout(this.#probe, this.#book.chapters[idx]!);
+      if (!laid.done) {
+        if (!sync) continue;
+        laid.step();
+      }
+      this.#prepared.delete(idx);
       this.#decorate(idx, laid.lines);
       const next = [...this.#blocks.keys()].sort((x, y) => x - y).find((k) => k > idx);
       this.#content.insertBefore(laid.block, next === undefined ? null : this.#blocks.get(next)!.block);
       this.#blocks.set(idx, laid);
     }
     this.#rebuildTable();
-    if (ref?.el.isConnected) this.#scroller.scrollTop = scrollTop + ref.el.offsetTop - refTop;
+    const refNow = ref ? this.#index.get(ref.el) : undefined;
+    if (refNow !== undefined) this.#scroller.scrollTop = scrollTop + this.#top[refNow]! - refTop;
   }
 
-  /** The only place line positions are read: once per layout change. */
+  /**
+   * Line positions, once per layout change. Every row (line or blank) is exactly one line-height
+   * tall, so positions are counted rather than read: no forced layout of a freshly attached
+   * chapter. (Never called while the drawer gap is open.)
+   */
   #rebuildTable(): void {
     for (let i = this.#win[0]; i < this.#win[1]; i++) {
       const l = this.#lines[i];
       if (l) l.el.style.willChange = '';
     }
-    this.#lines = [...this.#blocks.keys()].sort((x, y) => x - y).flatMap((k) => this.#blocks.get(k)!.lines);
+    const order = [...this.#blocks.keys()].sort((x, y) => x - y);
+    this.#lines = order.flatMap((k) => this.#blocks.get(k)!.lines);
     const n = this.#lines.length;
     this.#top = new Float64Array(n);
     this.#index = new WeakMap();
-    for (let i = 0; i < n; i++) {
-      this.#top[i] = this.#lines[i]!.el.offsetTop;
-      this.#index.set(this.#lines[i]!.el, i);
+    const lh = this.#lh;
+    let i = 0;
+    let base = this.#pad;
+    for (const k of order) {
+      const { block, lines } = this.#blocks.get(k)!;
+      for (const l of lines) {
+        this.#top[i] = base + l.row * lh;
+        this.#index.set(l.el, i++);
+      }
+      base += block.childElementCount * lh;
+      block.style.containIntrinsicSize = `auto ${block.childElementCount * lh}px`;
     }
     this.#blur = new Float64Array(n).fill(Number.NaN);
     this.#opa = new Float64Array(n).fill(Number.NaN);

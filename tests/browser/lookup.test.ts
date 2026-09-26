@@ -6,7 +6,7 @@ import { DEFAULT_PREFS } from '../../src/core/prefs/prefs.ts';
 import type { Footnote } from '../../src/core/reader/decorate.ts';
 import { ReaderEngine } from '../../src/core/reader/engine.ts';
 import { words } from '../../src/core/reader/words.ts';
-import { host, lineAt, makeBook } from './helpers.ts';
+import { frames, host, lineAt, makeBook } from './helpers.ts';
 
 let engine: ReaderEngine | null = null;
 afterEach(() => { engine?.destroy(); engine = null; document.body.innerHTML = ''; });
@@ -18,6 +18,7 @@ async function open() {
   await e.mount(null);
   el.scrollTop = 1200;
   e.paintNow();
+  await frames(2); // a tap always comes after the page has rendered (off-screen chapters render lazily)
   return { el, e };
 }
 const centreY = (el: HTMLElement) => { const b = el.getBoundingClientRect(); return b.top + b.height / 2; };

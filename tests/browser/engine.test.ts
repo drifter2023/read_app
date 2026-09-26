@@ -10,9 +10,9 @@ import { frames, host, lineAt, makeBook, sleep } from './helpers.ts';
 let engine: ReaderEngine | null = null;
 afterEach(() => { engine?.destroy(); engine = null; document.body.innerHTML = ''; });
 
-async function open(prefs: Partial<Prefs> = {}, opts: { chapters?: number; h?: number; progress?: Progress[] } = {}) {
+async function open(prefs: Partial<Prefs> = {}, opts: { chapters?: number; paras?: number; h?: number; progress?: Progress[] } = {}) {
   const el = host(402, opts.h ?? 874);
-  const e = new ReaderEngine(el, makeBook(opts.chapters ?? 3), { ...DEFAULT_PREFS, tier: 'full', ...prefs }, {
+  const e = new ReaderEngine(el, makeBook(opts.chapters ?? 3, opts.paras), { ...DEFAULT_PREFS, tier: 'full', ...prefs }, {
     onProgress: (p) => opts.progress?.push(p),
   });
   engine = e;
@@ -137,16 +137,37 @@ describe('ReaderEngine', () => {
     expect(progress.at(-1)).toMatchObject({ chapterTitle: 'Chapter 3', pct: 100 });
   });
 
+  it('R-01: crossing into a long chapter never blocks a frame (layout runs in background slices)', async () => {
+    const { el } = await open({}, { chapters: 4, paras: 250 });
+    const mounted = () => Array.from(el.querySelectorAll<HTMLElement>('.rd-chapter')).map((b) => Number(b.dataset.ch));
+    expect(mounted()).toEqual([0, 1]);
+    // Read like a person: scroll in bursts with pauses, from chapter 0 well into chapter 1.
+    const start = el.querySelector<HTMLElement>('.rd-chapter[data-ch="1"]')!.offsetTop - el.clientHeight;
+    el.scrollTop = start;
+    await sleep(300);
+    const gaps: number[] = [];
+    let last = 0;
+    let run = true;
+    const loop = (t: number) => { if (last) gaps.push(t - last); last = t; if (run) requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+    for (let burst = 0; burst < 6; burst++) {
+      for (let i = 0; i < 20; i++) { el.scrollTop += 30; await frames(1); }
+      await sleep(400);
+    }
+    run = false;
+    expect(mounted()).toEqual([0, 1, 2]);
+    expect(Math.max(...gaps)).toBeLessThan(40);
+  });
+
   it('virtualises to chapter ±1 without moving the text under the reader', async () => {
     const { el, e } = await open({}, { chapters: 6 });
     const mounted = () => Array.from(el.querySelectorAll<HTMLElement>('.rd-chapter')).map((b) => Number(b.dataset.ch));
     expect(mounted()).toEqual([0, 1]);
+    // Neighbours are laid out in the background and attached at the next pause.
     e.scrollToAnchor({ chapter: 1, para: 0, sentence: 0 });
-    await sleep(300);
-    expect(mounted()).toEqual([0, 1, 2]);
+    await expect.poll(mounted, { timeout: 3000 }).toEqual([0, 1, 2]);
     e.scrollToAnchor({ chapter: 2, para: 3, sentence: 0 });
-    await sleep(300);
-    expect(mounted()).toEqual([1, 2, 3]);
+    await expect.poll(mounted, { timeout: 3000 }).toEqual([1, 2, 3]);
     expect(e.currentAnchor()).toMatchObject({ chapter: 2, para: 3 });
   });
 });
