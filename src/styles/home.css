@@ -91,3 +91,8 @@
 .fly-author { margin-top: 14px; font: 400 11.5px/1 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: rgba(255, 255, 255, .66); }
 .reader-layer { position: fixed; inset: 0; z-index: 10; opacity: 0; transition: opacity 320ms var(--ease); }
 .reader-on { opacity: 1; }
+.home-foot { margin-top: 36px; text-align: center; }
+.home-foot button {
+  min-height: 44px; padding: 0 12px; border: 0; background: none;
+  font: 400 11px/1 var(--zh); color: var(--sec); -webkit-tap-highlight-color: transparent;
+}

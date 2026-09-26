@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Session } from '../../app/boot.ts';
 import { ImportError, importFile, type ImportProgress } from '../../app/importBook.ts';
+import { shareTextFile } from '../../app/share.ts';
+import { exportMetrics } from '../../core/metrics/metrics.ts';
 import { BUNDLED } from '../../core/library/bundled.ts';
 import { dateEyebrow, minutesLeft } from '../../core/library/format.ts';
 import { deleteBook, listShelf, restoreBundled, type ShelfBook } from '../../core/library/library.ts';
@@ -60,6 +62,12 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
     const res = await fetch(`${import.meta.env.BASE_URL}books/${id}.json`);
     if (res.ok) await restoreBundled(session.db, (await res.json()) as ParsedBook);
     await reload();
+  };
+
+  /** Beta metrics leave the device only when the tester shares this file themselves. */
+  const exportLog = async () => {
+    const day = new Date().toISOString().slice(0, 10);
+    await shareTextFile(`spotlight-log-${day}.json`, await exportMetrics(session.db)).catch(() => {});
   };
 
   if (!shelf) return <div className="home" />;
@@ -138,6 +146,10 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
             </ul>
           </>
         )}
+
+        <footer className="home-foot">
+          <button type="button" onClick={() => void exportLog()}>导出内测日志</button>
+        </footer>
       </div>
 
       {importing && (
