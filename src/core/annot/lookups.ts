@@ -47,3 +47,8 @@ export async function listLookups(db: Db, bookId: string): Promise<LookupRow[]> 
      FROM lookup WHERE book_id = ? ORDER BY at`, [bookId]);
   return rows.map((r) => ({ ...r, loc: JSON.parse(r.loc) as LookupLoc, saved: r.saved === 1 }));
 }
+
+/** Undo a mistaken lookup: this book forgets the lemma entirely (its rows, saved state and footnotes). */
+export async function forgetLemma(db: Db, bookId: string, lemma: string): Promise<void> {
+  await db.run('DELETE FROM lookup WHERE book_id = ? AND lemma = ?', [bookId, lemma]);
+}

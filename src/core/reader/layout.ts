@@ -15,6 +15,10 @@ export interface LineMeta {
   row: number;
   /** Book-level word count up to the end of this line. */
   wordEnd: number;
+  /** Paragraph offsets just past each sentence that ends on this line (where its grammar droplet goes). */
+  ends: number[];
+  /** x of each of those ends from the line's left edge, measured once in the probe. */
+  endX: number[];
 }
 
 /**
@@ -88,7 +92,7 @@ export class ChapterLayout {
     this.block.className = 'rd-chapter';
     this.block.dataset.ch = String(ch.idx);
     this.#add('', 'rd-blank');
-    this.lines.push({ el: this.#add(ch.title, 'rd-line rd-head'), chapter: ch.idx, para: -1, sFirst: 0, sLast: 0, start: 0, row: 1, wordEnd: ch.wordStart });
+    this.lines.push({ el: this.#add(ch.title, 'rd-line rd-head'), chapter: ch.idx, para: -1, sFirst: 0, sLast: 0, start: 0, row: 1, wordEnd: ch.wordStart, ends: [], endX: [] });
     this.#add('', 'rd-blank');
   }
 
@@ -124,7 +128,9 @@ export class ChapterLayout {
     if (pi > 0) this.#add('', 'rd-blank');
     const text = paragraphText(p);
     const starts = breakLines(this.#probe, text);
+    const endX = sentenceEndX(this.#probe, p);
     const sStarts = sentenceStarts(p);
+    const sEnds = sStarts.map((x, i) => x + p[i]!.length);
     let s = 0;
     starts.forEach((a, li) => {
       const b = starts[li + 1] ?? text.length;
@@ -136,9 +142,32 @@ export class ChapterLayout {
       const row = this.block.childElementCount;
       const el = this.#add(slice, 'rd-line');
       el.dataset.p = String(pi);
-      this.lines.push({ el, chapter: this.#ch.idx, para: pi, sFirst: s, sLast, start: a, row, wordEnd: this.#words });
+      const mine = sEnds.map((e, k) => [e, k] as const).filter(([e]) => e > a && e <= a + slice.length);
+      this.lines.push({
+        el, chapter: this.#ch.idx, para: pi, sFirst: s, sLast, start: a, row, wordEnd: this.#words,
+        ends: mine.map(([e]) => e), endX: mine.map(([, k]) => endX[k]!),
+      });
     });
   }
+}
+
+/**
+ * x of each sentence's last character's right edge, from the left of its visual line, while the
+ * probe still holds the paragraph (`breakLines` just laid it out). One Range read per sentence.
+ */
+function sentenceEndX(probe: HTMLElement, p: string[]): number[] {
+  const node = probe.firstChild;
+  if (!(node instanceof Text)) return p.map(() => 0);
+  const left = probe.getBoundingClientRect().left;
+  const range = probe.ownerDocument.createRange();
+  return sentenceStarts(p).map((st, k) => {
+    const e = st + p[k]!.length;
+    range.setStart(node, e - 1);
+    range.setEnd(node, e);
+    const rects = range.getClientRects();
+    const r = rects[rects.length - 1];
+    return r ? r.right - left : 0;
+  });
 }
 
 /** Lays out a whole chapter at once (opening a book, font-size change, jumps). */

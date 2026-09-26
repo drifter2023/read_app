@@ -1,6 +1,6 @@
 import type { Prefs } from '../prefs/prefs.ts';
 import { TYPE_SCALE } from '../prefs/prefs.ts';
-import { paragraphText } from '../ingest/text.ts';
+import { paragraphText, sentenceStarts } from '../ingest/text.ts';
 import type { Anchor, ChapterData, Paragraph } from '../types.ts';
 import { lineOffset, lineRange, renderLine, type Footnote } from './decorate.ts';
 import { bandFor, blurPx, opacityFor, tFor, withSentencePenalty } from './focus.ts';
@@ -27,8 +27,14 @@ export interface WordHit {
   lineIndex: number; rect: DOMRect;
 }
 export interface Highlight { chapter: number; para: number; start: number; end: number }
+/** A tapped grammar droplet: the sentence that ends there, and the droplet's centre x. */
+export interface SentenceHit {
+  chapter: number; para: number; sentence: number; sentenceText: string; lineIndex: number; x: number;
+}
 
 const SIDE = 34;
+/** A droplet counts as tapped within this distance of its centre (a 44 px target). */
+const DROP_REACH = 22;
 const IDLE_MS = 180;
 /** Background layout works in slices this long, so a frame is never blocked (R-01). */
 const SLICE_MS = 5;
@@ -62,6 +68,13 @@ export class ReaderEngine {
   #top = new Float64Array(0);
   #blur = new Float64Array(0);
   #opa = new Float64Array(0);
+  /**
+   * Grammar droplets for the sentences that end inside the focus band, in one overlay layer above
+   * the lines (never inside them), placed by transform from the line table. Keyed chapter:para:end.
+   */
+  #dropLayer: HTMLElement;
+  #drops = new Map<string, { el: HTMLElement; i: number; e: number; t: string }>();
+  #dropTop = 0;
   #win: [number, number] = [0, 0];
   #H = 0;
   #W = 0;
@@ -85,6 +98,9 @@ export class ReaderEngine {
   #prepared = new Map<number, ChapterLayout>();
   #jobTimer = 0;
   #lastScroll = 0;
+  /** Paragraphs waiting for their footnotes to be redrawn, nearest to the band first. */
+  #annQueue: { chapter: number; lines: LineMeta[]; i: number; j: number }[] = [];
+  #annTimer = 0;
 
   constructor(scroller: HTMLElement, book: EngineBook, prefs: Prefs, cb: EngineCallbacks = {}) {
     this.#scroller = scroller;
@@ -96,7 +112,9 @@ export class ReaderEngine {
     this.#content.className = 'rd-content';
     this.#probe = document.createElement('div');
     this.#probe.className = 'rd-probe';
-    scroller.append(this.#content, this.#probe);
+    this.#dropLayer = document.createElement('div');
+    this.#dropLayer.className = 'rd-drops';
+    scroller.append(this.#content, this.#dropLayer, this.#probe);
     scroller.addEventListener('scroll', this.#onScroll, { passive: true });
     this.#ro = new ResizeObserver(this.#onResize);
   }
@@ -139,6 +157,7 @@ export class ReaderEngine {
     const full = this.#prefs.tier !== 'fallback';
     const bmax = this.#prefs.blurMax;
     const cur = this.#prefs.sentenceMode ? this.#lines[this.#lineAtY(mid)] : undefined;
+    const sharp: number[] = [];
 
     for (let i = lo; i < hi; i++) {
       const line = this.#lines[i]!;
@@ -149,6 +168,7 @@ export class ReaderEngine {
       }
       const b = full ? blurPx(t, bmax) : 0;
       const o = opacityFor(t);
+      if (t === 0 && line.ends.length) sharp.push(i);
       if (b !== this.#blur[i]) {
         line.el.style.filter = b > 0 ? `blur(${b}px)` : 'none';
         this.#blur[i] = b;
@@ -160,6 +180,7 @@ export class ReaderEngine {
         this.stats.styleWrites++;
       }
     }
+    this.#placeDrops(sharp);
     this.#emitProgress(mid);
     this.stats.paints++;
     this.stats.lastPaintMs = performance.now() - t0;
@@ -222,9 +243,12 @@ export class ReaderEngine {
     this.refreshAnnotations();
   }
 
-  /** Re-runs the annotator over mounted paragraphs, e.g. after a new lookup joins `seen`. */
+  /**
+   * Re-runs the annotator over mounted paragraphs, e.g. after a new lookup joins `seen`. Paragraphs
+   * nearest the band go first; the rest follow in background slices, so no frame is blocked (R-01).
+   */
   refreshAnnotations(): void {
-    for (const [idx, { lines }] of this.#blocks) this.#decorate(idx, lines);
+    this.#queueDecorate([...this.#blocks.keys()], true);
   }
 
   /** The word-highlight while its drawer is open (README → Reader 4a). */
@@ -234,7 +258,7 @@ export class ReaderEngine {
     for (const x of [prev, h]) {
       if (!x) continue;
       const block = this.#blocks.get(x.chapter);
-      if (block) this.#decorate(x.chapter, block.lines, x.para);
+      if (block) this.#decoratePara(x.chapter, x.para);
     }
   }
 
@@ -275,6 +299,39 @@ export class ReaderEngine {
     } as WordHit;
   }
 
+  /**
+   * True while line `i` is sharp: inside the focus band (and, in sentence mode, in the current
+   * sentence). Only sharp lines open drawers; the blurred text around the band does not.
+   */
+  isInBand(i: number): boolean {
+    const line = this.#lines[i];
+    if (!line) return false;
+    const mid = this.#scroller.scrollTop + this.#H / 2;
+    const top = this.#gap && this.#gapLine >= 0 && i > this.#gapLine ? this.#top[i]! + this.#gap : this.#top[i]!;
+    if (tFor(Math.abs(top + this.#lh / 2 - mid), bandFor(this.#H, this.#prefs.focusPct)) > 0) return false;
+    const cur = this.#prefs.sentenceMode ? this.#lines[this.#lineAtY(mid)] : undefined;
+    return !cur || (line.chapter === cur.chapter && line.para === cur.para && line.sFirst <= cur.sFirst && cur.sFirst <= line.sLast);
+  }
+
+  /** The grammar droplet under a viewport point, if one is showing there (sentences in the focus band only). */
+  dropAt(x: number, y: number): SentenceHit | null {
+    let best: SentenceHit | null = null;
+    let bestD = Infinity;
+    for (const { el, i, e } of this.#drops.values()) {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const dist = Math.max(Math.abs(x - cx), Math.abs(y - (r.top + r.height / 2)));
+      if (dist > DROP_REACH || dist >= bestD) continue;
+      const line = this.#lines[i]!;
+      const p = this.#book.chapters[line.chapter]!.paras[line.para]!;
+      const sentence = sentenceStarts(p).findIndex((st, k) => st + p[k]!.length === e);
+      if (sentence < 0) continue;
+      bestD = dist;
+      best = { chapter: line.chapter, para: line.para, sentence, sentenceText: p[sentence]!, lineIndex: i, x: cx };
+    }
+    return best;
+  }
+
   /** Inserts an empty element right after line `lineIndex` (the drawer host) and holds virtualisation. */
   openGap(lineIndex: number): HTMLElement {
     this.closeGap();
@@ -282,6 +339,7 @@ export class ReaderEngine {
     const host = this.#scroller.ownerDocument.createElement('div');
     host.className = 'rd-gap';
     line.el.after(host);
+    line.el.classList.add('rd-gapline'); // above the drawer: its footnotes hang into the notch
     // content-visibility implies paint containment, which would clip the drawer's full-bleed margins.
     host.closest<HTMLElement>('.rd-chapter')?.style.setProperty('content-visibility', 'visible');
     this.#gapHost = host;
@@ -300,6 +358,7 @@ export class ReaderEngine {
   closeGap(): void {
     if (!this.#gapHost) return;
     this.#gapHost.closest<HTMLElement>('.rd-chapter')?.style.removeProperty('content-visibility');
+    this.#gapHost.previousElementSibling?.classList.remove('rd-gapline');
     this.#gapHost.remove();
     this.#gapHost = null;
     this.#gapLine = -1;
@@ -315,8 +374,12 @@ export class ReaderEngine {
     cancelAnimationFrame(this.#raf);
     clearTimeout(this.#idle);
     clearTimeout(this.#jobTimer);
+    clearTimeout(this.#annTimer);
+    this.#annQueue = [];
     this.#prepared.clear();
     this.#content.remove();
+    this.#dropLayer.remove();
+    this.#drops.clear();
     this.#probe.remove();
     this.#blocks.clear();
     this.#lines = [];
@@ -333,35 +396,74 @@ export class ReaderEngine {
     return s;
   }
 
-  /** Applies footnotes and the highlight to one mounted chapter (or one paragraph of it). */
-  #decorate(chapter: number, lines: LineMeta[], onlyPara?: number): void {
+  /** Applies footnotes and the highlight to one paragraph of a mounted chapter (by its line index). */
+  #decoratePara(chapter: number, para: number): void {
+    const lines = this.#blocks.get(chapter)?.lines;
+    if (!lines) return;
+    const i = lines.findIndex((l) => l.para === para);
+    if (i < 0) return;
+    let j = i;
+    while (j < lines.length && lines[j]!.para === para) j++;
+    this.#decorateLines(chapter, lines, i, j);
+  }
+
+  /** Footnotes and highlight for `lines[i..j)`, which are all the lines of one paragraph. */
+  #decorateLines(chapter: number, lines: LineMeta[], i: number, j: number): void {
+    const para = lines[i]!.para;
     const ch = this.#book.chapters[chapter];
-    if (!ch) return;
-    let i = 0;
-    while (i < lines.length) {
-      const para = lines[i]!.para;
-      let j = i;
-      while (j < lines.length && lines[j]!.para === para) j++;
-      if (para >= 0 && (onlyPara === undefined || onlyPara === para)) {
-        const p = ch.paras[para]!;
-        const text = paragraphText(p);
-        const notes = this.#annotate ? this.#annotate(chapter, para, p, text) : [];
-        const hl = this.#hl && this.#hl.chapter === chapter && this.#hl.para === para ? this.#hl : null;
-        for (let k = i; k < j; k++) {
-          const l = lines[k]!;
-          const lineText = this.#lineText(l.el);
-          const touches = (x: { start: number; end: number }) => x.end > l.start && x.start < l.start + lineText.length;
-          const mine = notes.filter(touches);
-          const myHl = hl && touches(hl) ? hl : null;
-          if (!mine.length && !myHl && !this.#decorated.has(l.el)) continue;
-          renderLine(l.el, lineText, l.start, mine, myHl);
-          if (mine.length || myHl) this.#decorated.add(l.el);
-          else this.#decorated.delete(l.el);
-        }
-      }
-      i = j;
+    if (!ch || para < 0) return;
+    const p = ch.paras[para]!;
+    const text = paragraphText(p);
+    const notes = this.#annotate ? this.#annotate(chapter, para, p, text) : [];
+    const hl = this.#hl && this.#hl.chapter === chapter && this.#hl.para === para ? this.#hl : null;
+    for (let k = i; k < j; k++) {
+      const l = lines[k]!;
+      const lineText = this.#lineText(l.el);
+      const touches = (x: { start: number; end: number }) => x.end > l.start && x.start < l.start + lineText.length;
+      const mine = notes.filter(touches);
+      const myHl = hl && touches(hl) ? hl : null;
+      if (!mine.length && !myHl && !this.#decorated.has(l.el)) continue;
+      renderLine(l.el, lineText, l.start, mine, myHl);
+      if (mine.length || myHl) this.#decorated.add(l.el);
+      else this.#decorated.delete(l.el);
     }
   }
+
+  /**
+   * Queues every paragraph of `chapters` for decoration, nearest to the band centre first, and
+   * runs the first slice now (what is on screen). `replace` drops what was queued before.
+   */
+  #queueDecorate(chapters: number[], replace: boolean): void {
+    const centre = this.#lines.length ? this.#lineAt(this.#scroller.scrollTop + this.#H / 2) : 0;
+    const items: { chapter: number; lines: LineMeta[]; i: number; j: number; d: number }[] = [];
+    for (const chapter of chapters) {
+      const lines = this.#blocks.get(chapter)?.lines;
+      if (!lines) continue;
+      for (let i = 0; i < lines.length;) {
+        let j = i + 1;
+        while (j < lines.length && lines[j]!.para === lines[i]!.para) j++;
+        if (lines[i]!.para >= 0) items.push({ chapter, lines, i, j, d: Math.abs((this.#index.get(lines[i]!.el) ?? 1e9) - centre) });
+        i = j;
+      }
+    }
+    const keep = replace ? [] : this.#annQueue.filter((q) => !chapters.includes(q.chapter));
+    this.#annQueue = [...items.sort((a, b) => a.d - b.d), ...keep];
+    clearTimeout(this.#annTimer);
+    this.#annTimer = 0;
+    this.#decorateSlice();
+  }
+
+  #decorateSlice = (): void => {
+    this.#annTimer = 0;
+    const deadline = performance.now() + SLICE_MS;
+    while (this.#annQueue.length) {
+      const q = this.#annQueue.shift()!;
+      if (this.#blocks.get(q.chapter)?.lines !== q.lines) continue; // unmounted or relaid since queued
+      this.#decorateLines(q.chapter, q.lines, q.i, q.j);
+      if (performance.now() >= deadline) break;
+    }
+    if (this.#annQueue.length && !this.#destroyed) this.#annTimer = window.setTimeout(this.#decorateSlice, 0);
+  };
 
   #onScroll = (): void => {
     this.#lastScroll = performance.now();
@@ -441,6 +543,7 @@ export class ReaderEngine {
   #applyTypography(): void {
     const { size, line } = TYPE_SCALE[this.#prefs.fontSize];
     this.#lh = line;
+    this.#dropTop = size * 1.18 + 2; // just under the baseline, like a footnote
     this.#scroller.style.setProperty('--fs', `${size}px`);
     this.#scroller.style.setProperty('--lh', `${line}px`);
   }
@@ -493,6 +596,7 @@ export class ReaderEngine {
         this.#blocks.delete(idx);
       }
     }
+    const attached: number[] = [];
     for (const idx of [...want].sort((x, y) => x - y)) {
       if (this.#blocks.has(idx)) continue;
       const laid = this.#prepared.get(idx) ?? new ChapterLayout(this.#probe, this.#book.chapters[idx]!);
@@ -501,7 +605,7 @@ export class ReaderEngine {
         laid.step();
       }
       this.#prepared.delete(idx);
-      this.#decorate(idx, laid.lines);
+      attached.push(idx);
       const next = [...this.#blocks.keys()].sort((x, y) => x - y).find((k) => k > idx);
       this.#content.insertBefore(laid.block, next === undefined ? null : this.#blocks.get(next)!.block);
       this.#blocks.set(idx, laid);
@@ -509,6 +613,7 @@ export class ReaderEngine {
     this.#rebuildTable();
     const refNow = ref ? this.#index.get(ref.el) : undefined;
     if (refNow !== undefined) this.#scroller.scrollTop = scrollTop + this.#top[refNow]! - refTop;
+    if (attached.length && (this.#annotate || this.#hl)) this.#queueDecorate(attached, false);
   }
 
   /**
@@ -541,6 +646,42 @@ export class ReaderEngine {
     this.#blur = new Float64Array(n).fill(Number.NaN);
     this.#opa = new Float64Array(n).fill(Number.NaN);
     this.#win = [0, 0];
+  }
+
+  /** Shows a droplet for each sentence ending on the sharp lines `sharp`; others fade out and go. */
+  #placeDrops(sharp: number[]): void {
+    const seen = new Set<string>();
+    const gap = this.#gap;
+    const gl = this.#gapLine;
+    for (const i of sharp) {
+      const line = this.#lines[i]!;
+      const y = (gap && gl >= 0 && i > gl ? this.#top[i]! + gap : this.#top[i]!) + this.#dropTop;
+      line.ends.forEach((e, k) => {
+        const key = `${line.chapter}:${line.para}:${e}`;
+        seen.add(key);
+        const t = `translate(${SIDE + line.endX[k]! - 4}px, ${y}px) rotate(45deg)`;
+        const d = this.#drops.get(key);
+        if (d) {
+          d.i = i;
+          if (d.t !== t) { d.el.style.transform = t; d.t = t; }
+          return;
+        }
+        const el = document.createElement('span');
+        el.className = 'rd-drop';
+        el.style.transform = t;
+        el.dataset.ch = String(line.chapter);
+        el.dataset.p = String(line.para);
+        el.dataset.at = String(e);
+        this.#dropLayer.append(el);
+        this.#drops.set(key, { el, i, e, t });
+      });
+    }
+    for (const [key, d] of this.#drops) {
+      if (seen.has(key)) continue;
+      this.#drops.delete(key);
+      d.el.classList.add('rd-drop-off');
+      window.setTimeout(() => d.el.remove(), 250);
+    }
   }
 
   #moveWindow(lo: number, hi: number): void {

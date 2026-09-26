@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { isSaved, listLookups, recordLookup, seenLemmas, setSaved, type NewLookup } from '../../src/core/annot/lookups.ts';
+import { forgetLemma, isSaved, listLookups, recordLookup, seenLemmas, setSaved, type NewLookup } from '../../src/core/annot/lookups.ts';
 import { migrate } from '../../src/core/db/migrations.ts';
 import type { Db } from '../../src/core/db/types.ts';
 import { saveParsedBook } from '../../src/core/library/library.ts';
@@ -46,5 +46,16 @@ describe('lookups', () => {
     await recordLookup(db, row('a', 'go'));
     await db.run('DELETE FROM book WHERE id = ?', ['a']);
     expect(await listLookups(db, 'a')).toEqual([]);
+  });
+  it('forgetLemma undoes a mistaken lookup in this book only: rows, saved state, seen', async () => {
+    const id = await recordLookup(db, row('a', 'go'));
+    await setSaved(db, id, true);
+    await recordLookup(db, row('a', 'go'));
+    await recordLookup(db, row('a', 'run'));
+    await recordLookup(db, row('b', 'go'));
+    await forgetLemma(db, 'a', 'go');
+    expect([...await seenLemmas(db, 'a')]).toEqual(['run']);
+    expect(await isSaved(db, 'a', 'go')).toBe(false);
+    expect([...await seenLemmas(db, 'b')]).toEqual(['go']);
   });
 });

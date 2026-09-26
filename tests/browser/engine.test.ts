@@ -157,6 +157,30 @@ describe('ReaderEngine', () => {
     run = false;
     expect(mounted()).toEqual([0, 1, 2]);
     expect(Math.max(...gaps)).toBeLessThan(40);
+  }, 20_000);
+
+  it('R-01: redrawing footnotes never blocks a frame (nearest paragraphs first, rest in slices)', async () => {
+    const { el, e } = await open();
+    const all = el.querySelectorAll('.rd-line[data-p]').length;
+    const slow = (_c: number, _p: number, _para: string[], text: string) => {
+      const until = performance.now() + 1; // 1 ms per paragraph: ~90 ms for the mounted chapters at once
+      while (performance.now() < until) { /* busy */ }
+      const m = /\S+/.exec(text.slice(1))!;
+      return [{ start: m.index + 1, end: m.index + 1 + m[0].length, text: '注' }];
+    };
+    const t0 = performance.now();
+    e.setAnnotator(slow);
+    expect(performance.now() - t0).toBeLessThan(5 + 1 + 4);
+    // What is on screen came first.
+    const centre = lineAt(el, mid(el)).closest('.rd-chapter')!;
+    expect(centre.querySelectorAll('.rd-fn').length).toBeGreaterThan(0);
+    const paras = () => new Set(Array.from(el.querySelectorAll<HTMLElement>('.rd-fn')).map((f) => {
+      const l = f.closest<HTMLElement>('.rd-line')!;
+      return `${l.closest<HTMLElement>('.rd-chapter')!.dataset.ch}:${l.dataset.p}`;
+    })).size;
+    const expected = new Set(Array.from(el.querySelectorAll<HTMLElement>('.rd-line[data-p]')).map((l) => `${l.closest<HTMLElement>('.rd-chapter')!.dataset.ch}:${l.dataset.p}`)).size;
+    await expect.poll(paras, { timeout: 3000 }).toBe(expected);
+    expect(all).toBeGreaterThan(0);
   });
 
   it('the drawer reaches the screen edges: its chapter does not clip it (content-visibility)', async () => {

@@ -3,17 +3,24 @@ import { createPortal } from 'react-dom';
 import { lightHaptic } from '../app/haptics.ts';
 import { loadDict } from '../app/dict.ts';
 import { footnoteAnnotator } from '../core/annot/footnotes.ts';
-import { isSaved, recordLookup, seenLemmas, setSaved } from '../core/annot/lookups.ts';
+import { forgetLemma, isSaved, recordLookup, seenLemmas, setSaved } from '../core/annot/lookups.ts';
 import type { Db } from '../core/db/types.ts';
 import type { DictService, LookupResult } from '../core/dict/service.ts';
+import { grammarFor, type Grammar } from '../core/grammar/samples.ts';
 import { logMetric } from '../core/metrics/metrics.ts';
 import { MOTION } from '../core/motion.ts';
-import type { ReaderEngine, WordHit } from '../core/reader/engine.ts';
-import { WordDrawer, type DrawerState } from './WordDrawer.tsx';
+import type { ReaderEngine, SentenceHit, WordHit } from '../core/reader/engine.ts';
+import { GrammarDrawer, WordDrawer, type DrawerState } from './WordDrawer.tsx';
+
+/** What a drawer is open for: a tapped word, or a tapped grammar droplet (its sentence). */
+type Target = { kind: 'word'; hit: WordHit } | { kind: 'sentence'; hit: SentenceHit };
 
 interface Pop {
-  hit: WordHit; host: HTMLElement; x: number; state: DrawerState; result: LookupResult | null;
-  closing: boolean; lookupId: number | null; saved: boolean;
+  target: Target; host: HTMLElement; x: number; closing: boolean;
+  /** Word drawers only. */
+  state: DrawerState; result: LookupResult | null; lookupId: number | null; saved: boolean;
+  /** Sentence drawers only. */
+  grammar: Grammar | null;
 }
 
 /** README → Word tap: the first scroll gesture after close stays locked this long. */
@@ -38,7 +45,9 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
   const seenRef = useRef<Set<string>>(new Set());
   const seenDirty = useRef(false);
   const lockUntil = useRef(0);
-  const pending = useRef<WordHit | null>(null);
+  const pending = useRef<Target | null>(null);
+  /** The Lookup write in flight, so an undo can wait for the row it deletes. */
+  const recording = useRef<Promise<void>>(Promise.resolve());
   const timers = useRef<number[]>([]);
   const closedAt = useRef<{ at: number; timer: number } | null>(null);
 
@@ -91,19 +100,20 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
   /** Side effects of a successful lookup: Lookup row, `seen`, saved state (README → On open). */
   const record = (p: Pop) => {
     const r = p.result;
-    if (!r) return;
+    if (!r || p.target.kind !== 'word') return;
+    const hit = p.target.hit;
     if (!seenRef.current.has(r.lemma)) { seenRef.current.add(r.lemma); seenDirty.current = true; }
     void logMetric(db, { type: 'lookup', bookId });
-    void (async () => {
+    recording.current = (async () => {
       const id = await recordLookup(db, {
-        bookId, surface: r.surface, lemma: r.lemma, zh: r.gloss, phonetic: r.phonetic, sentence: p.hit.sentenceText,
-        loc: { chapter: p.hit.chapter, para: p.hit.para, sentence: p.hit.sentence, offset: p.hit.start }, at: Date.now(),
+        bookId, surface: r.surface, lemma: r.lemma, zh: r.gloss, phonetic: r.phonetic, sentence: hit.sentenceText,
+        loc: { chapter: hit.chapter, para: hit.para, sentence: hit.sentence, offset: hit.start }, at: Date.now(),
       });
       const cur = popRef.current;
-      if (cur?.hit === p.hit && cur.saved) await setSaved(db, id, true); // Save tapped before the row existed
+      if (cur?.target === p.target && cur.saved) await setSaved(db, id, true); // Save tapped before the row existed
       const saved = await isSaved(db, bookId, r.lemma);
       const now = popRef.current;
-      if (now?.hit === p.hit) setPop({ ...now, lookupId: id, saved: saved || now.saved });
+      if (now?.target === p.target && !now.closing) setPop({ ...now, lookupId: id, saved: saved || now.saved });
     })();
   };
 
@@ -114,16 +124,25 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     engine.current?.setAnnotator(footnoteAnnotator(dictRef.current, seenRef.current));
   };
 
-  const open = (hit: WordHit, tapAt?: number) => {
+  const open = (target: Target, tapAt?: number) => {
     const e = engine.current;
     if (!e) return;
+    const { hit } = target;
     const host = e.openGap(hit.lineIndex);
-    e.setHighlight(hit);
     const box = e.scroller.getBoundingClientRect();
-    const x = Math.min(Math.max(16, hit.rect.left + hit.rect.width / 2 - box.left), box.width - 16);
-    const p: Pop = { hit, host, x, ...resolve(hit), closing: false, lookupId: null, saved: false };
-    setPop(p);
+    const cx = target.kind === 'word' ? target.hit.rect.left + target.hit.rect.width / 2 : target.hit.x;
+    const x = Math.min(Math.max(16, cx - box.left), box.width - 16);
+    const base: Pop = { target, host, x, closing: false, state: 'ready', result: null, lookupId: null, saved: false, grammar: null };
     lightHaptic();
+    if (target.kind === 'sentence') {
+      setPop({ ...base, grammar: grammarFor(bookId, hit.chapter, hit.para, target.hit.sentence) });
+      trackGap(host, MOTION.drawerOpen, () => keepOnScreen(host));
+      return;
+    }
+    const word = target.hit;
+    e.setHighlight(word);
+    const p: Pop = { ...base, ...resolve(word) };
+    setPop(p);
     if (tapAt !== undefined) {
       requestAnimationFrame(() => { window.__spotlightTapMs = performance.now() - tapAt; });
     }
@@ -131,13 +150,13 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     else if (p.state === 'loading') {
       void loadDict().then(() => {
         const cur = popRef.current;
-        if (cur?.hit !== hit || cur.closing) return;
-        const next = { ...cur, ...resolve(hit) };
+        if (cur?.target !== target || cur.closing) return;
+        const next = { ...cur, ...resolve(word) };
         setPop(next);
         if (next.state === 'ready') record(next);
       }).catch(() => {
         const cur = popRef.current;
-        if (cur?.hit === hit && !cur.closing) setPop({ ...cur, state: 'notfound' });
+        if (cur?.target === target && !cur.closing) setPop({ ...cur, state: 'notfound' });
       });
     }
     trackGap(host, MOTION.drawerOpen, () => { keepOnScreen(host); refreshFootnotes(); });
@@ -205,20 +224,38 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     setPop(null);
   };
 
+  /**
+   * A tap right on a word's glyphs opens the word; otherwise a droplet within reach opens its
+   * sentence. Only the sharp text in the focus band opens anything; blurred text is blank space.
+   */
+  const targetAt = (e: ReaderEngine, x: number, y: number): Target | null => {
+    const tapped = e.hitTest(x, y);
+    const word = tapped && e.isInBand(tapped.lineIndex) ? tapped : null;
+    const r = word?.rect;
+    const onGlyphs = r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    const drop = onGlyphs ? null : e.dropAt(x, y);
+    if (drop) return { kind: 'sentence', hit: drop };
+    return word ? { kind: 'word', hit: word } : null;
+  };
+
+  const sameTarget = (a: Target, b: Target): boolean => {
+    if (a.kind !== b.kind || a.hit.chapter !== b.hit.chapter || a.hit.para !== b.hit.para) return false;
+    return a.kind === 'word' ? a.hit.start === (b.hit as WordHit).start : a.hit.sentence === (b.hit as SentenceHit).sentence;
+  };
+
   const onTap = (x: number, y: number, timeStamp: number): boolean => {
     const e = engine.current;
     if (!e) return false;
     const p = popRef.current;
-    const hit = e.hitTest(x, y);
+    const target = targetAt(e, x, y);
     if (p) {
-      if (p.closing) { if (hit) pending.current = hit; return true; }
-      const same = hit && hit.chapter === p.hit.chapter && hit.para === p.hit.para && hit.start === p.hit.start;
-      if (hit && !same) pending.current = hit; // close first, then open after the close duration
+      if (p.closing) { if (target) pending.current = target; return true; }
+      if (target && !sameTarget(target, p.target)) pending.current = target; // close first, then open after the close duration
       close();
       return true;
     }
-    if (!hit) return false;
-    open(hit, timeStamp);
+    if (!target) return false;
+    open(target, timeStamp);
     return true;
   };
 
@@ -229,9 +266,21 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     if (p.lookupId !== null) void setSaved(db, p.lookupId, true);
   };
 
+  /** The drawer's 撤回: this book forgets the word (rows, saved state, footnotes), then the drawer closes. */
+  const undo = () => {
+    const p = popRef.current;
+    const lemma = p?.result?.lemma;
+    if (!p || p.closing || !lemma) return;
+    if (seenRef.current.delete(lemma)) seenDirty.current = true;
+    close();
+    void recording.current.then(() => forgetLemma(db, bookId, lemma));
+  };
+
   const drawer = pop
     ? createPortal(
-      <WordDrawer state={pop.state} closing={pop.closing} result={pop.result} x={pop.x} saved={pop.saved} onSave={save} />,
+      pop.target.kind === 'sentence'
+        ? <GrammarDrawer closing={pop.closing} grammar={pop.grammar} x={pop.x} />
+        : <WordDrawer state={pop.state} closing={pop.closing} result={pop.result} x={pop.x} saved={pop.saved} onSave={save} onUndo={undo} />,
       pop.host,
     )
     : null;
