@@ -159,6 +159,24 @@ describe('ReaderEngine', () => {
     expect(Math.max(...gaps)).toBeLessThan(40);
   });
 
+  it('the drawer reaches the screen edges: its chapter does not clip it (content-visibility)', async () => {
+    const { el, e } = await open();
+    const line = Array.from(el.querySelectorAll<HTMLElement>('.rd-line')).findIndex((l) => mid(l) > 400);
+    const gap = e.openGap(line);
+    const wd = document.createElement('div');
+    wd.className = 'wd';
+    wd.style.height = '60px';
+    gap.append(wd);
+    e.setGap(gap.offsetHeight);
+    await frames(2);
+    const box = el.getBoundingClientRect();
+    const y = wd.getBoundingClientRect().top + 30;
+    expect(document.elementFromPoint(box.left + 6, y)).toBe(wd);
+    expect(document.elementFromPoint(box.right - 6, y)).toBe(wd);
+    e.closeGap();
+    expect(getComputedStyle(el.querySelector('.rd-chapter')!).contentVisibility).toBe('auto');
+  });
+
   it('virtualises to chapter ±1 without moving the text under the reader', async () => {
     const { el, e } = await open({}, { chapters: 6 });
     const mounted = () => Array.from(el.querySelectorAll<HTMLElement>('.rd-chapter')).map((b) => Number(b.dataset.ch));

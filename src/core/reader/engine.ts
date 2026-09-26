@@ -282,6 +282,8 @@ export class ReaderEngine {
     const host = this.#scroller.ownerDocument.createElement('div');
     host.className = 'rd-gap';
     line.el.after(host);
+    // content-visibility implies paint containment, which would clip the drawer's full-bleed margins.
+    host.closest<HTMLElement>('.rd-chapter')?.style.setProperty('content-visibility', 'visible');
     this.#gapHost = host;
     this.#gapLine = lineIndex;
     this.#gap = 0;
@@ -297,6 +299,7 @@ export class ReaderEngine {
 
   closeGap(): void {
     if (!this.#gapHost) return;
+    this.#gapHost.closest<HTMLElement>('.rd-chapter')?.style.removeProperty('content-visibility');
     this.#gapHost.remove();
     this.#gapHost = null;
     this.#gapLine = -1;
