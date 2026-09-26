@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Node / Vite
+node_modules/
+dist/
+*.log
+.vite/
+
+# Capacitor iOS build output
+ios/App/Pods/
+ios/App/build/
+ios/DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Local env
+.env*
+!.env.example

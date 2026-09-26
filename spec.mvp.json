@@ -1,0 +1,90 @@
+{
+  "product": "聚焦阅读 Focus Reader",
+  "release": "MVP",
+  "offline": true,
+  "network": "none",
+  "artboard": { "w": 402, "h": 812, "minTouch": 44 },
+  "screens": ["home", "reader.4a", "sheet.word", "sheet.settings", "sheet.import"],
+  "outOfScope": ["tab.study", "tab.words", "tab.me", "tabBar", "todayStats", "streak", "reviewCards", "srs", "theme.1c", "guidedReading", "tts", "examples", "agent", "llm", "sync", "push", "account", "themeEditor", "sentenceTranslate"],
+  "ease": "cubic-bezier(.42,0,.58,1)",
+  "motion": { "drawerOpen": 330, "drawerClose": 250, "contentIn": 250, "contentOut": 138, "bookOut": 220, "bookExpand": 460, "coverFade": 300, "pageFade": 320, "bookBack": 300, "chrome": 220 },
+  "palette": {
+    "home": { "bg": "#fbfaf8", "ink": "#16150f", "sub": "rgba(22,21,15,.62)", "rule": "rgba(22,21,15,.10)", "accent": "#c1452f" },
+    "reader": { "bg": "#faf8f3", "ink": "#221f1b", "eyebrow": "rgba(34,31,27,.38)", "footnote": "rgba(34,31,27,.60)", "wordMark": "rgba(34,31,27,.09)" },
+    "drawer": { "base": "#2c2620", "grad": ["#332c25", "#241f1a"], "text": "#f2ead9", "button": ["#574d42", "#3b342c"] }
+  },
+  "type": {
+    "body": { "family": "Newsreader", "size": 19.5, "lineHeight": 34 },
+    "bodySizes": { "S": [17.5, 30], "M": [19.5, 34], "L": [22, 38] },
+    "eyebrow": { "family": "IBM Plex Sans", "size": 11, "tracking": ".14em", "upper": true },
+    "footnote": { "family": "PingFang SC, Noto Sans SC, Hiragino Sans GB", "size": 9, "weight": 500, "tracking": ".04em", "left": 0, "top": 23 },
+    "drawerWord": { "family": "Newsreader", "size": 18, "weight": 500 },
+    "drawerDef": { "family": "IBM Plex Sans", "size": 13, "lineHeight": 20 },
+    "homeTitle": { "family": "Newsreader", "size": 36, "lineHeight": 1.1 },
+    "shelfTitle": { "family": "Newsreader", "size": 18 },
+    "zh": "Noto Sans SC"
+  },
+  "reader": {
+    "padding": "45% 34px",
+    "masks": { "top": { "h": 150, "solidTo": "22%" }, "bottom": { "h": 130, "solidFrom": "72%" } },
+    "eyebrowTop": 58,
+    "focusBand": {
+      "half": "H * focusPct / 200", "ramp": "max(1, H/2 - half)",
+      "t": "clamp((|lineMid - viewMid| - half) / ramp, 0, 1)",
+      "blur": "blurMax * t", "opacity": "1 - 0.85 * t",
+      "sentenceMode": "t = min(1, t + 0.18) outside current sentence",
+      "blurStep": 0.5, "window": "±1 viewport", "frameBudgetMs": 4
+    },
+    "drawer": {
+      "margin": "5px -34px 7px", "padding": "26px 0 27px",
+      "notch": { "strip": 16, "halfWidth": 12, "offset": -4, "caretClamp": 16 },
+      "keepOnScreen": { "bottomInset": 70, "minOverflow": 8 },
+      "userScrollWindowMs": 500,
+      "buttons": ["Save"],
+      "hidden": ["Examples", "pronounce", "exampleSentence"],
+      "states": ["loading", "ready", "notfound", "closing"]
+    },
+    "tapOrder": ["word → open drawer", "drawer open → close", "else → toggle chrome"]
+  },
+  "settings": {
+    "fontSize": { "default": "M", "options": ["S", "M", "L"] },
+    "focusPct": { "default": 30, "min": 20, "max": 80, "step": 5, "runtimeClamp": [10, 90] },
+    "blurMax": { "default": 7, "min": 2, "max": 14 },
+    "sentenceMode": { "default": false },
+    "tier": { "values": ["full", "fallback"], "source": "first-launch probe" }
+  },
+  "home": {
+    "padding": 24,
+    "sections": ["dateEyebrow", "continue", "shelfHeader", "filter", "shelfRows"],
+    "filter": ["在读", "读完"],
+    "shelfRow": { "cover": [46, 64], "sort": "openedAt desc" },
+    "readingSpeedWpm": 230,
+    "coverPalette": 8
+  },
+  "models": {
+    "Book": ["id", "title", "author", "cover", "color", "format", "wordCount", "status", "pct", "addedAt", "openedAt", "finishedAt"],
+    "Chapter": ["bookId", "idx", "title", "paras", "wordStart"],
+    "Position": ["bookId", "chapter", "para", "sentence", "updatedAt"],
+    "Lookup": ["id", "bookId", "surface", "lemma", "zh", "phonetic", "sentence", "loc", "at", "saved"],
+    "Settings": ["fontSize", "focusPct", "blurMax", "sentenceMode", "tier"],
+    "dict.entry": ["word", "phonetic", "pos", "gloss"],
+    "dict.forms": ["form", "lemma"]
+  },
+  "footnoteScope": "book",
+  "acceptance": {
+    "R-01": "60fps scroll mid-range, <2% dropped; fallback on low-end",
+    "R-04": "tap→drawer ≤100ms; ≥98% offline hit rate on bundled books",
+    "R-05": "drawer mechanics per v2 §3",
+    "R-06": "0px line shift; lemma match; persists",
+    "R-07": "restore same paragraph in band after kill / font change",
+    "R-09": "Save sets Lookup.saved (P1)",
+    "R-10": "TOC jump (P1)",
+    "H-01": "continue reading; remaining = words/230",
+    "H-02": "shelf sort + 2 filters; auto finished",
+    "H-03": "EPUB/TXT; readable ≤3s for 300 pages",
+    "H-04": "220/460/300/320ms flight",
+    "H-05": "swipe delete (P1)",
+    "S-01": "4 settings live + persisted"
+  },
+  "openDecisions": ["platform order", "footnote scope book|global", "footnote cap N", "sense selection", "bundled titles", "metrics collection"]
+}
