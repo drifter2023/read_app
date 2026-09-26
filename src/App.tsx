@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { boot, type Session } from './app/boot.ts';
 import { getBook, getChapters, markOpened } from './core/library/library.ts';
 import { MOTION } from './core/motion.ts';
@@ -29,7 +30,9 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [opened, setOpened] = useState<Opened | null>(null);
   const [readerOn, setReaderOn] = useState(false);
-  const [fly, setFly] = useState<Fly | null>(null);
+  const [fly, setFlyState] = useState<Fly | null>(null);
+  /** Commits a flight phase now, so each phase's timer starts when its transition does (H-04). */
+  const setFly = (f: Fly | null) => flushSync(() => setFlyState(f));
   const busy = useRef(false);
   /** The running open flight; going back waits for it rather than being dropped. */
   const opening = useRef<Promise<void> | null>(null);

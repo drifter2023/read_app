@@ -68,7 +68,7 @@
 @keyframes fadeOut   { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(4px) } }
 @keyframes dots      { 0%, 80% { opacity: .25 } 40% { opacity: 1 } }
 
-.wd { position: relative; margin: 5px -34px 7px; white-space: normal; }
+.wd { position: relative; z-index: 3; margin: 5px -34px 7px; white-space: normal; } /* above the fade masks (z 2) */
 .leather {
   background: #2c2620;
   background-image:

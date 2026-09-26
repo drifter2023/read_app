@@ -10,7 +10,8 @@ export default defineConfig({
   projects: [
     { name: 'webkit-phone', use: { browserName: 'webkit', ...phone }, testIgnore: /offline-reload/ },
     // Playwright's WebKit build hangs reloading a service-worker page with the server gone; the
-    // offline check runs in Chromium here and in Safari on the simulator (docs/perf/m4-offline.md).
+    // offline check runs in Chromium here; it was also checked by hand in Safari on the simulator
+    // (docs/plans/2026-09-26-m2-m4-notes.md).
     { name: 'chromium-phone', use: { browserName: 'chromium', ...phone }, testMatch: /offline-reload/ },
   ],
 });

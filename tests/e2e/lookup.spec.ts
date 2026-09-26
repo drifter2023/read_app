@@ -107,10 +107,15 @@ test('R-06 and R-09: footnotes follow the lemma, survive a reload, and Save stic
   const a = await wordInBand(page, 'advice');
   await page.mouse.click(a.x, a.y);
   await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+  // Let the 330 ms open finish: clicking a half-revealed button makes Playwright scroll it into view.
+  await page.waitForTimeout(450);
   await page.getByRole('button', { name: '保存' }).click();
   await expect(page.getByRole('button', { name: '已存' })).toBeVisible();
   await expect(drawer(page)).toHaveAttribute('data-state', 'ready'); // Save does not close the drawer
-  await page.mouse.click(a.x, a.y);
+  // Keep-on-screen may have scrolled the text up; tap the highlighted word where it is now.
+  await page.waitForTimeout(700);
+  const hl = (await page.locator('.rd-hl').boundingBox())!;
+  await page.mouse.click(hl.x + hl.width / 2, hl.y + hl.height / 2);
   await expect(drawer(page)).toHaveCount(0);
   const note = page.locator('.rd-w', { hasText: 'advice' }).first().locator('.rd-fn');
   await expect(note).toHaveText('忠告');

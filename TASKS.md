@@ -1,5 +1,7 @@
 # Tasks — in order
 
+Status (2026-09-26): tasks 1–23 are built, each with a test for its acceptance ID (see `DEVELOPING.md` → Tests and `docs/plans/2026-09-26-m2-m4-notes.md`). Task 24 needs real devices and the Apple Developer account.
+
 Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.html` §3.
 
 ## M1 · Reader core

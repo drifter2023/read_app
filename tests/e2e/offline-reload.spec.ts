@@ -31,6 +31,9 @@ test('mobile web: after the first visit the app works with the server gone', asy
     const reg = await navigator.serviceWorker.getRegistration();
     return reg?.active?.state === 'activated' && !!navigator.serviceWorker.controller;
   }, undefined, { timeout: 30_000 });
+  // A second, online visit: this navigation itself is served by the worker, as a real return visit is.
+  await page.reload();
+  await page.waitForFunction(() => !!navigator.serviceWorker.controller);
   await new Promise((r) => server.close(r));
   server.closeAllConnections();
 
