@@ -19,7 +19,7 @@ export function precacheServiceWorker(): Plugin {
         for (const e of await readdir(dir, { withFileTypes: true })) {
           const p = join(dir, e.name);
           if (e.isDirectory()) await walk(p);
-          else if (e.name !== 'sw.js' && !/\.(map|woff)$/.test(e.name)) files.push(relative(outDir, p)); // Safari 16+ uses woff2
+          else if (e.name !== 'sw.js' && !/\.(map|woff)$/.test(e.name) && e.name !== '_headers') files.push(relative(outDir, p)); // Safari 16+ uses woff2
         }
       };
       await walk(outDir);

@@ -36,6 +36,14 @@ In Xcode, pick an iPhone simulator and press ▶. `npm run build:ios:dev` builds
 
 `npm run build` writes `dist/`, including `sw.js`, a service worker that precaches every file (about 9 MB with the dictionary). After the first visit the web app runs with no network, and Home-screen installs work through `manifest.webmanifest`. Host `dist/` as static files over HTTPS; any path works because the build uses relative URLs.
 
+## Publish the mobile web build (Cloudflare)
+
+```bash
+npm run deploy:web
+```
+
+This builds `dist/` and uploads it as a static-assets Worker (`wrangler.jsonc`, name `spotlight-reader`), live at https://spotlight-reader.ai-core.workers.dev. The first time, run `npx wrangler login`. `public/_headers` makes `index.html` and `sw.js` revalidate on every visit, so phones pick up new deploys.
+
 ## Tests
 
 ```bash

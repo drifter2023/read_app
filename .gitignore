@@ -23,3 +23,8 @@ playwright-report/
 .cache/
 public/dict.db
 public/covers/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
