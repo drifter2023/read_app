@@ -1,0 +1,19 @@
+.rd-page { position: fixed; inset: 0; overflow: hidden; background: var(--paper); }
+.rd-scroll {
+  position: absolute; inset: 0; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
+  padding: 0 34px; /* vertical padding is set by the engine: H/2 - lineHeight/2 */
+}
+.rd-content, .rd-probe {
+  font-family: 'Newsreader Variable', 'Newsreader', Georgia, serif; font-optical-sizing: auto;
+  font-size: var(--fs, 19.5px); line-height: var(--lh, 34px); color: var(--reader-ink);
+  font-kerning: normal;
+}
+.rd-probe {
+  position: absolute; top: 0; left: 34px; visibility: hidden; pointer-events: none;
+  white-space: normal; overflow-wrap: anywhere;
+}
+.rd-line, .rd-blank { height: var(--lh, 34px); white-space: pre; position: relative; }
+.rd-head {
+  font: 400 11px/var(--lh, 34px) 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .14em;
+  text-transform: uppercase; text-align: center; color: rgba(34, 31, 27, .62);
+}
