@@ -301,7 +301,11 @@ Keyframes, copied from the prototype:
 - **Covers**: from the EPUB, or generated colour blocks.
 - **Icons**: only `‹`, a TOC icon and `Aa`. Use any consistent line-icon set; the design has no custom icons.
 - **Dictionary**: ECDICT → `dict.db`, built at build time by `scripts/build-dict`.
-- **Bundled books**: 3 public-domain English titles, still to be chosen.
+- **Bundled books** (decided 2026-09-26; EPUBs from Standard Ebooks in `books/`). Chosen for modern syntax and plain style, because the app is for English learners:
+  - *A Farewell to Arms*, Ernest Hemingway (1929). About 89k words, so it is also the H-03 "300-page book" test case.
+  - *The Maltese Falcon*, Dashiell Hammett (1930). About 68k words.
+  - *The Great Gatsby*, F. Scott Fitzgerald (1925). About 49k words.
+  - **Rights:** all three are public domain in the US and China. Hemingway and Hammett are **not** public domain in the EU until 2032, so exclude EU App Store storefronts and review this before any EU release (the web build is reachable from anywhere).
 
 ## Files
 
