@@ -13,8 +13,12 @@ export interface LineMeta {
   wordEnd: number;
 }
 
-/** Words at least this long are also checked for a break inside them (overflow-wrap:anywhere). */
+/**
+ * Words the browser may break inside: long ones (overflow-wrap:anywhere) and ones with a dash,
+ * hyphen or slash, where engines break even next to a word joiner.
+ */
 const LONG_WORD = 24;
+const BREAKABLE = /[-‐‑–—/]/;
 
 /**
  * Offsets where each visual line of `text` starts when laid out in `probe`
@@ -41,7 +45,7 @@ export function breakLines(probe: HTMLElement, text: string): number[] {
       if (first > 0) starts.push(first);
       lineTop = t;
     }
-    if (m[0].length >= LONG_WORD) {
+    if (m[0].length >= LONG_WORD || BREAKABLE.test(m[0])) {
       const last = first + m[0].length - 1;
       const tl = topAt(last);
       if (tl !== null && tl > lineTop + 1) {

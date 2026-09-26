@@ -60,6 +60,19 @@ describe('breakLines', () => {
     expect(pieces.join('')).toBe(text);
     for (const p of pieces) expect(width(content, p.trimEnd())).toBeLessThanOrEqual(WIDTH + 0.5);
   });
+
+  it('finds breaks at dashes and hyphens inside short words (Gatsby: “unsought\u2060—\u2060frequently”)', () => {
+    const { content, probe } = stage();
+    const tokens = ['unsought\u2060—\u2060frequently', 'well-known', 'v-shaped', 'yellow-grey', 'twenty\u2060—\u2060five', 'and', 'the', 'confidences'];
+    for (let shift = 0; shift < tokens.length; shift++) {
+      const words = Array.from({ length: 60 }, (_, i) => tokens[(i + shift) % tokens.length]!);
+      const text = `${INDENT}${words.join(' ')}.`;
+      const starts = breakLines(probe, text);
+      const pieces = starts.map((a, i) => text.slice(a, starts[i + 1] ?? text.length));
+      expect(pieces.join('')).toBe(text);
+      for (const p of pieces) expect(width(content, p.trimEnd())).toBeLessThanOrEqual(WIDTH + 0.5);
+    }
+  });
 });
 
 describe('layoutChapter', () => {
