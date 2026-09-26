@@ -1,6 +1,6 @@
 # Tasks — in order
 
-Status (2026-09-26): tasks 1–23 and M5 (25–28) are built, each with a test for its acceptance ID (see `DEVELOPING.md` → Tests and `docs/plans/2026-09-26-m2-m4-notes.md`). Task 24 needs real devices and the Apple Developer account.
+Status (2026-09-26): tasks 1–23 and M5 (25–29) are built, each with a test for its acceptance ID (see `DEVELOPING.md` → Tests and `docs/plans/2026-09-26-m2-m4-notes.md`). Task 24 needs real devices and the Apple Developer account.
 
 Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.html` §3.
 
@@ -41,3 +41,4 @@ Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.htm
 26. Grammar droplet after every sentence end, shown only on lines in the focus band; tapping it opens a grammar drawer (same tear-paper drawer, same close rules). Notes are hand-written for the opening sentences of the three bundled books; other sentences show a “coming soon” line. **R-12**
 27. Drawers open only from sharp text in the focus band; a tap on blurred text counts as blank space (toggles the chrome). **R-13**
 28. Footnote redraws (a new word joins `seen`, a chapter attaches) run nearest-first in 5 ms slices, so the drawer's open animation never drops a frame. **R-01**
+29. Night mode: a 纸白 / 夜读 capsule on Home; one theme for Home and the reader (设计文档 v2 §2 colour table: 1c for the reader, 7b colours on the 7a Home layout), stored in Settings and applied before first paint. Small text stays ≥ 4.5:1. **S-02**

@@ -2,10 +2,12 @@ import type { Db } from '../db/types.ts';
 
 export type FontSize = 'S' | 'M' | 'L';
 export type Tier = 'full' | 'fallback';
-export interface Prefs { fontSize: FontSize; focusPct: number; blurMax: number; sentenceMode: boolean; tier: Tier | null }
+/** 纸白 (4a, 7a) or 夜读 (1c reader, 7b colours on Home); one theme for the whole app. */
+export type Theme = 'paper' | 'night';
+export interface Prefs { fontSize: FontSize; focusPct: number; blurMax: number; sentenceMode: boolean; tier: Tier | null; theme: Theme }
 export type PrefsListener = (prefs: Prefs, changed: keyof Prefs) => void;
 
-export const DEFAULT_PREFS: Prefs = { fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null };
+export const DEFAULT_PREFS: Prefs = { fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper' };
 
 export const TYPE_SCALE: Record<FontSize, { size: number; line: number }> = {
   S: { size: 17.5, line: 30 },
@@ -22,6 +24,7 @@ export function sanitise(p: Prefs): Prefs {
     blurMax: clampStep(p.blurMax, 2, 14, 1, DEFAULT_PREFS.blurMax),
     sentenceMode: p.sentenceMode === true,
     tier: p.tier === 'full' || p.tier === 'fallback' ? p.tier : null,
+    theme: p.theme === 'night' ? 'night' : 'paper',
   };
 }
 

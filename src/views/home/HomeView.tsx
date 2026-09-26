@@ -6,6 +6,7 @@ import { exportMetrics } from '../../core/metrics/metrics.ts';
 import { BUNDLED } from '../../core/library/bundled.ts';
 import { dateEyebrow, minutesLeft } from '../../core/library/format.ts';
 import { deleteBook, listShelf, restoreBundled, type ShelfBook } from '../../core/library/library.ts';
+import type { Theme } from '../../core/prefs/prefs.ts';
 import type { ParsedBook } from '../../core/types.ts';
 import { Confirm } from '../Confirm.tsx';
 import { ShelfRow } from './ShelfRow.tsx';
@@ -25,6 +26,8 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
   const [swiped, setSwiped] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ShelfBook | null>(null);
   const [importing, setImporting] = useState<ImportState>(null);
+  const [theme, setTheme] = useState<Theme>(session.prefs.get().theme);
+  useEffect(() => session.prefs.subscribe((p) => setTheme(p.theme)), [session]);
   const fileRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const openAfterLoad = useRef<string | null>(null);
@@ -77,7 +80,22 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
   return (
     <div className="home" ref={rootRef} aria-hidden={hidden} onClick={() => swiped && setSwiped(null)}>
       <div className="home-scroll">
-        <div className="eyebrow home-date">{dateEyebrow(new Date())}</div>
+        <div className="home-top">
+          <div className="eyebrow home-date">{dateEyebrow(new Date())}</div>
+          <div className="theme-toggle" role="radiogroup" aria-label="主题">
+            {([['paper', '纸白'], ['night', '夜读']] as const).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={theme === id}
+                onClick={() => void session.prefs.set('theme', id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {current && (
           <section

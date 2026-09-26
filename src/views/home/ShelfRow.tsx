@@ -68,7 +68,7 @@ export function ShelfRow({ book, open, onOpen, onDelete, onSwipe }: {
           <div className="row-title">{book.title}</div>
           <div className="row-author">{book.author}</div>
           <div className="row-meta">
-            <div className="bar"><i style={{ width: `${done ? 100 : Math.max(2, pct)}%`, background: done ? 'rgba(22,21,15,.3)' : undefined }} /></div>
+            <div className="bar"><i style={{ width: `${done ? 100 : Math.max(2, pct)}%`, background: done ? 'rgba(var(--ink-rgb), .3)' : undefined }} /></div>
             <span className="row-note">
               {done && book.finishedAt ? finishedLabel(book.finishedAt) : `第 ${book.chapter + 1} 章 · 还剩 ${minutesLeft(book.wordCount, book.pct)} 分`}
             </span>

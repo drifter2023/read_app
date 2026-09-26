@@ -1,10 +1,36 @@
+/* Colours per theme (设计文档 v2 §2 colour table): 纸白 = 4a reader + 7a Home, 夜读 = 1c reader + 7b colours on Home. */
 :root {
   --paper: #faf8f3;
+  --paper-rgb: 250, 248, 243;
   --reader-ink: #221f1b;
+  --reader-ink-rgb: 34, 31, 27;
   --home-bg: #fbfaf8;
   --ink: #16150f;
+  --ink-rgb: 22, 21, 15;
   --accent: #c1452f;
+  --on-accent: #fff;
+  --surface: #fff; /* floating cards on Home (import progress) */
+  --danger: #a3321f;
+  --shadow-rgb: 22, 21, 15;
+  --drawer-edge: rgba(255, 255, 255, .55);
   --ease: cubic-bezier(.42, 0, .58, 1);
+  color-scheme: light;
+}
+:root[data-theme='night'] {
+  --paper: #0e0e10;
+  --paper-rgb: 14, 14, 16;
+  --reader-ink: #f2ede4;
+  --reader-ink-rgb: 242, 237, 228;
+  --home-bg: #0b0c0f;
+  --ink: #eceef2;
+  --ink-rgb: 236, 238, 242;
+  --accent: #f0b429;
+  --on-accent: #0b0c0f;
+  --surface: #15171c;
+  --danger: #ff8a7a;
+  --shadow-rgb: 0, 0, 0;
+  --drawer-edge: rgba(255, 255, 255, .07);
+  color-scheme: dark;
 }
 html, body { margin: 0; height: 100%; background: var(--paper); -webkit-text-size-adjust: 100%; }
 body { font-family: 'IBM Plex Sans', 'PingFang SC', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }

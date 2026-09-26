@@ -154,3 +154,49 @@ test('H-03: TXT import, duplicate detection, and a plain-language error', async 
   await page.locator('input[type=file]').setInputFiles({ name: 'notes.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4') });
   await expect(page.locator('.import-error')).toHaveText('只支持 EPUB 和 TXT 格式的书');
 });
+
+/** WCAG contrast ratio of two CSS colours; `fg` may be translucent over the opaque `bg`. */
+function contrast(fg: string, bg: string): number {
+  const parse = (c: string) => c.match(/[\d.]+/g)!.map(Number);
+  const [br, bgG, bb] = parse(bg);
+  const [r, g, b, a = 1] = parse(fg);
+  const mix = [r! * a + br! * (1 - a), g! * a + bgG! * (1 - a), b! * a + bb! * (1 - a)];
+  const lum = (v: number[]) => {
+    const [x, y, z] = v.map((c) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; });
+    return 0.2126 * x! + 0.7152 * y! + 0.0722 * z!;
+  };
+  const [hi, lo] = [lum(mix), lum([br!, bgG!, bb!])].sort((p, q) => q - p);
+  return (hi! + 0.05) / (lo! + 0.05);
+}
+
+test('Night mode: the Home capsule switches the whole app, survives a reload, keeps small text legible', async ({ page }) => {
+  await fullTier(page);
+  await page.goto('/');
+  const night = page.getByRole('radio', { name: '夜读' });
+  await expect(page.getByRole('radio', { name: '纸白' })).toHaveAttribute('aria-checked', 'true');
+  await night.click();
+  await expect(night).toHaveAttribute('aria-checked', 'true');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'night');
+  await expect(page.locator('.home')).toHaveCSS('background-color', 'rgb(11, 12, 15)');
+  // Small text on Home (≥ 4.5:1, README → Quality bar).
+  const [sec, bg] = await page.evaluate(() => [getComputedStyle(document.querySelector('.row-author')!).color, getComputedStyle(document.querySelector('.home')!).backgroundColor]);
+  expect(contrast(sec!, bg!)).toBeGreaterThanOrEqual(4.5);
+
+  // Applied before the app boots, so a reload never flashes paper white.
+  await page.waitForTimeout(600); // user.db persists after a 300 ms debounce
+  await page.reload({ waitUntil: 'commit' });
+  await page.waitForFunction(() => document.body !== null);
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('night');
+  await expect(page.getByRole('radio', { name: '夜读' })).toHaveAttribute('aria-checked', 'true');
+
+  // The reader follows (1c colours).
+  await openFromHome(page, 'The Great Gatsby');
+  await expect(page.locator('.rd-page')).toHaveCSS('background-color', 'rgb(14, 14, 16)');
+  const [fn, paper] = await page.evaluate(() => [getComputedStyle(document.querySelector('.rd-head')!).color, getComputedStyle(document.querySelector('.rd-page')!).backgroundColor]);
+  expect(contrast(fn!, paper!)).toBeGreaterThanOrEqual(4.5);
+
+  await back(page);
+  await page.getByRole('radio', { name: '纸白' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'paper');
+  await expect(page.locator('.home')).toHaveCSS('background-color', 'rgb(251, 250, 248)');
+});

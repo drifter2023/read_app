@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { boot, type Session } from './app/boot.ts';
+import { followTheme } from './app/theme.ts';
 import { getBook, getChapters, markOpened } from './core/library/library.ts';
 import { MOTION } from './core/motion.ts';
 import { loadPosition } from './core/reader/position.ts';
@@ -54,6 +55,8 @@ export function App() {
     })().catch((e: unknown) => { if (live) setError(e instanceof Error ? e.message : String(e)); });
     return () => { live = false; };
   }, []);
+
+  useEffect(() => (session ? followTheme(session.prefs) : undefined), [session]);
 
   const open = useCallback(({ book, from }: OpenRequest) => {
     if (!session || busy.current) return;

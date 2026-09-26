@@ -4,12 +4,12 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Scope guard
 - Build only: Home (continue reading + shelf + import), Reader 4a, word drawer, 9px footnotes, settings sheet, open-book transition.
-- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer. Grammar notes are hand-written samples in `src/core/grammar/samples.ts` (no LLM). Drawers open only from the sharp text in the focus band.
+- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer. Grammar notes are hand-written samples in `src/core/grammar/samples.ts` (no LLM). Drawers open only from the sharp text in the focus band. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged).
 - Do NOT build:
   - tabs 书房 / 生词 / 我 or a tab bar;
   - today stats or streak;
   - review cards or spaced repetition;
-  - night mode 1c or auto guided reading;
+  - auto guided reading;
   - pronunciation / TTS, or the Examples button;
   - any LLM or agent, sync, push, accounts, analytics SDKs;
   - long-press sentence translation.
