@@ -28,6 +28,7 @@
   - Revisit in M2 alongside `dict.db` (official sqlite-wasm + OPFS).
 - **Engine:** `#setWindow` saves `scrollTop` before mutating the DOM, because removing a chapter above clamps `scrollTop` at the next layout. `.rd-scroll` also sets `overflow-anchor: none`.
 - **linkedom:** `getElementsByTagName('*')` is empty for XML documents, so `tagText` uses `querySelectorAll('*')`.
+- **Line breaking:** WebKit breaks at an em-dash even next to U+2060, so `breakLines` also checks inside words containing `- ‐ ‑ – — /`, not only words of 24+ characters. This was found on the simulator (Gatsby, “unsought—frequently”) and is now pinned by a browser test.
 - **Standard Ebooks subtitles** keep their no-break space ("Spade\u00a0& Archer"), so the test expectation was adjusted.
 
 ## Global Constraints
