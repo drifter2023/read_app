@@ -13,6 +13,12 @@ export const MIGRATIONS: readonly string[] = [
      book_id TEXT PRIMARY KEY REFERENCES book(id) ON DELETE CASCADE, chapter INTEGER NOT NULL,
      para INTEGER NOT NULL, sentence INTEGER NOT NULL, updated_at INTEGER NOT NULL);
    CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`,
+  // v2 (M2): one row per drawer open. Kept rich on purpose (README → Local data model).
+  `CREATE TABLE lookup (
+     id INTEGER PRIMARY KEY AUTOINCREMENT, book_id TEXT NOT NULL REFERENCES book(id) ON DELETE CASCADE,
+     surface TEXT NOT NULL, lemma TEXT NOT NULL, zh TEXT NOT NULL, phonetic TEXT NOT NULL, sentence TEXT NOT NULL,
+     loc TEXT NOT NULL, at INTEGER NOT NULL, saved INTEGER NOT NULL DEFAULT 0);
+   CREATE INDEX lookup_book_lemma ON lookup (book_id, lemma);`,
 ];
 
 export async function migrate(db: Db, migrations: readonly string[] = MIGRATIONS): Promise<number> {

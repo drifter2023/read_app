@@ -4,9 +4,11 @@
   "type": "module",
   "scripts": {
     "books": "node scripts/build-books.ts",
-    "predev": "npm run books",
+    "dict": "node --no-warnings=ExperimentalWarning scripts/build-dict.ts",
+    "assets": "npm run books && npm run dict",
+    "predev": "npm run assets",
     "dev": "vite",
-    "prebuild": "npm run books",
+    "prebuild": "npm run assets",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",

@@ -20,3 +20,5 @@ xcuserdata/
 public/books/
 test-results/
 playwright-report/
+.cache/
+public/dict.db

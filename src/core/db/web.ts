@@ -1,5 +1,5 @@
-import initSqlJs, { type Database } from 'sql.js';
-import wasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
+import type { Database } from 'sql.js';
+import { loadSqlJs } from './sqljs.ts';
 import type { Db, SqlValue } from './types.ts';
 
 const IDB_NAME = 'spotlight';
@@ -11,7 +11,7 @@ const PERSIST_DELAY_MS = 300;
  * The wasm is bundled by Vite, so there are no network requests beyond the app's own origin.
  */
 export async function openWebDb(name: string): Promise<Db> {
-  const SQL = await initSqlJs({ locateFile: () => wasmUrl });
+  const SQL = await loadSqlJs();
   const saved = await idbGet(name);
   const d: Database = saved ? new SQL.Database(saved) : new SQL.Database();
   d.run('PRAGMA foreign_keys = ON');
