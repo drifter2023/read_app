@@ -28,3 +28,7 @@ A phone is slower still at this work, which is consistent with the 4 fps reading
 **Regression test.** `tests/browser/engine.test.ts`, "R-01: crossing into a long chapter never blocks a frame": in WebKit and Chromium, the worst frame must stay under 40 ms. It measured 198 ms before the fix.
 
 **On a device.** Open `?dev=1`. The readout now shows the worst frame of each half-second (`worst Nms`).
+
+**Confirmed on device (2026-09-26).** iPhone 13 Pro, Safari: scrolling is smooth after the fix.
+
+**Side effect, fixed in 01c6205.** `content-visibility: auto` on `.rd-chapter` implies paint containment, which clipped the drawer's full-bleed margins. The chapter holding an open drawer now opts out until the drawer closes.
