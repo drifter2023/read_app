@@ -1,19 +1,18 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { fullTier, openFromHome, ready, tapBlank, wordInBand } from './helpers.ts';
 
-async function ready(page: Page) {
-  await page.locator('.rd-line[data-p]').first().waitFor();
-  await expect(page.locator('.rd-probing')).toHaveCount(0, { timeout: 20_000 });
-}
-
-test('makes no network requests outside the app origin', async ({ page, baseURL }) => {
+test('makes no network requests outside the app origin, through home, reading and lookup', async ({ page, baseURL }) => {
   const origin = new URL(baseURL!).origin;
   const foreign: string[] = [];
   page.on('request', (r) => {
     const u = r.url();
     if (!u.startsWith(origin) && !u.startsWith('data:') && !u.startsWith('blob:')) foreign.push(u);
   });
-  await page.goto('/?book=gatsby');
-  await ready(page);
+  await page.goto('/');
+  await openFromHome(page, 'The Great Gatsby');
+  const p = await wordInBand(page, 'advice');
+  await page.mouse.click(p.x, p.y);
+  await expect(page.getByTestId('drawer')).toHaveAttribute('data-state', 'ready');
   expect(foreign).toEqual([]);
 });
 
@@ -26,6 +25,7 @@ test('opens The Great Gatsby with the chapter eyebrow and 1%', async ({ page }) 
 });
 
 test('R-07: a reload restores the same paragraph into the band', async ({ page }) => {
+  await fullTier(page);
   await page.goto('/?book=gatsby&dev=1');
   await ready(page);
   await page.evaluate(() => { document.querySelector('.rd-scroll')!.scrollTop += 6000; });
@@ -35,4 +35,63 @@ test('R-07: a reload restores the same paragraph into the band', async ({ page }
   await ready(page);
   const after = await page.evaluate(() => window.__spotlight!.engine.currentAnchor());
   expect([after.chapter, after.para]).toEqual([before.chapter, before.para]);
+});
+
+test('chrome: a blank tap shows the top bar and capsule; they hide after 3 s idle and on scroll', async ({ page }) => {
+  await fullTier(page);
+  await page.goto('/?book=gatsby');
+  await ready(page);
+  const bar = page.locator('.rd-top');
+  await tapBlank(page);
+  await expect(bar).toHaveClass(/rd-chrome-on/);
+  await expect(page.locator('.rd-title')).toHaveText('The Great Gatsby');
+  await page.waitForTimeout(3300);
+  await expect(bar).not.toHaveClass(/rd-chrome-on/);
+  await tapBlank(page);
+  await expect(bar).toHaveClass(/rd-chrome-on/);
+  await page.evaluate(() => { document.querySelector('.rd-scroll')!.scrollTop += 200; });
+  await expect(bar).not.toHaveClass(/rd-chrome-on/);
+});
+
+test('S-01: settings apply live, keep the paragraph in the band, and persist', async ({ page }) => {
+  await fullTier(page);
+  await page.goto('/?book=gatsby&dev=1');
+  await ready(page);
+  await page.evaluate(() => { document.querySelector('.rd-scroll')!.scrollTop += 3000; });
+  await page.waitForTimeout(400);
+  const before = await page.evaluate(() => window.__spotlight!.engine.currentAnchor());
+  await tapBlank(page);
+  await page.getByRole('button', { name: '阅读设置' }).click();
+  await expect(page.getByRole('dialog', { name: '阅读设置' })).toBeVisible();
+  await page.getByRole('radio', { name: '大' }).click();
+  await expect(page.locator('.rd-scroll')).toHaveCSS('--fs', '22px');
+  const after = await page.evaluate(() => window.__spotlight!.engine.currentAnchor());
+  expect([after.chapter, after.para]).toEqual([before.chapter, before.para]);
+  await page.getByRole('slider', { name: '清晰带' }).fill('50');
+  await page.getByRole('switch', { name: '整句模式' }).check();
+  await page.waitForTimeout(1000); // the web db is written to IndexedDB 300 ms after the last change
+  await page.reload();
+  await ready(page);
+  await expect(page.locator('.rd-scroll')).toHaveCSS('--fs', '22px');
+  expect(await page.evaluate(() => window.__spotlight!.prefs.get())).toMatchObject({ fontSize: 'L', focusPct: 50, sentenceMode: true });
+});
+
+test('R-10: the contents list marks the current chapter and jumps to a chapter start in the band', async ({ page }) => {
+  await fullTier(page);
+  await page.goto('/?book=gatsby');
+  await ready(page);
+  await tapBlank(page);
+  await page.getByRole('button', { name: '目录' }).click();
+  const toc = page.getByRole('dialog', { name: '目录' });
+  await expect(toc.locator('[aria-current="true"]')).toHaveText('Chapter I');
+  await toc.getByRole('button', { name: 'Chapter V', exact: true }).click();
+  await page.waitForTimeout(400);
+  const d = await page.evaluate(() => {
+    const head = [...document.querySelectorAll<HTMLElement>('.rd-head')].find((h) => h.textContent === 'Chapter V')!;
+    const s = document.querySelector('.rd-scroll')!.getBoundingClientRect();
+    const b = head.getBoundingClientRect();
+    return { off: Math.abs(b.top + b.height / 2 - (s.top + s.height / 2)), band: s.height * 0.3 / 2 };
+  });
+  expect(d.off).toBeLessThanOrEqual(d.band);
+  await expect(page.locator('.rd-eyebrow-chapter')).toHaveText('Chapter V');
 });

@@ -19,6 +19,8 @@ export const MIGRATIONS: readonly string[] = [
      surface TEXT NOT NULL, lemma TEXT NOT NULL, zh TEXT NOT NULL, phonetic TEXT NOT NULL, sentence TEXT NOT NULL,
      loc TEXT NOT NULL, at INTEGER NOT NULL, saved INTEGER NOT NULL DEFAULT 0);
    CREATE INDEX lookup_book_lemma ON lookup (book_id, lemma);`,
+  // v3 (M4): local beta metrics log, exported by hand through the share sheet. Never sent anywhere.
+  `CREATE TABLE metric (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, type TEXT NOT NULL, book_id TEXT, data TEXT NOT NULL);`,
 ];
 
 export async function migrate(db: Db, migrations: readonly string[] = MIGRATIONS): Promise<number> {

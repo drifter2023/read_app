@@ -89,6 +89,10 @@ describe('firstSense / americanIpa', () => {
     expect(americanIpa('/ˈɫʊk/')).toBe('/lʊk/');
     expect(americanIpa('/əˈbəv/, /əˈbʌv/')).toBe('/əˈbʌv/');
     expect(americanIpa('/ˈkæɹi/')).toBe('/ˈkæri/');
+    expect(americanIpa('/ˈsəmɝ/')).toBe('/ˈsʌmɚ/');
+    expect(americanIpa('/ˈwɝk/')).toBe('/wɝk/');
+    expect(americanIpa('/ˈfaɪɝ/')).toBe('/faɪɚ/');
+    expect(americanIpa('/ˈbɝθˌdeɪ/')).toBe('/ˈbɝθˌdeɪ/');
   });
 });
 

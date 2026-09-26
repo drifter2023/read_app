@@ -9,7 +9,12 @@ export class EpubError extends Error {}
 const SKIP = /\b(frontmatter|backmatter|titlepage|halftitlepage|imprint|colophon|copyright-page|toc|dedication|epigraph|loi|endnotes)\b/;
 const ROMAN = /^[IVXLCDM]+$/;
 
-export async function parseEpub(bytes: Uint8Array | ArrayBuffer, id: string): Promise<ParsedBook> {
+/** The EPUB's own cover image, if it declares one (EPUB 3 `cover-image` or EPUB 2 `<meta name="cover">`). */
+export interface CoverImage { bytes: Uint8Array; mime: string }
+
+export async function parseEpub(
+  bytes: Uint8Array | ArrayBuffer, id: string, onProgress?: (done: number, total: number) => void,
+): Promise<ParsedBook & { coverImage?: CoverImage }> {
   let zip: JSZip;
   try {
     zip = await JSZip.loadAsync(bytes);
@@ -24,14 +29,23 @@ export async function parseEpub(bytes: Uint8Array | ArrayBuffer, id: string): Pr
   const opf = parse(await readText(zip, opfPath), 'text/xml');
   const base = opfPath.includes('/') ? opfPath.slice(0, opfPath.lastIndexOf('/') + 1) : '';
   const manifest = new Map<string, string>();
+  let coverPath: string | undefined;
+  let coverMime = '';
+  const coverId = Array.from(opf.querySelectorAll('meta')).find((m) => m.getAttribute('name') === 'cover')?.getAttribute('content');
   for (const item of Array.from(opf.querySelectorAll('item'))) {
     const itemId = item.getAttribute('id');
     const href = item.getAttribute('href');
-    if (itemId && href) manifest.set(itemId, resolvePath(base, href));
+    if (!itemId || !href) continue;
+    manifest.set(itemId, resolvePath(base, href));
+    const mime = item.getAttribute('media-type') ?? '';
+    const isCover = /\bcover-image\b/.test(item.getAttribute('properties') ?? '') || itemId === coverId;
+    if (isCover && /^image\/(jpeg|png|gif|webp)$/.test(mime) && !coverPath) { coverPath = resolvePath(base, href); coverMime = mime; }
   }
 
   const chapters: ParsedChapter[] = [];
-  for (const ref of Array.from(opf.querySelectorAll('itemref'))) {
+  const spine = Array.from(opf.querySelectorAll('itemref'));
+  for (const [i, ref] of spine.entries()) {
+    onProgress?.(i, spine.length);
     const path = manifest.get(ref.getAttribute('idref') ?? '');
     if (!path || !zip.file(path)) continue;
     const ch = readChapter(parse(await readText(zip, path), 'text/html'));
@@ -39,12 +53,15 @@ export async function parseEpub(bytes: Uint8Array | ArrayBuffer, id: string): Pr
   }
   if (chapters.length === 0) throw new EpubError('这本 EPUB 里没有找到正文');
 
+  const coverFile = coverPath ? zip.file(coverPath) : null;
+  const coverImage = coverFile ? { bytes: await coverFile.async('uint8array'), mime: coverMime } : undefined;
   return {
     id,
     title: normaliseText(tagText(opf, 'dc:title')) || id,
     author: normaliseText(tagText(opf, 'dc:creator')),
     chapters,
     wordCount: chapters.reduce((n, c) => n + c.wordCount, 0),
+    ...(coverImage ? { coverImage } : {}),
   };
 }
 

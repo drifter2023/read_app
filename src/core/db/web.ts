@@ -33,6 +33,7 @@ export async function openWebDb(name: string): Promise<Db> {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden' && timer !== undefined) void save();
   });
+  window.addEventListener('pagehide', () => { if (timer !== undefined) void save(); });
 
   return {
     async exec(sql) { d.exec(sql); persist(); },

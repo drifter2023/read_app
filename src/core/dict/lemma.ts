@@ -25,7 +25,7 @@ const RULES: readonly [string, string, PosClass | null][] = [
   ['er', 'e', 'adj'], ['er', '', 'adj'], ['est', 'e', 'adj'], ['est', '', 'adj'],
 ];
 
-function* ruleCandidates(w: string): Generator<Resolution> {
+export function* ruleCandidates(w: string): Generator<Resolution> {
   for (const [suf, rep, kind] of RULES) {
     if (w.length <= suf.length + 1 || !w.endsWith(suf)) continue;
     const stem = w.slice(0, -suf.length);
@@ -43,7 +43,7 @@ function lemmaOf(w: string, lex: Lexicon): Resolution | null {
   return null;
 }
 
-function stripClitic(w: string): string {
+export function stripClitic(w: string): string {
   const lower = w.toLowerCase();
   if (CLITIC_WHOLE[lower]) return CLITIC_WHOLE[lower];
   if (/s'$/.test(w)) return w.slice(0, -1);

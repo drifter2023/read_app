@@ -16,7 +16,6 @@ const PREFERRED: Record<string, PosClass> = {
   since: 'conj', as: 'conj', so: 'adv', that: 'pron', right: 'adj', last: 'adj', only: 'adv', even: 'adv',
   very: 'adv', about: 'prep', after: 'prep', before: 'prep', near: 'prep', past: 'prep', through: 'prep',
 };
-const TIE_ORDER: PosClass[] = ['v', 'adj', 'adv', 'n', 'prep', 'conj', 'pron', 'aux', 'int', 'num', 'art', 'other'];
 
 const INFLECTION_NOTE = /的(过去式|过去分词|现在分词|复数|第三人称单数|比较级|最高级)/;
 const MAX_SENSES = 4;
@@ -55,12 +54,35 @@ function toSense(pos: string, cls: PosClass, text: string): Sense {
   return { pos, cls, gloss: all.slice(0, MAX_SENSES).join('，'), count: all.length };
 }
 
-/** The reading shown when nothing else is known: a preferred class for function words, else the fullest line. */
-export function defaultSense(word: string, senses: Sense[]): Sense | undefined {
+/** Part-of-speech evidence for one lemma, counted over real text (see `posVote`). */
+export type PosVotes = Partial<Record<PosClass, number>>;
+
+/**
+ * The reading shown when context says nothing: a preferred class for function words; else the class
+ * the evidence clearly favours (≥ 3 votes and 1.5× the runner-up); else the fullest line, with
+ * ECDICT's own line order breaking ties ("summer": n. before vi.).
+ */
+export function defaultSense(word: string, senses: Sense[], votes: PosVotes = {}): Sense | undefined {
   const pref = PREFERRED[word.toLowerCase()];
   const hit = pref && senses.find((s) => s.cls === pref);
   if (hit) return hit;
-  return [...senses].sort((a, b) => b.count - a.count || TIE_ORDER.indexOf(a.cls) - TIE_ORDER.indexOf(b.cls))[0];
+  const ranked = senses.map((s) => ({ s, v: votes[s.cls] ?? 0 })).sort((a, b) => b.v - a.v);
+  if (ranked[0] && ranked[0].v >= 3 && ranked[0].v >= 1.5 * (ranked[1]?.v ?? 0)) return ranked[0].s;
+  return senses.reduce<Sense | undefined>((best, s) => (!best || s.count > best.count ? s : best), undefined);
+}
+
+const NOUN_AFTER = new Set(['of', 'in', 'on', 'at', 'to', 'with', 'and', 'or', 'was', 'is', 'had', 'that', 'from', 'for', 'by', 'were', 'came']);
+
+/**
+ * One vote from one occurrence: the inflection's class, or a context cue ("to look" → v;
+ * "the summer of" / "the summer." → n). A determiner alone is not enough ("a good man").
+ */
+export function posVote(kind: PosClass | null, prev: string | undefined, next: string | undefined): PosClass | null {
+  if (kind) return kind;
+  const p = prev?.toLowerCase().replace(/[‘’]/g, "'");
+  if (p && VERB_CUES.has(p)) return 'v';
+  if (p && NOUN_CUES.has(p) && (next === undefined || NOUN_AFTER.has(next.toLowerCase()))) return 'n';
+  return null;
 }
 
 /** Choose a sense for a wanted class; `v` also accepts `aux` and the reverse. */
@@ -103,6 +125,20 @@ export function americanIpa(field: string): string {
   if (!s) return '';
   s = s.replace(/ɹ/g, 'r').replace(/ɫ/g, 'l');
   s = s.replace(new RegExp(`([ˈˌ][^${VOWEL}]*)ə`, 'g'), '$1ʌ');
+  // ɝ is the stressed r-vowel; after another vowel or outside the stressed syllable it is ɚ ("fire", "summer").
+  s = s.replace(new RegExp(`([${VOWEL}])ɝ`, 'g'), '$1ɚ');
+  let stressed = false;
+  let out = '';
+  for (const ch of s) {
+    if (ch === 'ˈ' || ch === 'ˌ') stressed = true;
+    else if (VOWEL.includes(ch)) {
+      out += ch === 'ɝ' && !stressed ? 'ɚ' : ch;
+      stressed = false;
+      continue;
+    }
+    out += ch;
+  }
+  s = out;
   const nuclei = s.match(new RegExp(`[${VOWEL}]+`, 'g'))?.length ?? 0;
   if (nuclei <= 1) s = s.replace(/[ˈˌ]/g, '');
   return `/${s}/`;

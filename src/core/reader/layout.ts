@@ -9,6 +9,8 @@ export interface LineMeta {
   /** First and last sentence index (within `para`) this line touches. */
   sFirst: number;
   sLast: number;
+  /** Offset of the line's first character in the paragraph text (0 for the heading). */
+  start: number;
   /** Book-level word count up to the end of this line. */
   wordEnd: number;
 }
@@ -78,7 +80,7 @@ export function layoutChapter(probe: HTMLElement, ch: ChapterData): { block: HTM
 
   const lines: LineMeta[] = [];
   add('', 'rd-blank');
-  lines.push({ el: add(ch.title, 'rd-line rd-head'), chapter: ch.idx, para: -1, sFirst: 0, sLast: 0, wordEnd: ch.wordStart });
+  lines.push({ el: add(ch.title, 'rd-line rd-head'), chapter: ch.idx, para: -1, sFirst: 0, sLast: 0, start: 0, wordEnd: ch.wordStart });
   add('', 'rd-blank');
 
   let words = ch.wordStart;
@@ -97,7 +99,7 @@ export function layoutChapter(probe: HTMLElement, ch: ChapterData): { block: HTM
       words += countWords(slice);
       const el = add(slice, 'rd-line');
       el.dataset.p = String(pi);
-      lines.push({ el, chapter: ch.idx, para: pi, sFirst: s, sLast, wordEnd: words });
+      lines.push({ el, chapter: ch.idx, para: pi, sFirst: s, sLast, start: a, wordEnd: words });
     });
   });
   add('', 'rd-blank');

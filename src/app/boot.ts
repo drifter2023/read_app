@@ -5,7 +5,7 @@ import { migrate } from '../core/db/migrations.ts';
 import type { Db } from '../core/db/types.ts';
 import { openWebDb } from '../core/db/web.ts';
 import { BUNDLED } from '../core/library/bundled.ts';
-import { seedBundled } from '../core/library/library.ts';
+import { backfillBundledCovers, seedBundled } from '../core/library/library.ts';
 import { PrefsStore } from '../core/prefs/prefs.ts';
 import type { ParsedBook } from '../core/types.ts';
 
@@ -27,5 +27,6 @@ async function start(): Promise<Session> {
     if (!res.ok) throw new Error(`内置书籍缺失：${id}`);
     return (await res.json()) as ParsedBook;
   });
+  await backfillBundledCovers(db, BUNDLED.map((b) => b.id));
   return { db, prefs: await PrefsStore.load(db) };
 }

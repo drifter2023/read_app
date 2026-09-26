@@ -3,7 +3,7 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { DatabaseSync } from 'node:sqlite';
-import { americanIpa, defaultSense, parseSenses, type PosClass, type Sense } from '../src/core/dict/gloss.ts';
+import { americanIpa, defaultSense, parseSenses, posVote, type PosClass, type PosVotes, type Sense } from '../src/core/dict/gloss.ts';
 import { resolveLemma } from '../src/core/dict/lemma.ts';
 import type { FormLink, Lexicon } from '../src/core/dict/types.ts';
 import type { ParsedBook } from '../src/core/types.ts';
@@ -104,6 +104,8 @@ const lemmasSorted = (form: string): FormLink[] =>
 // ---- resolve every word in the bundled books ----
 const full: Lexicon = { has: (w) => glossed.has(w), lemmasOf: lemmasSorted };
 const bookLemmas = new Set<string>();
+/** POS evidence per lemma from the bundled books, used to pick each entry's default sense. */
+const votes = new Map<string, PosVotes>();
 let tokens = 0;
 let names = 0;
 const misses = new Map<string, number>();
@@ -112,15 +114,29 @@ for (const file of (await readdir('public/books')).filter((f) => f.endsWith('.js
   for (const ch of book.chapters) {
     for (const p of ch.paras) {
       for (const s of p) {
+        const ws = [...s.matchAll(/[A-Za-z]+(?:['’⁠-][A-Za-z]+)*|[.,;:!?—]/g)].map((m) => m[0]);
         let first = true;
-        for (const m of s.matchAll(/[A-Za-z]+(?:['’⁠-][A-Za-z]+)*/g)) {
-          const lemma = resolveLemma(m[0], full, { sentenceInitial: first });
-          const name = !first && /^[A-Z]/.test(m[0]);
+        for (const [i, w] of ws.entries()) {
+          if (!/[A-Za-z]/.test(w)) continue;
+          const lemma = resolveLemma(w, full, { sentenceInitial: first });
+          const name = !first && /^[A-Z]/.test(w);
           first = false;
-          if (lemma) { bookLemmas.add(lemma.lemma); tokens++; continue; }
+          if (lemma) {
+            bookLemmas.add(lemma.lemma);
+            tokens++;
+            const prev = ws[i - 1];
+            const next = ws[i + 1];
+            const vote = posVote(lemma.kind, prev && /[A-Za-z]/.test(prev) ? prev : undefined, next && /[A-Za-z]/.test(next) ? next : undefined);
+            if (vote) {
+              const v = votes.get(lemma.lemma) ?? {};
+              v[vote] = (v[vote] ?? 0) + 1;
+              votes.set(lemma.lemma, v);
+            }
+            continue;
+          }
           if (name) { names++; continue; } // proper nouns are excluded from the R-04 hit rate
           tokens++;
-          misses.set(m[0], (misses.get(m[0]) ?? 0) + 1);
+          misses.set(w, (misses.get(w) ?? 0) + 1);
         }
       }
     }
@@ -157,7 +173,7 @@ const insS = db.prepare('INSERT INTO sense VALUES (?, ?, ?, ?)');
 let senseRows = 0;
 for (const w of [...keep].sort()) {
   const senses = glossed.get(w)!;
-  const def = defaultSense(w, senses)!;
+  const def = defaultSense(w, senses, votes.get(w))!;
   insE.run(w, ipa.get(w.toLowerCase()) ?? '', def.pos, def.gloss);
   // Other readings, used when the inflection or the previous word points at a different class.
   for (const s of senses) if (s !== def) { insS.run(w, s.cls, s.pos, s.gloss); senseRows++; }

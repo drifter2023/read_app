@@ -15,6 +15,10 @@ export async function savePosition(db: Db, bookId: string, a: Anchor, pct: numbe
       [bookId, a.chapter, a.para, a.sentence, now],
     );
     await db.run('UPDATE book SET pct = ? WHERE id = ?', [pct, bookId]);
+    // H-02: reaching 100% files the book under 读完 and records the date, once.
+    if (pct >= 100) {
+      await db.run("UPDATE book SET status = 'done', finished_at = COALESCE(finished_at, ?) WHERE id = ?", [now, bookId]);
+    }
   });
 }
 

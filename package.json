@@ -16,11 +16,13 @@
     "test:unit": "vitest run --project unit",
     "test:browser": "vitest run --project browser",
     "e2e": "playwright test",
-    "build:ios": "VITE_DEV_TOOLS=1 npm run build && npx cap sync ios"
+    "build:ios": "npm run build && npx cap sync ios",
+    "build:ios:dev": "VITE_DEV_TOOLS=1 npm run build && npx cap sync ios"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^8.1.1",
     "@capacitor/core": "^8.5.2",
+    "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.5.2",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource/ibm-plex-sans": "^5.3.0",

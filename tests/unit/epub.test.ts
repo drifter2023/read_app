@@ -40,3 +40,13 @@ describe('parseEpub (Standard Ebooks)', () => {
     await expect(parseEpub(new TextEncoder().encode('hello'), 'x')).rejects.toThrow(/EPUB/);
   });
 });
+
+describe('parseEpub cover', () => {
+  it('extracts the declared cover image', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const { parseEpub } = await import('../../src/core/ingest/epub.ts');
+    const b = await parseEpub(await readFile('books/f-scott-fitzgerald_the-great-gatsby.epub'), 'gatsby');
+    expect(b.coverImage?.mime).toBe('image/jpeg');
+    expect(b.coverImage!.bytes.length).toBeGreaterThan(10000);
+  });
+});
