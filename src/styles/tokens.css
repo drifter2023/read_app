@@ -1,0 +1,10 @@
+:root {
+  --paper: #faf8f3;
+  --reader-ink: #221f1b;
+  --home-bg: #fbfaf8;
+  --ink: #16150f;
+  --accent: #c1452f;
+  --ease: cubic-bezier(.42, 0, .58, 1);
+}
+html, body { margin: 0; height: 100%; background: var(--paper); -webkit-text-size-adjust: 100%; }
+body { font-family: 'IBM Plex Sans', 'PingFang SC', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }

@@ -1,0 +1,4 @@
+/* Bundled locally; the app makes no network requests. */
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
