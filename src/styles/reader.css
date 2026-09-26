@@ -1,6 +1,7 @@
 .rd-page { position: fixed; inset: 0; overflow: hidden; background: var(--paper); }
 .rd-scroll {
   position: absolute; inset: 0; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
+  overflow-anchor: none; /* the engine keeps the text still itself when chapters mount or unmount */
   padding: 0 34px; /* vertical padding is set by the engine: H/2 - lineHeight/2 */
 }
 .rd-content, .rd-probe {
