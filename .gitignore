@@ -18,6 +18,5 @@ xcuserdata/
 .env*
 !.env.example
 public/books/
-public/assets/sql-wasm.wasm
 test-results/
 playwright-report/

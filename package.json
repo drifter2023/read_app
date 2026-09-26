@@ -13,25 +13,25 @@
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:browser": "vitest run --project browser",
-    "e2e": "playwright test",
-    "postinstall": "node scripts/copy-wasm.ts"
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^8.1.1",
     "@capacitor/core": "^8.5.2",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource/ibm-plex-sans": "^5.3.0",
-    "jeep-sqlite": "^2.8.0",
     "jszip": "^3.10.2",
     "linkedom": "^0.18.13",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "sql.js": "^1.14.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/sql.js": "^1.4.11",
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/browser-playwright": "^5.0.2",
     "playwright": "^1.63.0",

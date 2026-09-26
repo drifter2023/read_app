@@ -19,6 +19,17 @@
 - `spec.mvp.json`
 - `docs/research/english-chinese-dictionary.md` (only for storage decisions)
 
+## Changes made during implementation (2026-09-26)
+
+- **Web database:** jeep-sqlite was replaced by `src/core/db/web.ts`: sql.js 1.14 in memory, with the file saved to IndexedDB (debounced 300 ms, flushed when the page is hidden).
+  - jeep-sqlite 2.8.0 (Aug 2024) ships sql.js glue that doesn't match the current `sql-wasm.wasm`.
+  - Even with the versions pinned, its `initWebStore()` hung on every reload after the first.
+  - `openCapacitorDb` is now native-only, and `boot()` picks the adapter with `Capacitor.isNativePlatform()`. `scripts/copy-wasm.ts` was dropped.
+  - Revisit in M2 alongside `dict.db` (official sqlite-wasm + OPFS).
+- **Engine:** `#setWindow` saves `scrollTop` before mutating the DOM, because removing a chapter above clamps `scrollTop` at the next layout. `.rd-scroll` also sets `overflow-anchor: none`.
+- **linkedom:** `getElementsByTagName('*')` is empty for XML documents, so `tagText` uses `querySelectorAll('*')`.
+- **Standard Ebooks subtitles** keep their no-break space ("Spade\u00a0& Archer"), so the test expectation was adjusted.
+
 ## Global Constraints
 
 - **Targets:** iOS (Capacitor) and mobile web. **No Android.** App name `Spotlight`, bundle ID `com.lin.spotlight`.
