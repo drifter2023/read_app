@@ -4,7 +4,7 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Scope guard
 - Build only: Home (continue reading + shelf + import), Reader 4a, word drawer, 9px footnotes, settings sheet, open-book transition.
-- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer, analysed by DeepSeek (TASKS.md → M6, `docs/plans/2026-09-29-deepseek-grammar.md`); since 2026-09-30 the grammar drawer shows the sentence's translation on top (owner request, prompt v3). Drawers open only from the sharp text in the focus band. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged). Where these lines disagree with README's out-of-scope list (night mode, LLM), these lines win.
+- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer, analysed by DeepSeek (TASKS.md → M6, `docs/plans/2026-09-29-deepseek-grammar.md`); since 2026-09-30 the grammar drawer shows the sentence's translation on top (owner request, prompt v3). Drawers open only from the sharp text in the focus band. Predicted words (TASKS.md → M7, `docs/plans/2026-09-30-predicted-words.md`): words the reader probably does not know get their footnote in advance, learned on the device from lookups, 撤回, reading and a one-minute calibration test on Home. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged). Where these lines disagree with README's out-of-scope list (night mode, LLM), these lines win.
 - Do NOT build:
   - tabs 书房 / 生词 / 我 or a tab bar;
   - today stats or streak;
@@ -29,7 +29,7 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Architecture rules
 - Keep domain modules framework-free TS under `src/core/`:
-  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`, `grammar`, `ai`.
+  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`, `grammar`, `ai`, `vocab`.
   - React views live under `src/views/` and only call module APIs.
 - The reader engine owns the scroll container and writes line styles directly (`style.filter`, `style.opacity`). Never re-render body-text lines through React on scroll.
 - Build the line table once per layout. Do not call `getBoundingClientRect` per line per frame.
