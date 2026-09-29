@@ -9,6 +9,7 @@ import { deleteBook, listShelf, restoreBundled, type ShelfBook } from '../../cor
 import type { Theme } from '../../core/prefs/prefs.ts';
 import type { ParsedBook } from '../../core/types.ts';
 import { Confirm } from '../Confirm.tsx';
+import { AiKeyCard } from './AiKeyCard.tsx';
 import { ShelfRow } from './ShelfRow.tsx';
 
 export interface OpenRequest { book: ShelfBook; from: HTMLElement }
@@ -164,6 +165,8 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
             </ul>
           </>
         )}
+
+        <AiKeyCard db={session.db} />
 
         <footer className="home-foot">
           <button type="button" onClick={() => void exportLog()}>导出内测日志</button>
