@@ -60,7 +60,7 @@ describe('grammar service', () => {
     const body = requests[0]!.body as { messages: { content: string }[]; max_tokens: number; temperature: number };
     expect(body.messages[0]!.content).toBe(SYSTEM_PROMPT);
     expect(body.messages[1]!.content).toBe(userMessage(PREV, TEXT));
-    expect(body).toMatchObject({ max_tokens: 400, temperature: 0.5 });
+    expect(body).toMatchObject({ max_tokens: 700, temperature: 0.5 });
   });
 
   it('G-03: a finished analysis is stored; the next open is served from history without a request', async () => {

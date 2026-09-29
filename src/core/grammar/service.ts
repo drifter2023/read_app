@@ -26,7 +26,7 @@ export interface GrammarRun {
 }
 
 /** About twice a full answer (docs/plans/2026-09-29-deepseek-grammar.md → Length). */
-const MAX_TOKENS = 400;
+const MAX_TOKENS = 700;
 const TEMPERATURE = 0.5;
 
 interface Options { fetch?: Fetch; firstTokenMs?: number; idleMs?: number }

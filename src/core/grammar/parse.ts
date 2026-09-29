@@ -6,8 +6,8 @@ export type Pending = { kind: 'pattern'; text: string } | { kind: 'point'; label
 
 export interface ParsedGrammar extends Grammar { pending: Pending | null }
 
-/** The drawer's height budget allows four points (docs/plans/2026-09-29-deepseek-grammar.md). */
-export const MAX_POINTS = 4;
+/** The prompt allows five points; the drawer scrolls inside when they run long. */
+export const MAX_POINTS = 5;
 
 const PATTERN = /^句型\s*[：:]\s*(.*)$/;
 const BAR = /\s*[｜|]\s*/;

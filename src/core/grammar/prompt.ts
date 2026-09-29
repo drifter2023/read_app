@@ -4,11 +4,11 @@ import { countWords } from '../ingest/text.ts';
  * Bump on any change to the text below: stored analyses carry the version they were made with,
  * and an older one is analysed again the next time its sentence opens.
  */
-export const PROMPT_VERSION = 1;
+export const PROMPT_VERSION = 2;
 
 /**
  * Never varies between requests, so DeepSeek's prefix cache bills it at the cache-hit price.
- * Length rules come from measuring the drawer (docs/plans/2026-09-29-deepseek-grammar.md).
+ * Length follows the sentence: the drawer has a height cap and scrolls inside (docs/plans/2026-09-29-deepseek-grammar.md).
  */
 export const SYSTEM_PROMPT = `你是英语语法老师。读者是正在读英文原著的中文母语者。
 你的任务：分析「目标句」的语法结构，帮读者读懂这一句。
@@ -18,9 +18,9 @@ export const SYSTEM_PROMPT = `你是英语语法老师。读者是正在读英�
 之后每行一个要点：<标签>｜<说明>
 
 【长度】
-- 句型不超过 16 个字。
-- 要点默认 3 条；只有用户注明「单词数」超过 40 时可以写 4 条；任何情况不超过 4 条。
-- 每条说明不超过 36 个字（英文每 2 个字母算 1 个字），大约两行。
+- 句型不超过 24 个字。
+- 要点条数跟着句子走：短而简单的句子 2–3 条；长句或结构复杂的句子可以多写，任何情况不超过 5 条。
+- 每条说明讲清楚为止，一般一到两行，不超过 60 个字（英文每 2 个字母算 1 个字）。
 - 标签 2–4 个字，优先从这些里选：主干、定语从句、状语从句、宾语从句、主语从句、非谓语、时态、语态、倒装、省略、并列、插入语、独立主格、固定搭配、修辞。
 
 【内容】

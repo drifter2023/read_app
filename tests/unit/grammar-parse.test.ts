@@ -9,9 +9,9 @@ const ANSWER = [
   '时态｜had been waiting 是过去完成进行时',
 ].join('\n');
 
-describe('grammar prompt v1 (G-06)', () => {
-  it('is version 1 and sent verbatim', () => {
-    expect(PROMPT_VERSION).toBe(1);
+describe('grammar prompt v2 (G-06)', () => {
+  it('is version 2 and sent verbatim', () => {
+    expect(PROMPT_VERSION).toBe(2);
     expect(SYSTEM_PROMPT).toMatchSnapshot();
   });
 
@@ -52,9 +52,9 @@ describe('grammar parser (G-06)', () => {
     expect(g.points).toEqual([{ label: '主干', text: 'He looked like a satan' }]);
   });
 
-  it('keeps at most four points', () => {
-    const five = ['句型：并列句', ...[1, 2, 3, 4, 5].map((n) => `要点${n}｜说明${n}`)].join('\n');
-    expect(parseGrammar(five, { final: true }).points).toHaveLength(4);
+  it('keeps at most five points', () => {
+    const six = ['句型：并列句', ...[1, 2, 3, 4, 5, 6].map((n) => `要点${n}｜说明${n}`)].join('\n');
+    expect(parseGrammar(six, { final: true }).points).toHaveLength(5);
   });
 
   it('drops the cut-off last line when the answer hit the token limit', () => {
