@@ -51,3 +51,4 @@ Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.htm
 34. Home key card: enter, check, show, clear the DeepSeek API key. **G-01**
 35. Streaming grammar drawer: dots until the first token, caret while streaming, errors with 重试, ≤ 300 px on a 375 px screen; the hand-written samples go. **G-02 G-04 G-05**
 36. Answers follow the sentence (prompt v2: pattern ≤ 24 字, 2–5 points, each ≤ 60 字; max_tokens 700). Every drawer is capped at `min(320px, 45vh)` and scrolls inside, with a bottom fade while more is below; a streaming answer follows its newest line until the reader scrolls up. A tap or scroll inside the drawer keeps it open; outside still closes it. **G-04 G-06 R-05**
+37. The sentence's translation on top of the grammar drawer (prompt v3 = version E of the prompt lab: natural, faithful translation; each point quotes the matching translation in 「」; migration v5 adds `grammar.translation`; max_tokens 900). **G-02 G-03 G-06**

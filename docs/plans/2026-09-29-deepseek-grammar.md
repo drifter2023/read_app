@@ -7,7 +7,7 @@
 - Loading dots until the first token, then streaming text with a caret.
 - Length: one pattern line ≤ 16 字, 3 points (4 only when the sentence has more than 40 words), each point ≤ 36 字 (two English letters count as one), about two lines; drawer ≤ 300 px on a 375 px wide screen. (First agreed as 40 字; measured on a 375 px screen a 40-字 point wraps to three lines, so the prompt says 36 and the label column is 48 px. The longest allowed answer is 290 px.)
 - **Superseded 2026-09-29 (prompt v2):** length follows the sentence: pattern ≤ 24 字, 2–3 points for short sentences and up to 5 for long or complex ones, each point as long as it needs, up to 60 字; `max_tokens` 700. The drawer caps the height instead: `min(320px, 45vh)`, scrolling inside with a bottom fade while more is below; a streaming answer follows its newest line until the reader scrolls up. A tap or scroll inside the drawer keeps it open; one outside closes it.
-- One explanation for everyone (no reader level). No sentence translation.
+- One explanation for everyone (no reader level). No sentence translation. **Superseded 2026-09-30 (prompt v3):** the drawer shows the translation on top, and points quote the matching part of it in 「」. Prompt chosen by comparison: `docs/prompt-lab/2026-09-29-translation-claude.md`.
 - The 9 hand-written samples (`src/core/grammar/samples.ts`) are removed.
 
 ## Global constraints
