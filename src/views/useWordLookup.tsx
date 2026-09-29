@@ -210,7 +210,8 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     }
     if (p.state === 'ready') record(p);
     else if (p.state === 'loading') {
-      void loadDict().then(() => {
+      void loadDict().then((dict) => {
+        dictRef.current ??= dict; // this can run before the load effect's own callback sets it
         const cur = popRef.current;
         if (cur?.target !== target || cur.closing) return;
         const next = { ...cur, ...resolve(word) };
