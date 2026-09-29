@@ -11,6 +11,7 @@ import type { ParsedBook } from '../../core/types.ts';
 import { Confirm } from '../Confirm.tsx';
 import { AiKeyCard } from './AiKeyCard.tsx';
 import { ShelfRow } from './ShelfRow.tsx';
+import { VocabCard } from './VocabCard.tsx';
 
 export interface OpenRequest { book: ShelfBook; from: HTMLElement }
 
@@ -166,6 +167,7 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
           </>
         )}
 
+        <VocabCard db={session.db} />
         <AiKeyCard db={session.db} />
 
         <footer className="home-foot">

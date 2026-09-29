@@ -127,6 +127,33 @@
 .ai-note { margin: 2px 0 0; font: 400 12px/1.5 var(--zh); color: var(--sec); }
 .ai-note-error { color: var(--danger); }
 .ai-fine { margin: 10px 0 0; font: 400 11px/1.6 var(--zh); color: var(--sec); }
+/* Predicted words: the calibration test (P-06) */
+.vocab-copy { margin: 0; font: 400 13px/1.6 var(--zh); color: var(--ink); }
+.cal {
+  --zh: 'PingFang SC', 'Noto Sans SC', 'Hiragino Sans GB', system-ui, sans-serif; --sec: rgba(var(--ink-rgb), .62);
+  position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 56px) 24px calc(env(safe-area-inset-bottom) + 32px); box-sizing: border-box;
+  background: var(--home-bg); color: var(--ink); animation: fadeIn 200ms var(--ease) both;
+}
+.cal-close {
+  position: absolute; top: calc(env(safe-area-inset-top) + 8px); right: 12px; min-height: 44px; min-width: 44px; padding: 0 12px;
+  border: 0; background: none; font: 400 13px/1 var(--zh); color: var(--sec);
+}
+.cal-progress { position: absolute; top: calc(env(safe-area-inset-top) + 24px); left: 24px; right: 88px; display: flex; align-items: center; gap: 10px; font: 400 11px/1 'IBM Plex Sans', system-ui, sans-serif; color: var(--sec); }
+.cal-progress .bar { flex: 1; }
+.cal-hint { margin: 0; font: 400 13px/1.6 var(--zh); color: var(--sec); text-align: center; }
+.cal-word { margin: 28px 0 44px; font: 400 44px/1.1 'Newsreader Variable', 'Newsreader', Georgia, serif; letter-spacing: -.01em; overflow-wrap: anywhere; text-align: center; }
+.cal-actions { display: flex; gap: 12px; width: 100%; max-width: 360px; }
+.cal-actions button {
+  flex: 1; min-height: 52px; border-radius: 12px; font: 500 15px/1 var(--zh); -webkit-tap-highlight-color: transparent;
+}
+.cal-no { border: 1px solid rgba(var(--ink-rgb), .2); background: none; color: var(--ink); }
+.cal-yes { border: 0; background: var(--accent); color: var(--on-accent); }
+.cal-fine { margin: 20px 0 0; font: 400 11px/1.6 var(--zh); color: var(--sec); text-align: center; }
+.cal-result { text-align: center; }
+.cal-level { margin: 14px 0 4px; font: 500 34px/1.2 var(--zh); }
+.cal-note { font: 400 13px/1 var(--zh); color: var(--sec); }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
 .home-foot { margin-top: 36px; text-align: center; }
 .home-foot button {
   min-height: 44px; padding: 0 12px; border: 0; background: none;
