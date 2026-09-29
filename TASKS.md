@@ -1,6 +1,6 @@
 # Tasks — in order
 
-Status (2026-09-26): tasks 1–23 and M5 (25–29) are built; M6 (30–35) is in progress, each with a test for its acceptance ID (see `DEVELOPING.md` → Tests and `docs/plans/2026-09-26-m2-m4-notes.md`). Task 24 needs real devices and the Apple Developer account.
+Status (2026-09-26): tasks 1–23, M5 (25–29) and M6 (30–35) are built; M6 still needs a real-key run to tune temperature, each with a test for its acceptance ID (see `DEVELOPING.md` → Tests and `docs/plans/2026-09-26-m2-m4-notes.md`). Task 24 needs real devices and the Apple Developer account.
 
 Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.html` §3.
 

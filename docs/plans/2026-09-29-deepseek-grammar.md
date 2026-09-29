@@ -5,7 +5,7 @@
 **Decided with the owner (2026-09-27 … 29):**
 - Model `deepseek-flash` (= DeepSeek-V4.1-Flash), called straight from the app. CORS allows the web origin and `capacitor://localhost` (checked by preflight), so web and iOS share one `fetch`-based client and both can stream. No proxy.
 - Loading dots until the first token, then streaming text with a caret.
-- Length: one pattern line ≤ 16 字, 3 points (4 only when the sentence has more than 40 words), each point ≤ 40 字 (two English letters count as one), about two lines; drawer ≤ 300 px on a 375 px wide screen.
+- Length: one pattern line ≤ 16 字, 3 points (4 only when the sentence has more than 40 words), each point ≤ 36 字 (two English letters count as one), about two lines; drawer ≤ 300 px on a 375 px wide screen. (First agreed as 40 字; measured on a 375 px screen a 40-字 point wraps to three lines, so the prompt says 36 and the label column is 48 px. The longest allowed answer is 290 px.)
 - One explanation for everyone (no reader level). No sentence translation.
 - The 9 hand-written samples (`src/core/grammar/samples.ts`) are removed.
 
