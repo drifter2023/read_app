@@ -51,3 +51,27 @@ export async function tapBlank(page: Page) {
   const vp = page.viewportSize()!;
   await page.mouse.click(12, vp.height / 2);
 }
+
+/** Scrolls the end of sentence `s` of paragraph `p` (Gatsby, chapter 0) to the band centre; returns its droplet's centre. */
+export async function dropInBand(page: Page, p: number, s: number): Promise<{ x: number; y: number }> {
+  return page.evaluate(async ({ p, s }) => {
+    const book = await (await fetch('/books/gatsby.json')).json() as { chapters: { paras: string[][] }[] };
+    const para = book.chapters[0]!.paras[p]!;
+    const text = ` ${para.join(' ')}`; // paragraphText: INDENT + sentences
+    const end = 1 + para.slice(0, s + 1).join(' ').length;
+    const scroller = document.querySelector<HTMLElement>('.rd-scroll')!;
+    let cursor = 0;
+    const line = [...scroller.querySelectorAll<HTMLElement>(`.rd-chapter[data-ch="0"] .rd-line[data-p="${p}"]`)].find((l) => {
+      const at = text.indexOf(l.textContent!, cursor);
+      cursor = at + l.textContent!.length;
+      return end <= cursor;
+    })!;
+    const box = scroller.getBoundingClientRect();
+    scroller.scrollTop += line.getBoundingClientRect().top + line.offsetHeight / 2 - (box.top + box.height / 2);
+    await new Promise((r) => setTimeout(r, 400));
+    const d = document.querySelector<HTMLElement>(`.rd-drop[data-ch="0"][data-p="${p}"][data-at="${end}"]:not(.rd-drop-off)`);
+    if (!d) throw new Error('droplet not in the band');
+    const b = d.getBoundingClientRect();
+    return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+  }, { p, s });
+}

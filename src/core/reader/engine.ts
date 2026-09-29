@@ -27,9 +27,12 @@ export interface WordHit {
   lineIndex: number; rect: DOMRect;
 }
 export interface Highlight { chapter: number; para: number; start: number; end: number }
-/** A tapped grammar droplet: the sentence that ends there, and the droplet's centre x. */
+/**
+ * A tapped grammar droplet: the sentence that ends there, the sentence before it (for pronouns;
+ * the last one of the previous paragraph when this one opens a paragraph), and the droplet's centre x.
+ */
 export interface SentenceHit {
-  chapter: number; para: number; sentence: number; sentenceText: string; lineIndex: number; x: number;
+  chapter: number; para: number; sentence: number; sentenceText: string; prevText: string | null; lineIndex: number; x: number;
 }
 
 const SIDE = 34;
@@ -327,7 +330,8 @@ export class ReaderEngine {
       const sentence = sentenceStarts(p).findIndex((st, k) => st + p[k]!.length === e);
       if (sentence < 0) continue;
       bestD = dist;
-      best = { chapter: line.chapter, para: line.para, sentence, sentenceText: p[sentence]!, lineIndex: i, x: cx };
+      const prevText = sentence > 0 ? p[sentence - 1]! : this.#book.chapters[line.chapter]!.paras[line.para - 1]?.at(-1) ?? null;
+      best = { chapter: line.chapter, para: line.para, sentence, sentenceText: p[sentence]!, prevText, lineIndex: i, x: cx };
     }
     return best;
   }

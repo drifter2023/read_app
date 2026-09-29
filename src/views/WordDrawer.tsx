@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import type { LookupResult } from '../core/dict/service.ts';
-import type { Grammar } from '../core/grammar/samples.ts';
+import type { AiErrorKind } from '../core/ai/deepseek.ts';
+import type { Grammar, Pending } from '../core/grammar/parse.ts';
+import type { RunState } from '../core/grammar/service.ts';
 
 export type DrawerState = 'loading' | 'ready' | 'notfound';
 
@@ -12,7 +14,7 @@ const notchBottom = (x: string) => `polygon(calc(${x} - 12px) 16px,${x} 0,calc($
  * `x` is the notch centre in px, already clamped to [16, width − 16].
  */
 function DrawerFrame({ kind, state, closing, x, children }: {
-  kind: 'word' | 'sentence'; state: DrawerState; closing: boolean; x: number; children: ReactNode;
+  kind: 'word' | 'sentence'; state: string; closing: boolean; x: number; children: ReactNode;
 }) {
   const px = `${x}px`;
   return (
@@ -76,25 +78,74 @@ export function WordDrawer({ state, closing, result, x, saved, onSave, onUndo }:
   );
 }
 
-/** The grammar drawer opened from a sentence's droplet. `grammar` is null until notes exist for it. */
-export function GrammarDrawer({ closing, grammar, x }: { closing: boolean; grammar: Grammar | null; x: number }) {
+/** Why a grammar analysis failed, in words a reader can act on (G-05). */
+const FAILURE: Record<AiErrorKind, string> = {
+  'no-key': '先在首页填写 DeepSeek API Key',
+  'invalid-key': 'API Key 无效，请到首页更换',
+  'no-balance': 'DeepSeek 账户余额不足',
+  'rate-limit': '请求太频繁，请稍后再试',
+  server: 'DeepSeek 暂时不可用，请稍后再试',
+  network: '网络连接失败',
+  timeout: '等待超时',
+  'bad-answer': '没有得到有效的分析',
+};
+/** Failures that 重试 cannot fix: the key has to change first. */
+const NO_RETRY = new Set<AiErrorKind>(['no-key', 'invalid-key', 'no-balance']);
+
+const DATA_STATE: Record<RunState['status'], string> = { waiting: 'loading', streaming: 'streaming', done: 'ready', error: 'error' };
+
+function Caret() {
+  return <span className="wd-caret" aria-hidden="true" />;
+}
+
+/** The pattern and points so far; `pending` is the line still being written (with the caret). */
+function GrammarBody({ grammar, pending }: { grammar: Grammar; pending: Pending | null }) {
+  const pattern = grammar.pattern || (pending?.kind === 'pattern' ? pending.text : '');
   return (
-    <DrawerFrame kind="sentence" state="ready" closing={closing} x={x}>
+    <>
+      <p className="wd-pattern">{pattern}{pending?.kind === 'pattern' && <Caret />}</p>
+      {(grammar.points.length > 0 || pending?.kind === 'point') && (
+        <dl className="wd-points">
+          {grammar.points.map((p, i) => (
+            <div key={i} className="wd-point">
+              <dt>{p.label}</dt>
+              <dd>{p.text}</dd>
+            </div>
+          ))}
+          {pending?.kind === 'point' && (
+            <div className="wd-point">
+              <dt>{pending.text ? pending.label : <>{pending.label}<Caret /></>}</dt>
+              <dd>{pending.text}{pending.text && <Caret />}</dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </>
+  );
+}
+
+/** The grammar drawer opened from a sentence's droplet: dots, then the answer as it streams (G-02). */
+export function GrammarDrawer({ closing, run, x, onRetry }: { closing: boolean; run: RunState; x: number; onRetry: () => void }) {
+  return (
+    <DrawerFrame kind="sentence" state={DATA_STATE[run.status]} closing={closing} x={x}>
       <div className="wd-eyebrow">语法</div>
-      {grammar ? (
+      {run.status === 'waiting' && <div className="wd-dots wd-dots-grammar" aria-label="分析中"><i /><i /><i /></div>}
+      {run.status === 'streaming' && (
+        run.grammar.pattern || run.grammar.pending
+          ? <GrammarBody grammar={run.grammar} pending={run.grammar.pending} />
+          : <p className="wd-pattern"><Caret /></p>
+      )}
+      {run.status === 'done' && <GrammarBody grammar={run.grammar} pending={null} />}
+      {run.status === 'error' && (
         <>
-          <p className="wd-pattern">{grammar.pattern}</p>
-          <dl className="wd-points">
-            {grammar.points.map((p) => (
-              <div key={p.label} className="wd-point">
-                <dt>{p.label}</dt>
-                <dd>{p.text}</dd>
-              </div>
-            ))}
-          </dl>
+          {run.partial && (run.partial.pattern || run.partial.points.length > 0) && <GrammarBody grammar={run.partial} pending={null} />}
+          <div className="wd-fail">
+            <p className="wd-miss">{run.partial ? `${FAILURE[run.reason]}，没有保存` : FAILURE[run.reason]}</p>
+            {!NO_RETRY.has(run.reason) && (
+              <button type="button" className="wd-undo" onClick={(e) => { e.stopPropagation(); onRetry(); }}>重试</button>
+            )}
+          </div>
         </>
-      ) : (
-        <p className="wd-miss">这句话的语法解释即将推出</p>
       )}
     </DrawerFrame>
   );

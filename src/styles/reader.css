@@ -134,12 +134,21 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .75);
 }
 .wd-points { display: grid; gap: 8px; margin: 12px 0 0; }
-.wd-point { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: baseline; }
+.wd-point { display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: baseline; }
 .wd-point dt { font: 500 11px/20px 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; color: rgba(242, 234, 217, .6); }
 .wd-point dd {
   margin: 0; font: 400 13px/20px 'IBM Plex Sans', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
   color: rgba(242, 234, 217, .82);
 }
+.wd-point dd { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; } /* guard; a point is about two lines */
+.wd-dots-grammar { margin-top: 12px; }
+.wd-caret {
+  display: inline-block; width: 1.5px; height: 1em; margin-left: 2px; vertical-align: -.15em;
+  background: rgba(242, 234, 217, .8); animation: caret 1s var(--ease) infinite;
+}
+@keyframes caret { 0%, 100% { opacity: 1 } 50% { opacity: 0 } }
+.wd-fail { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.wd-fail .wd-undo { flex: none; }
 .wd-dots { display: flex; gap: 6px; height: 20px; align-items: center; }
 .wd-dots i { width: 5px; height: 5px; border-radius: 50%; background: rgba(242, 234, 217, .7); animation: dots 1.2s var(--ease) infinite; }
 .wd-dots i:nth-child(2) { animation-delay: .15s; }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { lightHaptic } from '../app/haptics.ts';
 import { loadDict } from '../app/dict.ts';
@@ -6,7 +6,7 @@ import { footnoteAnnotator } from '../core/annot/footnotes.ts';
 import { forgetLemma, isSaved, recordLookup, seenLemmas, setSaved } from '../core/annot/lookups.ts';
 import type { Db } from '../core/db/types.ts';
 import type { DictService, LookupResult } from '../core/dict/service.ts';
-import { grammarFor, type Grammar } from '../core/grammar/samples.ts';
+import { GrammarService, type GrammarRun, type RunState } from '../core/grammar/service.ts';
 import { logMetric } from '../core/metrics/metrics.ts';
 import { MOTION } from '../core/motion.ts';
 import type { ReaderEngine, SentenceHit, WordHit } from '../core/reader/engine.ts';
@@ -19,8 +19,8 @@ interface Pop {
   target: Target; host: HTMLElement; x: number; closing: boolean;
   /** Word drawers only. */
   state: DrawerState; result: LookupResult | null; lookupId: number | null; saved: boolean;
-  /** Sentence drawers only. */
-  grammar: Grammar | null;
+  /** Sentence drawers only: the analysis run and its state as last rendered. */
+  run: GrammarRun | null; runState: RunState | null;
 }
 
 /** README → Word tap: the first scroll gesture after close stays locked this long. */
@@ -50,6 +50,10 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
   const recording = useRef<Promise<void>>(Promise.resolve());
   const timers = useRef<number[]>([]);
   const closedAt = useRef<{ at: number; timer: number } | null>(null);
+  /** One service per open book, so reopening a sentence that is still streaming joins its run. */
+  const grammar = useMemo(() => new GrammarService(db), [db]);
+  /** Stops following the open grammar run (its updates and its drawer's growth). */
+  const unfollow = useRef<(() => void) | null>(null);
 
   const setPop = useCallback((p: Pop | null) => { popRef.current = p; setPopState(p); }, []);
   const later = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
@@ -66,6 +70,7 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     return () => {
       live = false;
       for (const t of timers.current) clearTimeout(t);
+      unfollow.current?.();
       if (closedAt.current) clearTimeout(closedAt.current.timer);
     };
   }, [db, bookId, engine]);
@@ -132,10 +137,13 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     const box = e.scroller.getBoundingClientRect();
     const cx = target.kind === 'word' ? target.hit.rect.left + target.hit.rect.width / 2 : target.hit.x;
     const x = Math.min(Math.max(16, cx - box.left), box.width - 16);
-    const base: Pop = { target, host, x, closing: false, state: 'ready', result: null, lookupId: null, saved: false, grammar: null };
+    const base: Pop = { target, host, x, closing: false, state: 'ready', result: null, lookupId: null, saved: false, run: null, runState: null };
     lightHaptic();
     if (target.kind === 'sentence') {
-      setPop({ ...base, grammar: grammarFor(bookId, hit.chapter, hit.para, target.hit.sentence) });
+      const s = target.hit;
+      const run = grammar.open({ bookId, chapter: s.chapter, para: s.para, sentence: s.sentence }, s.sentenceText, s.prevText);
+      setPop({ ...base, run, runState: run.get() });
+      follow(host, run);
       trackGap(host, MOTION.drawerOpen, () => keepOnScreen(host));
       return;
     }
@@ -162,9 +170,46 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     trackGap(host, MOTION.drawerOpen, () => { keepOnScreen(host); refreshFootnotes(); });
   };
 
+  /**
+   * While a grammar drawer is open: re-render it at most once per frame as the answer streams in,
+   * and keep the lines below it in step as it grows (keeping it on screen until the reader touches).
+   */
+  const follow = (host: HTMLElement, run: GrammarRun) => {
+    unfollow.current?.();
+    let frame = 0;
+    const off = run.subscribe(() => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const cur = popRef.current;
+        if (cur?.run === run && !cur.closing) setPop({ ...cur, runState: run.get() });
+      });
+    });
+    const openedAt = performance.now();
+    let touched = false;
+    const scroller = engine.current?.scroller;
+    const onTouch = () => { touched = true; };
+    scroller?.addEventListener('touchstart', onTouch, { passive: true });
+    const ro = new ResizeObserver(() => {
+      const e = engine.current;
+      if (!e || !host.isConnected) return;
+      e.setGap(host.offsetHeight);
+      if (!touched && performance.now() - openedAt > MOTION.drawerOpen) keepOnScreen(host);
+    });
+    ro.observe(host);
+    unfollow.current = () => {
+      off();
+      cancelAnimationFrame(frame);
+      ro.disconnect();
+      scroller?.removeEventListener('touchstart', onTouch);
+      unfollow.current = null;
+    };
+  };
+
   const close = useCallback(() => {
     const p = popRef.current;
     if (!p || p.closing) return;
+    unfollow.current?.(); // the run goes on without the drawer and still stores its answer
     setPop({ ...p, closing: true });
     trackGap(p.host, MOTION.drawerClose);
     if (closedAt.current) clearTimeout(closedAt.current.timer);
@@ -219,6 +264,7 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
 
   /** A relayout (font size, rotation) dropped the lines the drawer was attached to. */
   const reset = () => {
+    unfollow.current?.();
     pending.current = null;
     engine.current?.setHighlight(null);
     setPop(null);
@@ -279,7 +325,7 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
   const drawer = pop
     ? createPortal(
       pop.target.kind === 'sentence'
-        ? <GrammarDrawer closing={pop.closing} grammar={pop.grammar} x={pop.x} />
+        ? <GrammarDrawer closing={pop.closing} run={pop.runState!} x={pop.x} onRetry={() => pop.run?.retry()} />
         : <WordDrawer state={pop.state} closing={pop.closing} result={pop.result} x={pop.x} saved={pop.saved} onSave={save} onUndo={undo} />,
       pop.host,
     )

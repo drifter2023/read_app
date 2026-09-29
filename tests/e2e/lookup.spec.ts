@@ -153,51 +153,6 @@ test('Undo: 撤回 forgets a mistaken word; its footnotes are gone, also after a
   await expect(page.getByRole('button', { name: '保存' })).toBeVisible();
 });
 
-/** Scrolls the end of sentence `s` of paragraph `p` (Gatsby, chapter 0) to the band centre; returns its droplet's centre. */
-async function dropInBand(page: Page, p: number, s: number): Promise<{ x: number; y: number }> {
-  return page.evaluate(async ({ p, s }) => {
-    const book = await (await fetch('/books/gatsby.json')).json() as { chapters: { paras: string[][] }[] };
-    const para = book.chapters[0]!.paras[p]!;
-    const text = ` ${para.join(' ')}`; // paragraphText: INDENT + sentences
-    const end = 1 + para.slice(0, s + 1).join(' ').length;
-    const scroller = document.querySelector<HTMLElement>('.rd-scroll')!;
-    let cursor = 0;
-    const line = [...scroller.querySelectorAll<HTMLElement>(`.rd-chapter[data-ch="0"] .rd-line[data-p="${p}"]`)].find((l) => {
-      const at = text.indexOf(l.textContent!, cursor);
-      cursor = at + l.textContent!.length;
-      return end <= cursor;
-    })!;
-    const box = scroller.getBoundingClientRect();
-    scroller.scrollTop += line.getBoundingClientRect().top + line.offsetHeight / 2 - (box.top + box.height / 2);
-    await new Promise((r) => setTimeout(r, 400));
-    const d = document.querySelector<HTMLElement>(`.rd-drop[data-ch="0"][data-p="${p}"][data-at="${end}"]:not(.rd-drop-off)`);
-    if (!d) throw new Error('droplet not in the band');
-    const b = d.getBoundingClientRect();
-    return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
-  }, { p, s });
-}
-
-test('Grammar: a droplet in the band opens its sentence notes; tapping it again closes', async ({ page }) => {
-  await open(page);
-  const d = await dropInBand(page, 0, 0);
-  await page.mouse.click(d.x, d.y);
-  await expect(drawer(page)).toHaveAttribute('data-kind', 'sentence');
-  await expect(page.locator('.wd-pattern')).toHaveText('主句 + 定语从句');
-  await expect(page.locator('.wd-point dt')).toHaveText(['主干', '状语', '定语从句', '时态']);
-  await page.waitForTimeout(900); // keep-on-screen may scroll; tap the droplet where it is now
-  const again = await page.evaluate(() => {
-    const el = document.querySelector<HTMLElement>('.rd-drop[data-ch="0"][data-p="0"]:not(.rd-drop-off)')!.getBoundingClientRect();
-    return { x: el.left + el.width / 2, y: el.top + el.height / 2 };
-  });
-  await page.mouse.click(again.x, again.y);
-  await expect(drawer(page)).toHaveCount(0);
-
-  const other = await dropInBand(page, 2, 3); // no hand-written notes for this one yet
-  await page.mouse.click(other.x, other.y);
-  await expect(drawer(page)).toHaveAttribute('data-kind', 'sentence');
-  await expect(page.locator('.wd-miss')).toHaveText('这句话的语法解释即将推出');
-});
-
 test('Only the focus band opens drawers: a blurred word is blank space', async ({ page }) => {
   await open(page);
   await wordInBand(page, 'politician'); // well into the text, so there are blurred lines above the band
