@@ -1,6 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 import type { PosClass } from '../../src/core/dict/gloss.ts';
-import type { DictSource } from '../../src/core/dict/service.ts';
+import type { DictSource, WordLevel } from '../../src/core/dict/service.ts';
 import type { FormLink } from '../../src/core/dict/types.ts';
 
 /** node:sqlite twin of src/core/dict/sqljs.ts, for unit tests. */
@@ -9,11 +9,14 @@ export function nodeDictSource(d: DatabaseSync): DictSource {
   const entry = d.prepare('SELECT phonetic, pos, gloss FROM entry WHERE word = ?');
   const sense = d.prepare('SELECT pos, gloss FROM sense WHERE word = ? AND cls = ?');
   const forms = d.prepare('SELECT lemma, kind FROM forms WHERE form = ? ORDER BY rank');
+  const level = d.prepare('SELECT rank, tier, collins, oxford FROM entry WHERE word = ?');
   return {
     has: (w) => has.get(w) !== undefined,
     entry: (w) => entry.get(w) as { phonetic: string; pos: string; gloss: string } | undefined,
     sense: (w, cls: PosClass) => sense.get(w, cls) as { pos: string; gloss: string } | undefined,
     lemmasOf: (f) => forms.all(f) as unknown as FormLink[],
+    level: (w) => level.get(w) as WordLevel | undefined,
+    levels: () => d.prepare('SELECT word, rank, tier, collins, oxford FROM entry').all() as unknown as (WordLevel & { word: string })[],
     formsOfLemmas: (ls) => ls.length
       ? (d.prepare(`SELECT form FROM forms WHERE lemma IN (${ls.map(() => '?').join(',')})`).all(...ls) as { form: string }[]).map((r) => r.form)
       : [],
@@ -23,10 +26,11 @@ export function nodeDictSource(d: DatabaseSync): DictSource {
 /** A tiny dict.db with the production schema. */
 export function fixtureDict(): DictSource {
   const d = new DatabaseSync(':memory:');
-  d.exec(`CREATE TABLE entry (word TEXT PRIMARY KEY, phonetic TEXT NOT NULL, pos TEXT NOT NULL, gloss TEXT NOT NULL);
+  d.exec(`CREATE TABLE entry (word TEXT PRIMARY KEY, phonetic TEXT NOT NULL, pos TEXT NOT NULL, gloss TEXT NOT NULL,
+      rank INTEGER NOT NULL DEFAULT 0, tier INTEGER NOT NULL DEFAULT 7, collins INTEGER NOT NULL DEFAULT 0, oxford INTEGER NOT NULL DEFAULT 0);
     CREATE TABLE sense (word TEXT NOT NULL, cls TEXT NOT NULL, pos TEXT NOT NULL, gloss TEXT NOT NULL, PRIMARY KEY (word, cls));
     CREATE TABLE forms (form TEXT NOT NULL, lemma TEXT NOT NULL, kind TEXT, rank INTEGER NOT NULL, PRIMARY KEY (form, lemma));`);
-  const e = d.prepare('INSERT INTO entry VALUES (?, ?, ?, ?)');
+  const e = d.prepare('INSERT INTO entry (word, phonetic, pos, gloss) VALUES (?, ?, ?, ?)');
   for (const row of [
     ['carry', '/ˈkæri/', 'vt.', '携带，运送，支持，传送'],
     ['look', '/lʊk/', 'vi.', '看，注意，朝着，显得'],

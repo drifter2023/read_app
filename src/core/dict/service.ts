@@ -8,7 +8,18 @@ export interface DictSource extends Lexicon {
   sense(word: string, cls: PosClass): { pos: string; gloss: string } | undefined;
   /** Every stored form whose lemma is one of `lemmas`. */
   formsOfLemmas(lemmas: readonly string[]): string[];
+  /** Difficulty signals of an entry (predicted words, P-01). */
+  level(word: string): WordLevel | undefined;
+  /** Every entry's signals, for picking calibration words (P-06). */
+  levels(): (WordLevel & { word: string })[];
 }
+
+/**
+ * ECDICT signals for one entry. `rank`: min(nonzero BNC, frq) rank, 0 when on no list. `tier`: the
+ * easiest exam list it is on, 0 zk, 1 gk, 2 cet4, 3 cet6, 4 ky, 5 toefl/ielts, 6 gre, 7 none.
+ * `collins`: 0–5 stars. `oxford`: 1 in the Oxford 3000.
+ */
+export interface WordLevel { rank: number; tier: number; collins: number; oxford: number }
 
 export interface LookupContext { prevWord?: string; sentenceInitial?: boolean; part?: string }
 

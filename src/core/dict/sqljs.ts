@@ -1,6 +1,6 @@
 import type { Database, Statement } from 'sql.js';
 import type { PosClass } from './gloss.ts';
-import type { DictSource } from './service.ts';
+import type { DictSource, WordLevel } from './service.ts';
 import type { FormLink } from './types.ts';
 
 /** dict.db opened read-only in sql.js. Every query is a prepared statement, synchronous and sub-millisecond. */
@@ -9,6 +9,7 @@ export function sqlJsDictSource(db: Database): DictSource {
   const entrySt = db.prepare('SELECT phonetic, pos, gloss FROM entry WHERE word = ?');
   const senseSt = db.prepare('SELECT pos, gloss FROM sense WHERE word = ? AND cls = ?');
   const formsSt = db.prepare('SELECT lemma, kind FROM forms WHERE form = ? ORDER BY rank');
+  const levelSt = db.prepare('SELECT rank, tier, collins, oxford FROM entry WHERE word = ?');
   const one = <T>(st: Statement, params: (string | number)[]): T | undefined => {
     st.bind(params);
     const row = st.step() ? (st.getAsObject() as T) : undefined;
@@ -25,6 +26,12 @@ export function sqlJsDictSource(db: Database): DictSource {
       while (formsSt.step()) out.push(formsSt.getAsObject() as unknown as FormLink);
       formsSt.reset();
       return out;
+    },
+    level: (w) => one<WordLevel>(levelSt, [w]),
+    levels() {
+      const [res] = db.exec('SELECT word, rank, tier, collins, oxford FROM entry');
+      return (res?.values ?? []).map(([word, rank, tier, collins, oxford]) =>
+        ({ word: String(word), rank: Number(rank), tier: Number(tier), collins: Number(collins), oxford: Number(oxford) }));
     },
     formsOfLemmas(lemmas) {
       if (!lemmas.length) return [];

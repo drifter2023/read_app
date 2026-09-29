@@ -163,18 +163,21 @@ for (const line of (await readFile(`${CACHE}/en_US.txt`, 'utf8')).split('\n')) {
 await rm(OUT, { force: true });
 const db = new DatabaseSync(OUT);
 db.exec(`PRAGMA journal_mode = DELETE; PRAGMA page_size = 4096;
-  CREATE TABLE entry (word TEXT PRIMARY KEY, phonetic TEXT NOT NULL, pos TEXT NOT NULL, gloss TEXT NOT NULL) WITHOUT ROWID;
+  CREATE TABLE entry (word TEXT PRIMARY KEY, phonetic TEXT NOT NULL, pos TEXT NOT NULL, gloss TEXT NOT NULL,
+    rank INTEGER NOT NULL, tier INTEGER NOT NULL, collins INTEGER NOT NULL, oxford INTEGER NOT NULL) WITHOUT ROWID;
   CREATE TABLE sense (word TEXT NOT NULL, cls TEXT NOT NULL, pos TEXT NOT NULL, gloss TEXT NOT NULL, PRIMARY KEY (word, cls)) WITHOUT ROWID;
   CREATE TABLE forms (form TEXT NOT NULL, lemma TEXT NOT NULL, kind TEXT, rank INTEGER NOT NULL, PRIMARY KEY (form, lemma)) WITHOUT ROWID;
   CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);`);
 db.exec('BEGIN');
-const insE = db.prepare('INSERT INTO entry VALUES (?, ?, ?, ?)');
+const insE = db.prepare('INSERT INTO entry VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
 const insS = db.prepare('INSERT INTO sense VALUES (?, ?, ?, ?)');
 let senseRows = 0;
 for (const w of [...keep].sort()) {
   const senses = glossed.get(w)!;
   const def = defaultSense(w, senses, votes.get(w))!;
-  insE.run(w, ipa.get(w.toLowerCase()) ?? '', def.pos, def.gloss);
+  const r = rows.get(w)!;
+  // Difficulty signals for predicted words (P-01); rank 0 = on no frequency list.
+  insE.run(w, ipa.get(w.toLowerCase()) ?? '', def.pos, def.gloss, Number.isFinite(r.rank) ? r.rank : 0, tierOf(r.tag), r.collins, r.oxford ? 1 : 0);
   // Other readings, used when the inflection or the previous word points at a different class.
   for (const s of senses) if (s !== def) { insS.run(w, s.cls, s.pos, s.gloss); senseRows++; }
 }
@@ -193,6 +196,14 @@ db.exec('CREATE INDEX forms_lemma ON forms (lemma); ANALYZE; VACUUM;');
 db.close();
 const size = (await readFile(OUT)).length;
 console.log(`dict.db: ${keep.size} entries, ${senseRows} extra senses, ${formRows} forms, ${(size / 1e6).toFixed(1)} MB`);
+
+/** The easiest exam list a word is on (predicted words, P-01): 0 zk … 6 gre, 7 on none. */
+function tierOf(tag: string): number {
+  const TIERS = [['zk'], ['gk'], ['cet4'], ['cet6'], ['ky'], ['toefl', 'ielts'], ['gre']];
+  const tags = tag.split(/\s+/);
+  const i = TIERS.findIndex((t) => t.some((x) => tags.includes(x)));
+  return i < 0 ? 7 : i;
+}
 
 /** RFC 4180 CSV: quoted fields may contain commas, newlines and doubled quotes. */
 function* parseCsv(text: string): Generator<string[]> {
