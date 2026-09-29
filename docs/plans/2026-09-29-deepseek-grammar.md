@@ -6,6 +6,7 @@
 - Model `deepseek-flash` (= DeepSeek-V4.1-Flash), called straight from the app. CORS allows the web origin and `capacitor://localhost` (checked by preflight), so web and iOS share one `fetch`-based client and both can stream. No proxy.
 - Loading dots until the first token, then streaming text with a caret.
 - Length: one pattern line ≤ 16 字, 3 points (4 only when the sentence has more than 40 words), each point ≤ 36 字 (two English letters count as one), about two lines; drawer ≤ 300 px on a 375 px wide screen. (First agreed as 40 字; measured on a 375 px screen a 40-字 point wraps to three lines, so the prompt says 36 and the label column is 48 px. The longest allowed answer is 290 px.)
+- **Superseded 2026-09-29 (prompt v2):** length follows the sentence: pattern ≤ 24 字, 2–3 points for short sentences and up to 5 for long or complex ones, each point as long as it needs, up to 60 字; `max_tokens` 700. The drawer caps the height instead: `min(320px, 45vh)`, scrolling inside with a bottom fade while more is below; a streaming answer follows its newest line until the reader scrolls up. A tap or scroll inside the drawer keeps it open; one outside closes it.
 - One explanation for everyone (no reader level). No sentence translation.
 - The 9 hand-written samples (`src/core/grammar/samples.ts`) are removed.
 
@@ -24,15 +25,15 @@
 | **G-01** | Key: 确认 calls `GET /models`; 200 saves it and shows `已连接 ····abcd`; 401 shows 「Key 无效」 and saves nothing; 清除 removes it. |
 | **G-02** | Loading dots until the first content token; then points appear line by line with a caret; the caret goes when the stream ends. |
 | **G-03** | A finished analysis is stored; reopening the sentence shows it with no request, also offline. |
-| **G-04** | The longest analysis the rules allow renders at ≤ 300 px drawer height on a 375 px wide screen. |
+| **G-04** | v2: the drawer is never taller than `min(320px, 45vh)`; the longest allowed analysis scrolls inside it with a bottom fade; gestures inside do not close it. (v1: ≤ 300 px on a 375 px screen.) |
 | **G-05** | No key → 「先在首页填写 DeepSeek API Key」. No first token in 15 s, a network error, HTTP 4xx/5xx, or an empty/invalid answer → reason + 重试; nothing stored. |
-| **G-06** | Prompt v1 is sent verbatim (snapshot); the parser accepts the line format, tolerates `|`, ignores junk lines, caps at 4 points. |
+| **G-06** | Prompt v1 is sent verbatim (snapshot); the parser accepts the line format, tolerates `|`, ignores junk lines, caps at 5 points (v1: 4). |
 
 ## Prompt v1
 
-`PROMPT_VERSION = 1`; the text lives in `src/core/grammar/prompt.ts`. The system prompt never changes between requests, so DeepSeek's prefix cache bills it at the cache-hit price after the first call. The user message carries 前一句 (≤ 60 words, else （无）), 目标句 and 单词数 (counted by the app).
+`PROMPT_VERSION = 2` since the length change (v1 answers are analysed again when reopened); the text lives in `src/core/grammar/prompt.ts`. The system prompt never changes between requests, so DeepSeek's prefix cache bills it at the cache-hit price after the first call. The user message carries 前一句 (≤ 60 words, else （无）), 目标句 and 单词数 (counted by the app).
 
-Request: `{ model: 'deepseek-flash', stream: true, thinking: { type: 'disabled' }, max_tokens: 400, temperature: 0.5, messages }`. Temperature is a starting value, to tune on real sentences.
+Request: `{ model: 'deepseek-flash', stream: true, thinking: { type: 'disabled' }, max_tokens: 700, temperature: 0.5, messages }`. Temperature is a starting value, to tune on real sentences.
 
 ## Modules
 
