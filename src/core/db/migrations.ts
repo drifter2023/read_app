@@ -29,6 +29,10 @@ export const MIGRATIONS: readonly string[] = [
      PRIMARY KEY (book_id, chapter, para, sentence));`,
   // v5: the grammar drawer shows the sentence's translation on top (prompt v3).
   `ALTER TABLE grammar ADD COLUMN translation TEXT NOT NULL DEFAULT '';`,
+  // v6 (M7): what the reader knows, for predicted words. Lookups live in `lookup`; this keeps the rest.
+  `CREATE TABLE vocab (
+     lemma TEXT PRIMARY KEY, state TEXT, source TEXT, weight REAL NOT NULL DEFAULT 1,
+     exposures INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL);`,
 ];
 
 export async function migrate(db: Db, migrations: readonly string[] = MIGRATIONS): Promise<number> {

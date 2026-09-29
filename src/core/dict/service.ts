@@ -50,6 +50,16 @@ export class DictService {
     return res;
   }
 
+  /** Difficulty signals of an entry (predicted words, P-01). */
+  level(word: string): WordLevel | undefined {
+    return this.#src.level(word);
+  }
+
+  /** Every entry's signals (calibration, P-06). */
+  levels(): (WordLevel & { word: string })[] {
+    return this.#src.levels();
+  }
+
   /** Lower-cased surface forms that belong to `lemmas`, so footnotes can be matched with a Set lookup. */
   formsOf(lemmas: Iterable<string>): Set<string> {
     const list = [...lemmas];
