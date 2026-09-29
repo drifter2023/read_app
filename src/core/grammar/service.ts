@@ -26,7 +26,7 @@ export interface GrammarRun {
 }
 
 /** About twice a full answer (docs/plans/2026-09-29-deepseek-grammar.md → Length). */
-const MAX_TOKENS = 700;
+const MAX_TOKENS = 900;
 const TEMPERATURE = 0.5;
 
 interface Options { fetch?: Fetch; firstTokenMs?: number; idleMs?: number }
@@ -86,7 +86,7 @@ export class GrammarService {
       }, this.#fetch);
       const g = parseGrammar(acc, { final: true, truncated: r.finish === 'length' });
       if (!isUsable(g)) return { status: 'error', reason: 'bad-answer', partial: acc ? g : null };
-      const grammar: Grammar = { pattern: g.pattern, points: g.points };
+      const grammar: Grammar = { translation: g.translation, pattern: g.pattern, points: g.points };
       await saveGrammar(this.#db, ref, text, grammar).catch(() => {}); // e.g. the book was deleted meanwhile
       return { status: 'done', grammar, cached: false };
     } catch (e) {

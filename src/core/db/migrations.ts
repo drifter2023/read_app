@@ -27,6 +27,8 @@ export const MIGRATIONS: readonly string[] = [
      sentence INTEGER NOT NULL, text_hash TEXT NOT NULL, prompt_version INTEGER NOT NULL,
      pattern TEXT NOT NULL, points TEXT NOT NULL, at INTEGER NOT NULL,
      PRIMARY KEY (book_id, chapter, para, sentence));`,
+  // v5: the grammar drawer shows the sentence's translation on top (prompt v3).
+  `ALTER TABLE grammar ADD COLUMN translation TEXT NOT NULL DEFAULT '';`,
 ];
 
 export async function migrate(db: Db, migrations: readonly string[] = MIGRATIONS): Promise<number> {

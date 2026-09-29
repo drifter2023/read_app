@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { migrate } from '../../src/core/db/migrations.ts';
+import { MIGRATIONS, migrate } from '../../src/core/db/migrations.ts';
 import type { Db } from '../../src/core/db/types.ts';
 import { loadGrammar, saveGrammar } from '../../src/core/grammar/history.ts';
 import { PROMPT_VERSION } from '../../src/core/grammar/prompt.ts';
@@ -10,7 +10,7 @@ let db: Db;
 const book = (id: string) => ({ id, title: id, author: 'A', wordCount: 2, chapters: [{ title: 'I', paras: [['Hi there.']], wordCount: 2 }] });
 const ref = { bookId: 'a', chapter: 0, para: 2, sentence: 1 };
 const TEXT = 'His yellow-grey eyes were horizontal.';
-const G = { pattern: '主系表', points: [{ label: '主干', text: 'eyes were horizontal' }] };
+const G = { translation: '他那黄灰色的眼睛是平的。', pattern: '主系表', points: [{ label: '主干', text: 'eyes were horizontal' }] };
 
 beforeEach(async () => {
   db = nodeDb();
@@ -34,6 +34,18 @@ describe('grammar history (G-03)', () => {
     expect(await loadGrammar(db, ref, `${TEXT} `)).toBeNull();
     await db.run('UPDATE grammar SET prompt_version = ?', [PROMPT_VERSION - 1]);
     expect(await loadGrammar(db, ref, TEXT)).toBeNull();
+  });
+
+  it('a v4 database gains an empty translation column; its old rows no longer load', async () => {
+    const old = nodeDb();
+    await migrate(old, MIGRATIONS.slice(0, 4));
+    await saveParsedBook(old, book('a'), 'epub', 0);
+    await old.run(`INSERT INTO grammar (book_id, chapter, para, sentence, text_hash, prompt_version, pattern, points, at)
+      VALUES ('a', 0, 2, 1, 'x', 2, '主系表', '[]', 0)`);
+    expect(await migrate(old)).toBe(MIGRATIONS.length);
+    const [row] = await old.all<{ translation: string }>('SELECT translation FROM grammar');
+    expect(row!.translation).toBe('');
+    expect(await loadGrammar(old, ref, TEXT)).toBeNull();
   });
 
   it('goes with its book', async () => {

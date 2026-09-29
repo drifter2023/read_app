@@ -17,12 +17,12 @@ function hash(text: string): string {
 
 /** The stored analysis, if it was made for this exact text with the current prompt. */
 export async function loadGrammar(db: Db, ref: SentenceRef, text: string): Promise<Grammar | null> {
-  const [row] = await db.all<{ text_hash: string; prompt_version: number; pattern: string; points: string }>(
-    'SELECT text_hash, prompt_version, pattern, points FROM grammar WHERE book_id = ? AND chapter = ? AND para = ? AND sentence = ?',
+  const [row] = await db.all<{ text_hash: string; prompt_version: number; translation: string; pattern: string; points: string }>(
+    'SELECT text_hash, prompt_version, translation, pattern, points FROM grammar WHERE book_id = ? AND chapter = ? AND para = ? AND sentence = ?',
     [ref.bookId, ref.chapter, ref.para, ref.sentence]);
   if (!row || row.text_hash !== hash(text) || row.prompt_version !== PROMPT_VERSION) return null;
   try {
-    return { pattern: row.pattern, points: JSON.parse(row.points) as Grammar['points'] };
+    return { translation: row.translation, pattern: row.pattern, points: JSON.parse(row.points) as Grammar['points'] };
   } catch {
     return null;
   }
@@ -30,9 +30,9 @@ export async function loadGrammar(db: Db, ref: SentenceRef, text: string): Promi
 
 export async function saveGrammar(db: Db, ref: SentenceRef, text: string, g: Grammar, at = Date.now()): Promise<void> {
   await db.run(
-    `INSERT INTO grammar (book_id, chapter, para, sentence, text_hash, prompt_version, pattern, points, at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO grammar (book_id, chapter, para, sentence, text_hash, prompt_version, translation, pattern, points, at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (book_id, chapter, para, sentence) DO UPDATE SET text_hash = excluded.text_hash,
-       prompt_version = excluded.prompt_version, pattern = excluded.pattern, points = excluded.points, at = excluded.at`,
-    [ref.bookId, ref.chapter, ref.para, ref.sentence, hash(text), PROMPT_VERSION, g.pattern, JSON.stringify(g.points), at]);
+       prompt_version = excluded.prompt_version, translation = excluded.translation, pattern = excluded.pattern, points = excluded.points, at = excluded.at`,
+    [ref.bookId, ref.chapter, ref.para, ref.sentence, hash(text), PROMPT_VERSION, g.translation, g.pattern, JSON.stringify(g.points), at]);
 }

@@ -1,14 +1,15 @@
-/** One sentence's grammar notes: the overall pattern, then labelled points. */
-export interface Grammar { pattern: string; points: { label: string; text: string }[] }
+/** One sentence's analysis: its translation, the overall pattern, then labelled points. */
+export interface Grammar { translation: string; pattern: string; points: { label: string; text: string }[] }
 
 /** The line still being written, shaped for display with a caret. */
-export type Pending = { kind: 'pattern'; text: string } | { kind: 'point'; label: string; text: string };
+export type Pending = { kind: 'translation' | 'pattern'; text: string } | { kind: 'point'; label: string; text: string };
 
 export interface ParsedGrammar extends Grammar { pending: Pending | null }
 
 /** The prompt allows five points; the drawer scrolls inside when they run long. */
 export const MAX_POINTS = 5;
 
+const TRANSLATION = /^译文\s*[：:]\s*(.*)$/;
 const PATTERN = /^句型\s*[：:]\s*(.*)$/;
 const BAR = /\s*[｜|]\s*/;
 
@@ -18,7 +19,7 @@ function clean(line: string): string {
 }
 
 /**
- * Parses the prompt's line format ("句型：…", then "标签｜说明" per line) from a stream prefix.
+ * Parses the prompt's line format ("译文：…", "句型：…", then "标签｜说明" per line) from a stream prefix.
  * Finished lines become the pattern and points; the unfinished last line is `pending`. With
  * `final`, every line is finished, unless `truncated` (the token limit cut the answer): then the
  * last line, which never got its newline, is dropped.
@@ -26,10 +27,15 @@ function clean(line: string): string {
 export function parseGrammar(text: string, opts: { final?: boolean; truncated?: boolean } = {}): ParsedGrammar {
   const lines = text.split('\n');
   const open = !opts.final || (opts.truncated && !text.endsWith('\n')) ? lines.pop() ?? '' : '';
-  const out: ParsedGrammar = { pattern: '', points: [], pending: null };
+  const out: ParsedGrammar = { translation: '', pattern: '', points: [], pending: null };
   for (const raw of lines) {
     const line = clean(raw);
     if (!line) continue;
+    const t = TRANSLATION.exec(line);
+    if (t) {
+      if (!out.translation && t[1]) out.translation = t[1].trim();
+      continue;
+    }
     const m = PATTERN.exec(line);
     if (m) {
       if (!out.pattern && m[1]) out.pattern = m[1].trim();
@@ -45,13 +51,15 @@ export function parseGrammar(text: string, opts: { final?: boolean; truncated?: 
 
 function pendingOf(line: string, g: Grammar): Pending | null {
   if (!line) return null;
+  const t = TRANSLATION.exec(line);
+  if (t) return g.translation ? null : { kind: 'translation', text: t[1]!.trim() };
   const m = PATTERN.exec(line);
   if (m) return g.pattern ? null : { kind: 'pattern', text: m[1]!.trim() };
   if (g.points.length >= MAX_POINTS) return null;
   const [label, ...rest] = line.split(BAR);
   if (rest.length) return { kind: 'point', label: label!, text: rest.join('｜').trim() };
   // A label being typed ("定语从"); anything longer is chatter that will be ignored.
-  return line.length <= 6 && !line.startsWith('句') ? { kind: 'point', label: line, text: '' } : null;
+  return line.length <= 6 && !/^[句译]/.test(line) ? { kind: 'point', label: line, text: '' } : null;
 }
 
 /** A finished answer is worth showing and keeping only with a pattern and at least one point. */

@@ -3,15 +3,16 @@ import { isUsable, parseGrammar } from '../../src/core/grammar/parse.ts';
 import { PROMPT_VERSION, SYSTEM_PROMPT, userMessage } from '../../src/core/grammar/prompt.ts';
 
 const ANSWER = [
+  '译文：她等了一整个夏天的那封信，终于到了。',
   '句型：主句 + 定语从句',
   '主干｜The letter … finally arrived，arrive 不及物',
   '定语从句｜that she had been waiting for 修饰 letter',
   '时态｜had been waiting 是过去完成进行时',
 ].join('\n');
 
-describe('grammar prompt v2 (G-06)', () => {
-  it('is version 2 and sent verbatim', () => {
-    expect(PROMPT_VERSION).toBe(2);
+describe('grammar prompt v3 (G-06)', () => {
+  it('is version 3 and sent verbatim', () => {
+    expect(PROMPT_VERSION).toBe(3);
     expect(SYSTEM_PROMPT).toMatchSnapshot();
   });
 
@@ -25,8 +26,9 @@ describe('grammar prompt v2 (G-06)', () => {
 });
 
 describe('grammar parser (G-06)', () => {
-  it('reads the pattern and the points of a finished answer', () => {
+  it('reads the translation, the pattern and the points of a finished answer', () => {
     const g = parseGrammar(ANSWER, { final: true });
+    expect(g.translation).toBe('她等了一整个夏天的那封信，终于到了。');
     expect(g.pattern).toBe('主句 + 定语从句');
     expect(g.points.map((p) => p.label)).toEqual(['主干', '定语从句', '时态']);
     expect(g.points[1]!.text).toBe('that she had been waiting for 修饰 letter');
@@ -44,6 +46,9 @@ describe('grammar parser (G-06)', () => {
     expect(done).toBe(2); // the last line is still "pending" until the stream ends
     expect(parseGrammar(ANSWER.slice(0, ANSWER.lastIndexOf('｜') + 4)).pending).toEqual({ kind: 'point', label: '时态', text: 'had' });
     expect(parseGrammar('句型：主句 +').pending).toEqual({ kind: 'pattern', text: '主句 +' });
+    expect(parseGrammar('译文：她等了').pending).toEqual({ kind: 'translation', text: '她等了' });
+    expect(parseGrammar('译').pending).toBeNull(); // not a label being typed
+    expect(parseGrammar(`${ANSWER.split('\n')[0]}\n`)).toMatchObject({ translation: '她等了一整个夏天的那封信，终于到了。', pending: null });
   });
 
   it('accepts a half-width bar and ignores stray lines, numbering and bold marks', () => {

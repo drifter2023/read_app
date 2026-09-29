@@ -15,7 +15,7 @@ const book = { id: 'a', title: 'a', author: 'A', wordCount: 2, chapters: [{ titl
 const ref = { bookId: 'a', chapter: 0, para: 3, sentence: 1 };
 const TEXT = 'His nostrils curved back to make another, smaller, v.';
 const PREV = 'Samuel Spade’s jaw was long and bony.';
-const PIECES = ['句型：简单句', ' + 不定式\n主干｜His nostrils', ' curved back\n不定式｜to make another v 表结果\n'];
+const PIECES = ['译文：他的鼻孔向后弯，', '又形成一个更小的 v。\n句型：简单句', ' + 不定式\n主干｜His nostrils', ' curved back\n不定式｜to make another v 表结果\n'];
 
 let requests: { url: string; body: unknown }[] = [];
 const answer = (pieces = PIECES, finish = 'stop'): Fetch => async (url, init) => {
@@ -50,22 +50,22 @@ beforeEach(async () => {
 });
 
 describe('grammar service', () => {
-  it('G-02: waits, streams, then finishes; the request carries prompt v1', async () => {
+  it('G-02: waits, streams, then finishes; the request carries prompt v3', async () => {
     const states = await watch(new GrammarService(db, { fetch: answer() }));
     expect(states[0]!.status).toBe('waiting');
     expect(states.some((s) => s.status === 'streaming')).toBe(true);
     const last = states.at(-1)!;
-    expect(last).toMatchObject({ status: 'done', cached: false, grammar: { pattern: '简单句 + 不定式' } });
+    expect(last).toMatchObject({ status: 'done', cached: false, grammar: { translation: '他的鼻孔向后弯，又形成一个更小的 v。', pattern: '简单句 + 不定式' } });
     expect(last.status === 'done' && last.grammar.points.map((p) => p.label)).toEqual(['主干', '不定式']);
     const body = requests[0]!.body as { messages: { content: string }[]; max_tokens: number; temperature: number };
     expect(body.messages[0]!.content).toBe(SYSTEM_PROMPT);
     expect(body.messages[1]!.content).toBe(userMessage(PREV, TEXT));
-    expect(body).toMatchObject({ max_tokens: 700, temperature: 0.5 });
+    expect(body).toMatchObject({ max_tokens: 900, temperature: 0.5 });
   });
 
   it('G-03: a finished analysis is stored; the next open is served from history without a request', async () => {
     await watch(new GrammarService(db, { fetch: answer() }));
-    expect(await loadGrammar(db, ref, TEXT)).toMatchObject({ pattern: '简单句 + 不定式' });
+    expect(await loadGrammar(db, ref, TEXT)).toMatchObject({ translation: '他的鼻孔向后弯，又形成一个更小的 v。', pattern: '简单句 + 不定式' });
     requests = [];
     const states = await watch(new GrammarService(db, { fetch: silent }));
     expect(states.at(-1)).toMatchObject({ status: 'done', cached: true });
@@ -129,7 +129,7 @@ describe('grammar service', () => {
   });
 
   it('an old analysis for other text is ignored', async () => {
-    await saveGrammar(db, ref, 'Something else.', { pattern: '旧', points: [{ label: '主干', text: 'x' }] });
+    await saveGrammar(db, ref, 'Something else.', { translation: '', pattern: '旧', points: [{ label: '主干', text: 'x' }] });
     const states = await watch(new GrammarService(db, { fetch: answer() }));
     expect(states.at(-1)).toMatchObject({ status: 'done', cached: false });
   });
