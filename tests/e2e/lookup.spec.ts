@@ -86,6 +86,29 @@ test('R-05: the first scroll gesture closes the drawer instead of scrolling', as
   expect(await page.evaluate(() => document.querySelector('.rd-scroll')!.scrollTop)).toBeCloseTo(top, -1);
 });
 
+test('R-05: a tap or a scroll gesture inside the drawer leaves it open and the page still', async ({ page }) => {
+  await open(page);
+  const a = await wordInBand(page, 'advice');
+  await page.mouse.click(a.x, a.y);
+  await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+
+  await page.locator('.wd-def').click();
+  await page.waitForTimeout(900); // the page has settled, keeping the drawer on screen
+  await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+  const top = await page.evaluate(() => document.querySelector('.rd-scroll')!.scrollTop);
+
+  // Nothing to scroll in a word drawer: the gesture is held, not passed to the page.
+  const prevented = await page.evaluate(() => {
+    const ev = new WheelEvent('wheel', { deltaY: 300, bubbles: true, cancelable: true });
+    document.querySelector('.wd-def')!.dispatchEvent(ev);
+    return ev.defaultPrevented;
+  });
+  expect(prevented).toBe(true);
+  await page.waitForTimeout(400);
+  await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+  expect(await page.evaluate(() => document.querySelector('.rd-scroll')!.scrollTop)).toBeCloseTo(top, -1);
+});
+
 test('R-05: a drawer opened low on the screen is scrolled up to stay 70 px above the bottom', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby&dev=1');

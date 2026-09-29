@@ -114,6 +114,46 @@ test('G-02/G-03: a droplet shows dots, then the analysis; it is stored and reope
   await expect(page.locator('.wd-pattern')).toHaveText('主句 + 定语从句');
 });
 
+const LONG = `这一部分说明句子的主干成分以及它和后面从句之间的修饰关系，读的时候先抓住主语和谓语，再看后面的从句怎样修饰前面的名词`;
+const LONG_ANSWER = ['句型：主句 + 定语从句 + 状语从句\n', ...['主干', '定语从句', '状语从句', '非谓语', '插入语'].map((l) => `${l}｜${LONG}\n`)];
+
+test('G-04: a long analysis is capped and scrolls inside the drawer; only a tap outside closes it', async ({ page }) => {
+  await fullTier(page);
+  await fakeDeepSeek(page, (route) => route.fulfill({ status: 200, headers: { ...CORS, 'content-type': 'text/event-stream' }, body: sseText(LONG_ANSWER) }));
+  await withKey(page);
+  await page.goto('/?book=gatsby');
+  await ready(page);
+  const d = await dropInBand(page, 0, 0);
+  await page.mouse.click(d.x, d.y);
+  await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+  await expect(page.locator('.wd-point dt')).toHaveCount(5);
+
+  const inner = page.locator('.wd-inner');
+  const box = await inner.evaluate((el) => ({ h: el.clientHeight, sh: el.scrollHeight, cap: Math.min(320, innerHeight * 0.45) }));
+  expect(box.h).toBeLessThanOrEqual(box.cap + 1);
+  expect(box.sh).toBeGreaterThan(box.h);
+  await expect(inner).toHaveAttribute('data-more', '');
+
+  // A gesture inside scrolls the drawer (the browser does it; the guard lets it through).
+  await page.waitForTimeout(900); // the page has settled, keeping the drawer on screen
+  const page0 = await page.evaluate(() => document.querySelector('.rd-scroll')!.scrollTop);
+  const prevented = await inner.evaluate((el) => {
+    const ev = new WheelEvent('wheel', { deltaY: 200, bubbles: true, cancelable: true });
+    el.querySelector('.wd-point dd')!.dispatchEvent(ev);
+    el.scrollTop = el.scrollHeight;
+    return ev.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+  await expect(inner).not.toHaveAttribute('data-more');
+  expect(await page.evaluate(() => document.querySelector('.rd-scroll')!.scrollTop)).toBeCloseTo(page0, -1);
+  await page.locator('.wd-point dd').last().click();
+  await page.waitForTimeout(400);
+  await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+
+  await page.mouse.click(d.x, 120); // outside, above the drawer
+  await expect(drawer(page)).toHaveCount(0);
+});
+
 test('G-05: without a key the drawer says where to add one, and asks nothing', async ({ page }) => {
   await fullTier(page);
   const bodies = await fakeDeepSeek(page);

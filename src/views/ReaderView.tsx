@@ -11,7 +11,7 @@ import { FpsMeter } from './FpsMeter.tsx';
 import { ReaderChrome } from './reader/ReaderChrome.tsx';
 import { SettingsSheet } from './reader/SettingsSheet.tsx';
 import { TocSheet } from './reader/TocSheet.tsx';
-import { useWordLookup } from './useWordLookup.tsx';
+import { drawerInner, useWordLookup } from './useWordLookup.tsx';
 
 export interface ReaderBook extends EngineBook { title: string }
 interface Props { session: Session; book: ReaderBook; initialAnchor: Anchor | null; onBack: () => void }
@@ -111,9 +111,13 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   }, [chrome]);
   useEffect(() => () => clearTimeout(chromeTimer.current), []);
 
-  /** Tap arbitration (README): sheet open → close it; word → drawer; drawer open → close; else chrome. */
+  /**
+   * Tap arbitration (README): sheet open → close it; inside the drawer → nothing (its buttons handle
+   * themselves); word → drawer; drawer open → close; else chrome.
+   */
   const onTap = (e: MouseEvent) => {
     if (sheet) { setSheet(null); return; }
+    if (drawerInner(e.target)) return;
     if (lookup.onTap(e.clientX, e.clientY, e.timeStamp)) { if (chrome) showChrome(false); return; }
     showChrome(!chrome);
   };

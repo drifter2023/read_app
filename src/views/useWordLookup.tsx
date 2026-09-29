@@ -38,6 +38,12 @@ export interface WordLookup {
   drawer: ReactNode;
 }
 
+/** The scrolling part of the drawer that `target` is in, if any. */
+export function drawerInner(target: EventTarget | null): HTMLElement | null {
+  const wd = target instanceof Element ? target.closest('.wd') : null;
+  return wd?.querySelector<HTMLElement>('.wd-inner') ?? null;
+}
+
 export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bookId: string): WordLookup {
   const [pop, setPopState] = useState<Pop | null>(null);
   const popRef = useRef<Pop | null>(null);
@@ -233,12 +239,19 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPop]);
 
-  // Scrolling closes the drawer: the first gesture is swallowed, then scrolling stays locked briefly.
+  // Scrolling outside the drawer closes it: the first gesture is swallowed, then scrolling stays
+  // locked briefly. A gesture inside the drawer scrolls the drawer instead.
   useEffect(() => {
     const scroller = engine.current?.scroller;
     if (!scroller) return;
     const guard = (ev: Event) => {
       const p = popRef.current;
+      const inner = p && !p.closing ? drawerInner(ev.target) : null;
+      if (inner) {
+        // One with nothing to scroll holds the page still, so the text under it does not move.
+        if (inner.scrollHeight <= inner.clientHeight && ev.cancelable) ev.preventDefault();
+        return;
+      }
       const c = closedAt.current;
       // A gesture that only closes the drawer is not a re-scroll; one after it has closed is.
       if (c && (!p || p.closing) && performance.now() - c.at > 50) {
