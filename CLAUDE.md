@@ -4,16 +4,16 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Scope guard
 - Build only: Home (continue reading + shelf + import), Reader 4a, word drawer, 9px footnotes, settings sheet, open-book transition.
-- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer. Grammar notes are hand-written samples in `src/core/grammar/samples.ts` (no LLM). Drawers open only from the sharp text in the focus band. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged).
+- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer, analysed by DeepSeek (TASKS.md → M6, `docs/plans/2026-09-29-deepseek-grammar.md`). Drawers open only from the sharp text in the focus band. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged). Where these lines disagree with README's out-of-scope list (night mode, LLM), these lines win.
 - Do NOT build:
   - tabs 书房 / 生词 / 我 or a tab bar;
   - today stats or streak;
   - review cards or spaced repetition;
   - auto guided reading;
   - pronunciation / TTS, or the Examples button;
-  - any LLM or agent, sync, push, accounts, analytics SDKs;
-  - long-press sentence translation.
-- **Zero network requests at runtime.** Fonts, dictionary and books are all bundled.
+  - any LLM or agent other than the DeepSeek grammar analysis; sync, push, accounts, analytics SDKs;
+  - long-press sentence translation, or a sentence translation in the grammar drawer.
+- **Zero network requests at runtime**, with one exception: the grammar drawer calls `https://api.deepseek.com` after a tap on a droplet, with the user's own key. Fonts, dictionary and books are all bundled; lookups, footnotes and everything else stay offline.
 - If a design doc and the README disagree, the README wins. If the README is silent, follow `设计文档 v2` §3 (Reader 4a) exactly.
 
 ## Identity
@@ -29,7 +29,7 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Architecture rules
 - Keep domain modules framework-free TS under `src/core/`:
-  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`.
+  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`, `grammar`, `ai`.
   - React views live under `src/views/` and only call module APIs.
 - The reader engine owns the scroll container and writes line styles directly (`style.filter`, `style.opacity`). Never re-render body-text lines through React on scroll.
 - Build the line table once per layout. Do not call `getBoundingClientRect` per line per frame.
