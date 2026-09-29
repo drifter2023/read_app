@@ -2,7 +2,7 @@ import type { Db } from '../db/types.ts';
 import type { DictService } from '../dict/service.ts';
 import { estimateAbility } from './ability.ts';
 import { Difficulty } from './difficulty.ts';
-import { predictWords, scanBook, type PredictLevel } from './predict.ts';
+import { inSlices, predictWords, scanBook, type PredictLevel } from './predict.ts';
 import { addExposures, clearKnown, evidenceOf, knownSet, loadKnownWords, markWord, UNDO_WEIGHT, type KnownWords } from './store.ts';
 
 /** A book's common-word lemmas, scanned once per app session (the text does not change). */
@@ -34,15 +34,24 @@ export class VocabModel {
     this.#db = db;
     this.difficulty = new Difficulty(dict);
     this.#known = known;
-    this.#refit();
   }
 
+  /** Reads the evidence, works out its words' difficulty in slices (it grows with reading), then fits θ. */
   static async load(db: Db, dict: DictService): Promise<VocabModel> {
-    return new VocabModel(db, dict, await loadKnownWords(db));
+    const known = await loadKnownWords(db);
+    const m = new VocabModel(db, dict, known);
+    await m.warm([...known.rows.keys(), ...known.lookedUp]);
+    m.#refit();
+    return m;
   }
 
   get theta(): number {
     return this.#theta;
+  }
+
+  /** Works out every lemma's difficulty in background slices, so the first `predict` is quick (P-08). */
+  warm(lemmas: Iterable<string>): Promise<void> {
+    return inSlices(lemmas, (l) => { this.difficulty.of(l); });
   }
 
   /**

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import type { FontSize, PrefsStore } from '../../core/prefs/prefs.ts';
+import type { PredictLevel } from '../../core/vocab/predict.ts';
 import { Sheet } from './Sheet.tsx';
 
 const SIZES: { v: FontSize; label: string; px: number }[] = [
   { v: 'S', label: '小', px: 13 }, { v: 'M', label: '中', px: 16 }, { v: 'L', label: '大', px: 19 },
 ];
 
-/** S-01: font size, focus band, blur and sentence mode. Every change applies live and persists. */
+/** P-05: how many words get a predicted footnote. */
+const PREDICT: { v: PredictLevel; label: string }[] = [{ v: 'off', label: '关' }, { v: 'few', label: '少' }, { v: 'many', label: '多' }];
+
+/** S-01: font size, focus band, blur, predicted words and sentence mode. Every change applies live and persists. */
 export function SettingsSheet({ prefs, open, onClose }: { prefs: PrefsStore; open: boolean; onClose: () => void }) {
   const [p, setP] = useState(prefs.get());
   useEffect(() => prefs.subscribe((next) => setP(next)), [prefs]);
@@ -35,6 +39,17 @@ export function SettingsSheet({ prefs, open, onClose }: { prefs: PrefsStore; ope
           onChange={(e) => void prefs.set('blurMax', Number(e.target.value))} />
         <span className="set-val">{p.blurMax}</span>
       </label>
+      <div className="set-row">
+        <span className="set-label">预测生词</span>
+        <div className="set-seg set-seg-text" role="radiogroup" aria-label="预测生词">
+          {PREDICT.map((o) => (
+            <button key={o.v} type="button" role="radio" aria-checked={p.predict === o.v}
+              onClick={() => void prefs.set('predict', o.v)}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
       <label className="set-row">
         <span className="set-label">整句模式</span>
         <span className="set-hint">当前句之外再淡一些</span>

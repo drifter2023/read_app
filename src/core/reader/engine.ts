@@ -316,6 +316,26 @@ export class ReaderEngine {
     return !cur || (line.chapter === cur.chapter && line.para === cur.para && line.sFirst <= cur.sFirst && cur.sFirst <= line.sLast);
   }
 
+  /**
+   * The text of the sharp lines right now, as paragraph offsets [start, end) (predicted words: what
+   * the reader is reading, P-02). Called at scroll pauses, not per frame.
+   */
+  sharpText(): { chapter: number; para: number; start: number; end: number }[] {
+    const out: { chapter: number; para: number; start: number; end: number }[] = [];
+    if (!this.#lines.length) return out;
+    const mid = this.#scroller.scrollTop + this.#H / 2;
+    const half = bandFor(this.#H, this.#prefs.focusPct).half + this.#lh + this.#gap;
+    for (let i = Math.max(0, this.#lineAtY(mid - half)); i < this.#lines.length; i++) {
+      const line = this.#lines[i]!;
+      if (this.#top[i]! > mid + half) break;
+      if (line.para < 0 || !this.isInBand(i)) continue;
+      const next = this.#lines[i + 1];
+      const end = next && next.chapter === line.chapter && next.para === line.para ? next.start : Number.MAX_SAFE_INTEGER;
+      out.push({ chapter: line.chapter, para: line.para, start: line.start, end });
+    }
+    return out;
+  }
+
   /** The grammar droplet under a viewport point, if one is showing there (sentences in the focus band only). */
   dropAt(x: number, y: number): SentenceHit | null {
     let best: SentenceHit | null = null;

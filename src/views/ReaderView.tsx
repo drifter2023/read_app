@@ -11,6 +11,7 @@ import { FpsMeter } from './FpsMeter.tsx';
 import { ReaderChrome } from './reader/ReaderChrome.tsx';
 import { SettingsSheet } from './reader/SettingsSheet.tsx';
 import { TocSheet } from './reader/TocSheet.tsx';
+import { useExposure } from './useExposure.ts';
 import { drawerInner, useWordLookup } from './useWordLookup.tsx';
 
 export interface ReaderBook extends EngineBook { title: string }
@@ -31,9 +32,10 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const [sheet, setSheet] = useState<'settings' | 'toc' | null>(null);
   const [chapter, setChapter] = useState(initialAnchor?.chapter ?? 0);
   const chromeTimer = useRef(0);
-  const lookup = useWordLookup(engineRef, session.db, book.id);
+  const lookup = useWordLookup(engineRef, session.db, book, session.prefs);
   const lookupRef = useRef(lookup);
   lookupRef.current = lookup;
+  useExposure(scrollRef, engineRef, book, lookup);
 
   useEffect(() => {
     const saver = new PositionSaver((a, pct) => savePosition(session.db, book.id, a, pct));

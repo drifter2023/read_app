@@ -19,7 +19,18 @@ describe('metrics log (task 23)', () => {
     expect(await summarise(db)).toEqual({
       sessions: 2, minutes: 30, wordsRead: 4000, lookups: 6, lookupsPer1k: 1.5,
       drawerCloses: 4, rescrollWithin10s: 2, rescrollRatio: 0.5,
+      predictedLookups: 0, missesPer1k: 1.5, falseAlarmsPer1k: 0,
     });
+  });
+
+  it('P-07: counts predicted lookups, misses and false alarms per 1k words', async () => {
+    await logMetric(db, { type: 'session', bookId: 'a', ms: 60000, words: 2000 });
+    await logMetric(db, { type: 'lookup', bookId: 'a', predicted: true });
+    await logMetric(db, { type: 'lookup', bookId: 'a', predicted: false });
+    await logMetric(db, { type: 'lookup', bookId: 'a', predicted: false });
+    await logMetric(db, { type: 'undo', bookId: 'a', predicted: true });
+    await logMetric(db, { type: 'undo', bookId: 'a', predicted: false });
+    expect(await summarise(db)).toMatchObject({ lookups: 3, predictedLookups: 1, missesPer1k: 1, falseAlarmsPer1k: 0.5 });
   });
 
   it('exports JSON with the summary and raw events', async () => {

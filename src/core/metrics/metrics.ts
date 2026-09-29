@@ -6,7 +6,10 @@ import type { Db } from '../db/types.ts';
  */
 export type MetricEvent =
   | { type: 'session'; bookId: string; ms: number; words: number }
-  | { type: 'lookup'; bookId: string }
+  /** `predicted`: the word already had a predicted footnote (P-07); a lookup of an unpredicted word is a miss. */
+  | { type: 'lookup'; bookId: string; predicted?: boolean }
+  /** 撤回; of a predicted word, a false alarm (P-07). */
+  | { type: 'undo'; bookId: string; predicted: boolean }
   | { type: 'drawer_close'; bookId: string; rescroll: boolean };
 
 export async function logMetric(db: Db, e: MetricEvent, at = Date.now()): Promise<void> {
@@ -17,22 +20,27 @@ export async function logMetric(db: Db, e: MetricEvent, at = Date.now()): Promis
 export interface MetricSummary {
   sessions: number; minutes: number; wordsRead: number; lookups: number; lookupsPer1k: number;
   drawerCloses: number; rescrollWithin10s: number; rescrollRatio: number;
+  /** Predicted words (P-07): lookups of predicted words, misses (lookups of unpredicted ones) and false alarms (撤回 of predicted ones). */
+  predictedLookups: number; missesPer1k: number; falseAlarmsPer1k: number;
 }
 
 export async function summarise(db: Db): Promise<MetricSummary> {
   const rows = await db.all<{ type: string; data: string }>('SELECT type, data FROM metric');
-  let sessions = 0, ms = 0, words = 0, lookups = 0, closes = 0, rescroll = 0;
+  let sessions = 0, ms = 0, words = 0, lookups = 0, closes = 0, rescroll = 0, predicted = 0, falseAlarms = 0;
   for (const r of rows) {
     const d = JSON.parse(r.data) as Record<string, unknown>;
     if (r.type === 'session') { sessions++; ms += Number(d.ms) || 0; words += Number(d.words) || 0; }
-    else if (r.type === 'lookup') lookups++;
+    else if (r.type === 'lookup') { lookups++; if (d.predicted) predicted++; }
+    else if (r.type === 'undo') { if (d.predicted) falseAlarms++; }
     else if (r.type === 'drawer_close') { closes++; if (d.rescroll) rescroll++; }
   }
   const round = (x: number, k = 100) => Math.round(x * k) / k;
+  const per1k = (n: number) => (words ? round((n * 1000) / words) : 0);
   return {
     sessions, minutes: round(ms / 60000, 10), wordsRead: words, lookups,
-    lookupsPer1k: words ? round((lookups * 1000) / words) : 0,
+    lookupsPer1k: per1k(lookups),
     drawerCloses: closes, rescrollWithin10s: rescroll, rescrollRatio: closes ? round(rescroll / closes) : 0,
+    predictedLookups: predicted, missesPer1k: per1k(lookups - predicted), falseAlarmsPer1k: per1k(falseAlarms),
   };
 }
 

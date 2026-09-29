@@ -49,6 +49,19 @@ export async function scanBook(
   return out;
 }
 
+/** Runs `fn` over `items` in slices, yielding between them (P-08). */
+export async function inSlices<T>(items: Iterable<T>, fn: (item: T) => void, signal?: AbortSignal): Promise<void> {
+  let deadline = performance.now() + SLICE_MS;
+  for (const item of items) {
+    if (performance.now() > deadline) {
+      await new Promise((r) => setTimeout(r, 0));
+      if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
+      deadline = performance.now() + SLICE_MS;
+    }
+    fn(item);
+  }
+}
+
 /** The book's lemmas the reader probably does not know, leaving out `exclude` (looked up or known). */
 export function predictWords(
   lemmas: Iterable<string>, difficulty: (lemma: string) => number | null, theta: number, level: PredictLevel, exclude: ReadonlySet<string>,

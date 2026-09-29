@@ -9,7 +9,9 @@ import type { DictService, LookupResult } from '../core/dict/service.ts';
 import { GrammarService, type GrammarRun, type RunState } from '../core/grammar/service.ts';
 import { logMetric } from '../core/metrics/metrics.ts';
 import { MOTION } from '../core/motion.ts';
-import type { ReaderEngine, SentenceHit, WordHit } from '../core/reader/engine.ts';
+import type { PrefsStore } from '../core/prefs/prefs.ts';
+import type { EngineBook, ReaderEngine, SentenceHit, WordHit } from '../core/reader/engine.ts';
+import { bookLemmas, VocabModel } from '../core/vocab/model.ts';
 import { GrammarDrawer, WordDrawer, type DrawerState } from './WordDrawer.tsx';
 
 /** What a drawer is open for: a tapped word, or a tapped grammar droplet (its sentence). */
@@ -19,6 +21,8 @@ interface Pop {
   target: Target; host: HTMLElement; x: number; closing: boolean;
   /** Word drawers only. */
   state: DrawerState; result: LookupResult | null; lookupId: number | null; saved: boolean;
+  /** The word had a predicted footnote when it was tapped (P-07). */
+  predicted: boolean;
   /** Sentence drawers only: the analysis run and its state as last rendered. */
   run: GrammarRun | null; runState: RunState | null;
 }
@@ -36,6 +40,8 @@ export interface WordLookup {
   onTap(x: number, y: number, timeStamp: number): boolean;
   isOpen(): boolean;
   drawer: ReactNode;
+  /** For counting what the reader reads: the dictionary, the vocabulary model and the words with footnotes. */
+  vocab(): { dict: DictService; model: VocabModel; footnoted: ReadonlySet<string> } | null;
 }
 
 /** The scrolling part of the drawer that `target` is in, if any. */
@@ -44,12 +50,17 @@ export function drawerInner(target: EventTarget | null): HTMLElement | null {
   return wd?.querySelector<HTMLElement>('.wd-inner') ?? null;
 }
 
-export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bookId: string): WordLookup {
+export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, book: EngineBook, prefs: PrefsStore): WordLookup {
+  const bookId = book.id;
   const [pop, setPopState] = useState<Pop | null>(null);
   const popRef = useRef<Pop | null>(null);
   const dictRef = useRef<DictService | null>(null);
   const seenRef = useRef<Set<string>>(new Set());
   const seenDirty = useRef(false);
+  /** Predicted words (M7): footnoted like `seen`, from the vocabulary model and this book's lemmas. */
+  const predictedRef = useRef<Set<string>>(new Set());
+  const modelRef = useRef<VocabModel | null>(null);
+  const lemmasRef = useRef<Set<string> | null>(null);
   const lockUntil = useRef(0);
   const pending = useRef<Target | null>(null);
   /** The Lookup write in flight, so an undo can wait for the row it deletes. */
@@ -64,21 +75,51 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
   const setPop = useCallback((p: Pop | null) => { popRef.current = p; setPopState(p); }, []);
   const later = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
 
-  // Dictionary and `seen` load in the background; the reader is usable before they arrive.
+  /** Looked-up and predicted words: both get footnotes (P-03). */
+  const footnoted = (): Set<string> => new Set([...seenRef.current, ...predictedRef.current]);
+  const applyFootnotes = () => {
+    if (dictRef.current) engine.current?.setAnnotator(footnoteAnnotator(dictRef.current, footnoted()));
+  };
+  /** Re-predicts after the model or the level changed; true if the set moved. */
+  const repredict = (): boolean => {
+    const model = modelRef.current;
+    const lemmas = lemmasRef.current;
+    if (!model || !lemmas) return false;
+    const next = model.predict(lemmas, prefs.get().predict);
+    const prev = predictedRef.current;
+    predictedRef.current = next;
+    return next.size !== prev.size || [...next].some((l) => !prev.has(l));
+  };
+
+  // Dictionary and `seen` load in the background; the reader is usable before they arrive. Predicted
+  // words follow once the vocabulary model is loaded and the book is scanned (in slices, P-08).
   useEffect(() => {
     let live = true;
-    void Promise.all([loadDict(), seenLemmas(db, bookId)]).then(([dict, seen]) => {
+    void Promise.all([loadDict(), seenLemmas(db, bookId)]).then(async ([dict, seen]) => {
       if (!live) return;
       dictRef.current = dict;
       seenRef.current = seen;
-      engine.current?.setAnnotator(footnoteAnnotator(dict, seen));
+      applyFootnotes();
+      const [model, lemmas] = await Promise.all([VocabModel.load(db, dict), bookLemmas(bookId, book.chapters, dict)]);
+      if (!live) return;
+      await model.warm(lemmas);
+      if (!live) return;
+      modelRef.current = model;
+      lemmasRef.current = lemmas;
+      if (repredict()) applyFootnotes();
     }).catch(() => { /* the drawer shows not-found; footnotes stay off */ });
+    const offPrefs = prefs.subscribe((_p, changed) => {
+      if (changed === 'predict' && repredict()) applyFootnotes();
+    });
     return () => {
       live = false;
+      offPrefs();
+      void modelRef.current?.flush();
       for (const t of timers.current) clearTimeout(t);
       unfollow.current?.();
       if (closedAt.current) clearTimeout(closedAt.current.timer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db, bookId, engine]);
 
   /** Follows the drawer's height while it animates, so lines below are painted where they are. */
@@ -101,11 +142,12 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     if (over > 8) scroller.scrollTo({ top: scroller.scrollTop + over, behavior: 'smooth' });
   };
 
-  const resolve = (hit: WordHit): Pick<Pop, 'state' | 'result'> => {
+  const resolve = (hit: WordHit): Pick<Pop, 'state' | 'result' | 'predicted'> => {
     const dict = dictRef.current;
-    if (!dict) return { state: 'loading', result: null };
+    if (!dict) return { state: 'loading', result: null, predicted: false };
     const r = dict.lookup(hit.word, { prevWord: hit.prevWord, sentenceInitial: hit.sentenceInitial });
-    return r ? { state: 'ready', result: r } : { state: 'notfound', result: null };
+    if (!r) return { state: 'notfound', result: null, predicted: false };
+    return { state: 'ready', result: r, predicted: predictedRef.current.has(r.lemma) && !seenRef.current.has(r.lemma) };
   };
 
   /** Side effects of a successful lookup: Lookup row, `seen`, saved state (README → On open). */
@@ -113,8 +155,14 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     const r = p.result;
     if (!r || p.target.kind !== 'word') return;
     const hit = p.target.hit;
-    if (!seenRef.current.has(r.lemma)) { seenRef.current.add(r.lemma); seenDirty.current = true; }
-    void logMetric(db, { type: 'lookup', bookId });
+    const predicted = p.predicted;
+    if (!seenRef.current.has(r.lemma)) {
+      seenRef.current.add(r.lemma);
+      seenDirty.current = true;
+      const model = modelRef.current;
+      if (model) void model.lookedUp(r.lemma).then(() => { if (repredict()) seenDirty.current = true; });
+    }
+    void logMetric(db, { type: 'lookup', bookId, predicted });
     recording.current = (async () => {
       const id = await recordLookup(db, {
         bookId, surface: r.surface, lemma: r.lemma, zh: r.gloss, phonetic: r.phonetic, sentence: hit.sentenceText,
@@ -132,7 +180,7 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
   const refreshFootnotes = () => {
     if (!seenDirty.current || !dictRef.current) return;
     seenDirty.current = false;
-    engine.current?.setAnnotator(footnoteAnnotator(dictRef.current, seenRef.current));
+    applyFootnotes();
   };
 
   const open = (target: Target, tapAt?: number) => {
@@ -143,7 +191,7 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     const box = e.scroller.getBoundingClientRect();
     const cx = target.kind === 'word' ? target.hit.rect.left + target.hit.rect.width / 2 : target.hit.x;
     const x = Math.min(Math.max(16, cx - box.left), box.width - 16);
-    const base: Pop = { target, host, x, closing: false, state: 'ready', result: null, lookupId: null, saved: false, run: null, runState: null };
+    const base: Pop = { target, host, x, closing: false, state: 'ready', result: null, lookupId: null, saved: false, predicted: false, run: null, runState: null };
     lightHaptic();
     if (target.kind === 'sentence') {
       const s = target.hit;
@@ -325,14 +373,24 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     if (p.lookupId !== null) void setSaved(db, p.lookupId, true);
   };
 
-  /** The drawer's 撤回: this book forgets the word (rows, saved state, footnotes), then the drawer closes. */
+  /**
+   * The drawer's 撤回: this book forgets the word (rows, saved state, footnotes), then the drawer
+   * closes. The reader knows it, so it is never predicted again (P-04).
+   */
   const undo = () => {
     const p = popRef.current;
     const lemma = p?.result?.lemma;
     if (!p || p.closing || !lemma) return;
     if (seenRef.current.delete(lemma)) seenDirty.current = true;
+    if (predictedRef.current.delete(lemma)) seenDirty.current = true;
+    void logMetric(db, { type: 'undo', bookId, predicted: p.predicted });
     close();
-    void recording.current.then(() => forgetLemma(db, bookId, lemma));
+    const model = modelRef.current;
+    void recording.current.then(async () => {
+      await forgetLemma(db, bookId, lemma);
+      await model?.undone(lemma);
+      if (repredict()) { seenDirty.current = true; refreshFootnotes(); }
+    });
   };
 
   const drawer = pop
@@ -344,7 +402,13 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     )
     : null;
 
-  return { onTap, reset, isOpen: () => popRef.current !== null, drawer };
+  const vocab = () => {
+    const dict = dictRef.current;
+    const model = modelRef.current;
+    return dict && model ? { dict, model, footnoted: footnoted() } : null;
+  };
+
+  return { onTap, reset, isOpen: () => popRef.current !== null, drawer, vocab };
 }
 
 declare global {
