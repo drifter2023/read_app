@@ -10,9 +10,10 @@ const notchTop = (x: string) => `polygon(0 0,100% 0,100% 16px,calc(${x} + 12px) 
 const notchBottom = (x: string) => `polygon(calc(${x} - 12px) 16px,${x} 0,calc(${x} + 12px) 16px)`;
 
 /**
- * Keeps a capped drawer honest while its content changes: marks `data-more` while text is hidden
- * below (a fade at the bottom edge), and with `follow` (an answer streaming in) keeps the newest
- * line in view until the reader scrolls up.
+ * Keeps a capped drawer honest while its content changes: marks `data-more` / `data-above` while
+ * text is hidden below / above (a fade at that edge), and with `follow` (an answer streaming in)
+ * keeps the newest line in view until the reader scrolls up. Only an upward scroll away from the
+ * bottom lets go: the scroll event of our own jump can land after the content has grown again.
  */
 function useInnerScroll(follow: boolean) {
   const scroller = useRef<HTMLDivElement>(null);
@@ -24,9 +25,18 @@ function useInnerScroll(follow: boolean) {
     const content = flow.current;
     if (!el || !content) return;
     let stick = true;
+    let lastTop = 0;
     const gap = () => el.scrollHeight - el.clientHeight - el.scrollTop;
-    const mark = () => el.toggleAttribute('data-more', gap() > 1);
-    const onScroll = () => { stick = gap() < 4; mark(); };
+    const mark = () => {
+      el.toggleAttribute('data-more', gap() > 1);
+      el.toggleAttribute('data-above', el.scrollTop > 1);
+    };
+    const onScroll = () => {
+      if (gap() < 4) stick = true;
+      else if (el.scrollTop < lastTop - 1) stick = false;
+      lastTop = el.scrollTop;
+      mark();
+    };
     const onGrow = () => {
       if (followRef.current && stick) el.scrollTop = el.scrollHeight;
       mark();

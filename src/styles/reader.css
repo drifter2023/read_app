@@ -105,8 +105,11 @@
   animation: riseIn 250ms var(--ease) both;
 }
 .wd-inner::-webkit-scrollbar { display: none; }
-/* more text below: the last lines fade into the leather */
-.wd-inner[data-more] { -webkit-mask-image: linear-gradient(#000 calc(100% - 40px), transparent); mask-image: linear-gradient(#000 calc(100% - 40px), transparent); }
+/* text hidden below / above: the edge lines fade into the leather */
+.wd-inner[data-more] { --wd-fade: linear-gradient(#000 calc(100% - 40px), transparent); }
+.wd-inner[data-above] { --wd-fade: linear-gradient(transparent, #000 32px); }
+.wd-inner[data-above][data-more] { --wd-fade: linear-gradient(transparent, #000 32px, #000 calc(100% - 40px), transparent); }
+.wd-inner[data-more], .wd-inner[data-above] { -webkit-mask-image: var(--wd-fade); mask-image: var(--wd-fade); }
 .wd-closing .wd-inner { animation: fadeOut 138ms var(--ease) both; }
 .wd-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 .wd-word {

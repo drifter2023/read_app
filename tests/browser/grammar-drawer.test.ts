@@ -49,8 +49,12 @@ describe('grammar drawer', () => {
       expect(el.scrollHeight).toBeGreaterThan(el.clientHeight);
       expect(el.hasAttribute('data-more')).toBe(true);
       expect(el.scrollTop).toBe(0); // a stored answer opens at its top
+      expect(el.hasAttribute('data-above')).toBe(false);
       el.scrollTop = el.scrollHeight;
       await expect.poll(() => el.hasAttribute('data-more')).toBe(false);
+      expect(el.hasAttribute('data-above')).toBe(true);
+      const mask = getComputedStyle(el).getPropertyValue('-webkit-mask-image') || getComputedStyle(el).maskImage;
+      expect(mask).toMatch(/^linear-gradient\((transparent|rgba\(0, 0, 0, 0\)),/); // the top edge fades
       root!.unmount(); root = null; document.body.innerHTML = '';
     }
   });
@@ -67,6 +71,22 @@ describe('grammar drawer', () => {
     await settle();
     expect(wd.getBoundingClientRect().height).toBeLessThan(200);
     expect(inner(wd).hasAttribute('data-more')).toBe(false);
+  });
+
+  it('G-02: a fast stream stays followed to its last line (our own scroll events do not let go)', async () => {
+    const points = LONGEST.status === 'done' ? LONGEST.grammar.points : [];
+    const wd = render({ status: 'waiting' }, 402);
+    const el = inner(wd);
+    for (let n = 0; n < points.length; n++) {
+      for (let k = 6; k <= POINT.length; k += 6) {
+        const run: RunState = { status: 'streaming', grammar: { pattern: '并列句', points: points.slice(0, n), pending: { kind: 'point', label: points[n]!.label, text: POINT.slice(0, k) } } };
+        flushSync(() => root!.render(createElement(GrammarDrawer, { closing: false, run, x: 120, onRetry: () => {} })));
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+    }
+    await settle();
+    expect(el.scrollHeight).toBeGreaterThan(el.clientHeight);
+    expect(el.scrollHeight - el.clientHeight - el.scrollTop).toBeLessThan(4);
   });
 
   it('G-02: a streaming answer keeps its newest line in view until the reader scrolls up', async () => {
