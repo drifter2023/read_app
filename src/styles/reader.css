@@ -81,7 +81,7 @@
 @keyframes fadeOut   { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(4px) } }
 @keyframes dots      { 0%, 80% { opacity: .25 } 40% { opacity: 1 } }
 
-.wd { position: relative; z-index: 3; margin: 5px -34px 7px; white-space: normal; } /* above the fade masks (z 2) */
+.wd { --wd-max: min(320px, 45vh); position: relative; z-index: 3; margin: 5px -34px 7px; white-space: normal; } /* above the fade masks (z 2) */
 .leather {
   background: #2c2620;
   background-image:
@@ -99,7 +99,14 @@
 }
 .wd-closing .wd-body { animation: collapseG 250ms var(--ease) both; }
 .wd-clip { overflow: hidden; min-height: 0; }
-.wd-inner { padding: 26px 0 27px; animation: riseIn 250ms var(--ease) both; }
+.wd-inner {
+  box-sizing: border-box; max-height: var(--wd-max); padding: 26px 0 27px;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
+  animation: riseIn 250ms var(--ease) both;
+}
+.wd-inner::-webkit-scrollbar { display: none; }
+/* more text below: the last lines fade into the leather */
+.wd-inner[data-more] { -webkit-mask-image: linear-gradient(#000 calc(100% - 40px), transparent); mask-image: linear-gradient(#000 calc(100% - 40px), transparent); }
 .wd-closing .wd-inner { animation: fadeOut 138ms var(--ease) both; }
 .wd-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 .wd-word {
@@ -140,7 +147,6 @@
   margin: 0; font: 400 13px/20px 'IBM Plex Sans', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
   color: rgba(242, 234, 217, .82);
 }
-.wd-point dd { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; } /* guard; a point is about two lines */
 .wd-dots-grammar { margin-top: 12px; }
 .wd-caret {
   display: inline-block; width: 1.5px; height: 1em; margin-left: 2px; vertical-align: -.15em;

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import type { LookupResult } from '../core/dict/service.ts';
 import type { AiErrorKind } from '../core/ai/deepseek.ts';
 import type { Grammar, Pending } from '../core/grammar/parse.ts';
@@ -10,18 +10,51 @@ const notchTop = (x: string) => `polygon(0 0,100% 0,100% 16px,calc(${x} + 12px) 
 const notchBottom = (x: string) => `polygon(calc(${x} - 12px) 16px,${x} 0,calc(${x} + 12px) 16px)`;
 
 /**
- * The tear-paper drawer (README → Reader 4a), rendered into the engine's gap after a line.
- * `x` is the notch centre in px, already clamped to [16, width − 16].
+ * Keeps a capped drawer honest while its content changes: marks `data-more` while text is hidden
+ * below (a fade at the bottom edge), and with `follow` (an answer streaming in) keeps the newest
+ * line in view until the reader scrolls up.
  */
-function DrawerFrame({ kind, state, closing, x, children }: {
-  kind: 'word' | 'sentence'; state: string; closing: boolean; x: number; children: ReactNode;
+function useInnerScroll(follow: boolean) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const flow = useRef<HTMLDivElement>(null);
+  const followRef = useRef(follow);
+  followRef.current = follow;
+  useEffect(() => {
+    const el = scroller.current;
+    const content = flow.current;
+    if (!el || !content) return;
+    let stick = true;
+    const gap = () => el.scrollHeight - el.clientHeight - el.scrollTop;
+    const mark = () => el.toggleAttribute('data-more', gap() > 1);
+    const onScroll = () => { stick = gap() < 4; mark(); };
+    const onGrow = () => {
+      if (followRef.current && stick) el.scrollTop = el.scrollHeight;
+      mark();
+    };
+    const ro = new ResizeObserver(onGrow);
+    ro.observe(content);
+    ro.observe(el);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => { ro.disconnect(); el.removeEventListener('scroll', onScroll); };
+  }, []);
+  return { scroller, flow };
+}
+
+/**
+ * The tear-paper drawer (README → Reader 4a), rendered into the engine's gap after a line.
+ * `x` is the notch centre in px, already clamped to [16, width − 16]. Its height is capped
+ * (`--wd-max`); longer content scrolls inside it.
+ */
+function DrawerFrame({ kind, state, closing, x, follow = false, children }: {
+  kind: 'word' | 'sentence'; state: string; closing: boolean; x: number; follow?: boolean; children: ReactNode;
 }) {
   const px = `${x}px`;
+  const { scroller, flow } = useInnerScroll(follow);
   return (
     <div className={closing ? 'wd wd-closing' : 'wd'} data-testid="drawer" data-kind={kind} data-state={closing ? 'closing' : state}>
       <div className="wd-body leather">
         <div className="wd-clip">
-          <div className="wd-inner">{children}</div>
+          <div className="wd-inner" ref={scroller}><div ref={flow}>{children}</div></div>
         </div>
       </div>
       <div className="wd-notch wd-notch-top" style={{ clipPath: notchTop(px), WebkitClipPath: notchTop(px) }} />
@@ -127,7 +160,7 @@ function GrammarBody({ grammar, pending }: { grammar: Grammar; pending: Pending 
 /** The grammar drawer opened from a sentence's droplet: dots, then the answer as it streams (G-02). */
 export function GrammarDrawer({ closing, run, x, onRetry }: { closing: boolean; run: RunState; x: number; onRetry: () => void }) {
   return (
-    <DrawerFrame kind="sentence" state={DATA_STATE[run.status]} closing={closing} x={x}>
+    <DrawerFrame kind="sentence" state={DATA_STATE[run.status]} closing={closing} x={x} follow={run.status === 'streaming'}>
       <div className="wd-eyebrow">语法</div>
       {run.status === 'waiting' && <div className="wd-dots wd-dots-grammar" aria-label="分析中"><i /><i /><i /></div>}
       {run.status === 'streaming' && (
