@@ -139,6 +139,12 @@
   font: 500 10px/1 'IBM Plex Sans', 'PingFang SC', system-ui, sans-serif; letter-spacing: .14em;
   color: rgba(242, 234, 217, .62);
 }
+.wd-translation {
+  margin: 9px 0 0; padding-bottom: 12px; border-bottom: 1px solid rgba(242, 234, 217, .12);
+  font: 400 15px/24px 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; color: rgba(242, 234, 217, .94);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .75);
+}
+.wd-translation + .wd-pattern { margin-top: 12px; }
 .wd-pattern {
   margin: 9px 0 0; font: 500 15px/22px 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; color: #f2ead9;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .75);

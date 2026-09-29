@@ -24,16 +24,17 @@ function render(run: RunState, width: number): HTMLElement {
   return page.querySelector<HTMLElement>('.wd')!;
 }
 
-/** The longest answer the prompt allows: a 24-字 pattern and 5 points of 60 字 each (all Chinese, the widest case). */
+/** The longest answer the prompt allows: a long translation, a 24-字 pattern and 5 points of 60 字 each (all Chinese, the widest case). */
 const POINT = '这一部分说明句子的主干成分以及它和后面从句之间的修饰关系，读的时候先抓住主语和谓语，再看后面的从句怎样修饰前面的名词和动词'.slice(0, 60);
 const LONGEST: RunState = {
   status: 'done', cached: true,
   grammar: {
+    translation: '如果说人格是一连串不间断的成功姿态，那么他身上就有某种华美的东西，一种对人生种种希望的高度敏感，仿佛他与那些能记录万里之外地震的精密仪器有着某种亲缘。',
     pattern: '主句 + 定语从句 + 状语从句并列结构，再带一个插入语',
     points: ['主干', '定语从句', '状语从句', '独立主格', '插入语'].map((label) => ({ label, text: POINT })),
   },
 };
-const SHORT: RunState = { status: 'done', cached: true, grammar: { pattern: '简单句', points: [{ label: '主干', text: 'He looked like a satan' }] } };
+const SHORT: RunState = { status: 'done', cached: true, grammar: { translation: '', pattern: '简单句', points: [{ label: '主干', text: 'He looked like a satan' }] } };
 const inner = (wd: HTMLElement) => wd.querySelector<HTMLElement>('.wd-inner')!;
 const settle = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
@@ -79,7 +80,7 @@ describe('grammar drawer', () => {
     const el = inner(wd);
     for (let n = 0; n < points.length; n++) {
       for (let k = 6; k <= POINT.length; k += 6) {
-        const run: RunState = { status: 'streaming', grammar: { pattern: '并列句', points: points.slice(0, n), pending: { kind: 'point', label: points[n]!.label, text: POINT.slice(0, k) } } };
+        const run: RunState = { status: 'streaming', grammar: { translation: '', pattern: '并列句', points: points.slice(0, n), pending: { kind: 'point', label: points[n]!.label, text: POINT.slice(0, k) } } };
         flushSync(() => root!.render(createElement(GrammarDrawer, { closing: false, run, x: 120, onRetry: () => {} })));
         await new Promise((r) => requestAnimationFrame(r));
       }
@@ -92,7 +93,7 @@ describe('grammar drawer', () => {
   it('G-02: a streaming answer keeps its newest line in view until the reader scrolls up', async () => {
     const stream = (n: number): RunState => ({
       status: 'streaming',
-      grammar: { pattern: '并列句', points: LONGEST.status === 'done' ? LONGEST.grammar.points.slice(0, n) : [], pending: { kind: 'point', label: '时态', text: '正在写' } },
+      grammar: { translation: '', pattern: '并列句', points: LONGEST.status === 'done' ? LONGEST.grammar.points.slice(0, n) : [], pending: { kind: 'point', label: '时态', text: '正在写' } },
     });
     const wd = render(stream(4), 402);
     const el = inner(wd);
@@ -105,13 +106,29 @@ describe('grammar drawer', () => {
     expect(el.scrollTop).toBe(0);
   });
 
+  it('G-02: the translation comes first, streams with a caret, and sits above the pattern', () => {
+    let wd = render({ status: 'streaming', grammar: { translation: '', pattern: '', points: [], pending: { kind: 'translation', text: '他那黄灰' } } }, 402);
+    expect(wd.querySelector('.wd-translation')!.textContent).toBe('他那黄灰');
+    expect(wd.querySelector('.wd-translation .wd-caret')).not.toBeNull();
+    expect(wd.querySelector('.wd-pattern')).toBeNull();
+    root!.unmount(); document.body.innerHTML = '';
+
+    wd = render(LONGEST, 402);
+    const blocks = [...wd.querySelectorAll('.wd-translation, .wd-pattern, .wd-points')].map((e) => e.className);
+    expect(blocks).toEqual(['wd-translation', 'wd-pattern', 'wd-points']);
+    root!.unmount(); document.body.innerHTML = '';
+
+    wd = render(SHORT, 402); // a stored v2 answer never loads, but an empty translation must not leave an empty line
+    expect(wd.querySelector('.wd-translation')).toBeNull();
+  });
+
   it('G-02: dots while waiting; the answer so far with a caret while streaming; no caret when done', () => {
     let wd = render({ status: 'waiting' }, 402);
     expect(wd.dataset.state).toBe('loading');
     expect(wd.querySelector('.wd-dots')).not.toBeNull();
     root!.unmount(); document.body.innerHTML = '';
 
-    wd = render({ status: 'streaming', grammar: { pattern: '简单句', points: [{ label: '主干', text: 'eyes were horizontal' }], pending: { kind: 'point', label: '复合形容词', text: 'yellow-grey' } } }, 402);
+    wd = render({ status: 'streaming', grammar: { translation: '', pattern: '简单句', points: [{ label: '主干', text: 'eyes were horizontal' }], pending: { kind: 'point', label: '复合形容词', text: 'yellow-grey' } } }, 402);
     expect(wd.dataset.state).toBe('streaming');
     expect(wd.querySelector('.wd-dots')).toBeNull();
     expect([...wd.querySelectorAll('.wd-point dt')].map((d) => d.textContent)).toEqual(['主干', '复合形容词']);
@@ -125,8 +142,9 @@ describe('grammar drawer', () => {
   });
 
   it('G-05: a failure keeps what arrived, says it was not saved, and offers 重试; no key offers no retry', () => {
-    let wd = render({ status: 'error', reason: 'timeout', partial: { pattern: '简单句', points: [{ label: '主干', text: 'eyes were horizontal' }], pending: null } }, 402);
+    let wd = render({ status: 'error', reason: 'timeout', partial: { translation: '他那黄灰色的眼睛是平的。', pattern: '简单句', points: [{ label: '主干', text: 'eyes were horizontal' }], pending: null } }, 402);
     expect(wd.dataset.state).toBe('error');
+    expect(wd.querySelector('.wd-translation')!.textContent).toBe('他那黄灰色的眼睛是平的。');
     expect(wd.querySelector('.wd-pattern')!.textContent).toBe('简单句');
     expect(wd.querySelector('.wd-miss')!.textContent).toBe('等待超时，没有保存');
     expect(wd.querySelector('button')!.textContent).toBe('重试');

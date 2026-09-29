@@ -141,12 +141,18 @@ function Caret() {
   return <span className="wd-caret" aria-hidden="true" />;
 }
 
-/** The pattern and points so far; `pending` is the line still being written (with the caret). */
+/** The translation, pattern and points so far; `pending` is the line still being written (with the caret). */
 function GrammarBody({ grammar, pending }: { grammar: Grammar; pending: Pending | null }) {
+  const translation = grammar.translation || (pending?.kind === 'translation' ? pending.text : '');
   const pattern = grammar.pattern || (pending?.kind === 'pattern' ? pending.text : '');
   return (
     <>
-      <p className="wd-pattern">{pattern}{pending?.kind === 'pattern' && <Caret />}</p>
+      {(translation || pending?.kind === 'translation') && (
+        <p className="wd-translation">{translation}{pending?.kind === 'translation' && <Caret />}</p>
+      )}
+      {(pattern || pending?.kind === 'pattern') && (
+        <p className="wd-pattern">{pattern}{pending?.kind === 'pattern' && <Caret />}</p>
+      )}
       {(grammar.points.length > 0 || pending?.kind === 'point') && (
         <dl className="wd-points">
           {grammar.points.map((p, i) => (
@@ -174,14 +180,14 @@ export function GrammarDrawer({ closing, run, x, onRetry }: { closing: boolean; 
       <div className="wd-eyebrow">语法</div>
       {run.status === 'waiting' && <div className="wd-dots wd-dots-grammar" aria-label="分析中"><i /><i /><i /></div>}
       {run.status === 'streaming' && (
-        run.grammar.pattern || run.grammar.pending
+        run.grammar.translation || run.grammar.pattern || run.grammar.pending
           ? <GrammarBody grammar={run.grammar} pending={run.grammar.pending} />
           : <p className="wd-pattern"><Caret /></p>
       )}
       {run.status === 'done' && <GrammarBody grammar={run.grammar} pending={null} />}
       {run.status === 'error' && (
         <>
-          {run.partial && (run.partial.pattern || run.partial.points.length > 0) && <GrammarBody grammar={run.partial} pending={null} />}
+          {run.partial && (run.partial.translation || run.partial.pattern || run.partial.points.length > 0) && <GrammarBody grammar={run.partial} pending={null} />}
           <div className="wd-fail">
             <p className="wd-miss">{run.partial ? `${FAILURE[run.reason]}，没有保存` : FAILURE[run.reason]}</p>
             {!NO_RETRY.has(run.reason) && (

@@ -54,7 +54,7 @@ test('G-01: the Home key card checks a key before saving it, masks it, and clear
   await expect(card.locator('.ai-status')).toHaveText('未设置');
 });
 
-const ANSWER = ['句型：主句 + 定语从句\n主干｜my father gave me', ' some advice，give 带双宾语\n定语从句｜that I’ve been turning over 修饰 advice\n', '时态｜现在完成进行时：一直琢磨至今\n'];
+const ANSWER = ['译文：在我年纪还轻、阅历尚浅的那些年里，父亲给过我一句忠告。\n句型：主句 + 定语从句\n主干｜my father gave me', ' some advice，give 带双宾语\n定语从句｜that I’ve been turning over 修饰 advice\n', '时态｜现在完成进行时：一直琢磨至今\n'];
 
 /** A DeepSeek stand-in: /models accepts any key; /chat/completions runs `chat` (default: the answer above, after 800 ms). */
 async function fakeDeepSeek(page: Page, chat?: (route: Route) => Promise<void>) {
@@ -95,6 +95,7 @@ test('G-02/G-03: a droplet shows dots, then the analysis; it is stored and reope
   await expect(drawer(page)).toHaveAttribute('data-state', 'loading');
   await expect(page.locator('.wd-dots')).toBeVisible();
   await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+  await expect(page.locator('.wd-translation')).toHaveText('在我年纪还轻、阅历尚浅的那些年里，父亲给过我一句忠告。');
   await expect(page.locator('.wd-pattern')).toHaveText('主句 + 定语从句');
   await expect(page.locator('.wd-point dt')).toHaveText(['主干', '定语从句', '时态']);
   expect(bodies).toHaveLength(1);
@@ -111,11 +112,12 @@ test('G-02/G-03: a droplet shows dots, then the analysis; it is stored and reope
   const d2 = await dropInBand(page, 0, 0);
   await page.mouse.click(d2.x, d2.y);
   await expect(drawer(page)).toHaveAttribute('data-state', 'ready');
+  await expect(page.locator('.wd-translation')).toHaveText('在我年纪还轻、阅历尚浅的那些年里，父亲给过我一句忠告。'); // stored with it
   await expect(page.locator('.wd-pattern')).toHaveText('主句 + 定语从句');
 });
 
 const LONG = `这一部分说明句子的主干成分以及它和后面从句之间的修饰关系，读的时候先抓住主语和谓语，再看后面的从句怎样修饰前面的名词`;
-const LONG_ANSWER = ['句型：主句 + 定语从句 + 状语从句\n', ...['主干', '定语从句', '状语从句', '非谓语', '插入语'].map((l) => `${l}｜${LONG}\n`)];
+const LONG_ANSWER = ['译文：在我年纪还轻、阅历尚浅的那些年里，父亲给过我一句忠告。\n句型：主句 + 定语从句 + 状语从句\n', ...['主干', '定语从句', '状语从句', '非谓语', '插入语'].map((l) => `${l}｜${LONG}\n`)];
 
 test('G-04: a long analysis is capped and scrolls inside the drawer; only a tap outside closes it', async ({ page }) => {
   await fullTier(page);
