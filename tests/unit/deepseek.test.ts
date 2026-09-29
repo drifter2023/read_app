@@ -4,25 +4,7 @@ import { clearKey, getKey, maskKey, setKey } from '../../src/core/ai/key.ts';
 import { migrate } from '../../src/core/db/migrations.ts';
 import type { Db } from '../../src/core/db/types.ts';
 import { nodeDb } from '../helpers/nodeDb.ts';
-
-/** SSE body for these content pieces, cut into `size`-byte chunks (so cuts land inside lines and characters). */
-function sse(pieces: string[], finish = 'stop', size = 7): ReadableStream<Uint8Array> {
-  const events = [
-    ': keep-alive\n\n',
-    ...pieces.map((c) => `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: c }, finish_reason: null }] })}\r\n\r\n`),
-    `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: '' }, finish_reason: finish }] })}\n\n`,
-    'data: [DONE]\n\n',
-  ];
-  const bytes = new TextEncoder().encode(events.join(''));
-  let at = 0;
-  return new ReadableStream({
-    pull(c) {
-      if (at >= bytes.length) { c.close(); return; }
-      c.enqueue(bytes.slice(at, at + size));
-      at += size;
-    },
-  });
-}
+import { sse } from '../helpers/sse.ts';
 
 const calls: { url: string; init: RequestInit }[] = [];
 const fake = (res: () => Response | Promise<Response>): Fetch => async (url, init) => {

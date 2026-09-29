@@ -77,6 +77,8 @@ export async function streamChat(req: ChatRequest, onText: (text: string) => voi
   if (!res.body) throw new AiError('server');
 
   const reader = res.body.getReader();
+  // A timeout aborts the request; also stop a read that is waiting on a stalled stream.
+  req.signal?.addEventListener('abort', () => { reader.cancel().catch(() => {}); }, { once: true });
   const decoder = new TextDecoder();
   let buf = '';
   let finish: ChatResult['finish'] = 'other';
@@ -104,6 +106,7 @@ export async function streamChat(req: ChatRequest, onText: (text: string) => voi
       }
       if (done) break;
     }
+    if (req.signal?.aborted) throw failed(req.signal.reason);
     if (buf && line(buf)) return { finish };
   } catch (e) {
     throw failed(e);
