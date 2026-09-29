@@ -21,6 +21,12 @@ export const MIGRATIONS: readonly string[] = [
    CREATE INDEX lookup_book_lemma ON lookup (book_id, lemma);`,
   // v3 (M4): local beta metrics log, exported by hand through the share sheet. Never sent anywhere.
   `CREATE TABLE metric (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, type TEXT NOT NULL, book_id TEXT, data TEXT NOT NULL);`,
+  // v4 (M6): finished DeepSeek grammar analyses, one per sentence, so a sentence reopens without the network.
+  `CREATE TABLE grammar (
+     book_id TEXT NOT NULL REFERENCES book(id) ON DELETE CASCADE, chapter INTEGER NOT NULL, para INTEGER NOT NULL,
+     sentence INTEGER NOT NULL, text_hash TEXT NOT NULL, prompt_version INTEGER NOT NULL,
+     pattern TEXT NOT NULL, points TEXT NOT NULL, at INTEGER NOT NULL,
+     PRIMARY KEY (book_id, chapter, para, sentence));`,
 ];
 
 export async function migrate(db: Db, migrations: readonly string[] = MIGRATIONS): Promise<number> {
