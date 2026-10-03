@@ -51,7 +51,7 @@ test('P-04: 撤回 on a predicted word removes its footnote for good', async ({ 
   expect(await noteUnder(page, 'levity')).toBeNull(); // …but not this one
 });
 
-test('P-06: the calibration test on Home asks 24 multiple-choice words and shows a level', async ({ page }) => {
+test('P-06: the calibration test on Home asks 24 multiple-choice words and shows a vocabulary size', async ({ page }) => {
   await fullTier(page);
   await page.goto('/');
   const card = page.getByRole('region', { name: '预测生词' });
@@ -69,10 +69,10 @@ test('P-06: the calibration test on Home asks 24 multiple-choice words and shows
     }
   }
   expect(seen.size).toBe(24);
-  await expect(dialog.locator('.cal-level')).not.toBeEmpty();
+  await expect(dialog.locator('.cal-level')).toHaveText(/^约 [\d,]+ 词$/);
   await dialog.getByRole('button', { name: '完成' }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(card.locator('.ai-status')).toHaveText(/^估计水平：/);
+  await expect(card.locator('.ai-status')).toHaveText(/^词汇量约 [\d,]+ 词$/);
   await expect(card.getByRole('button', { name: '重新测试' })).toBeVisible();
 
   await page.waitForTimeout(600);

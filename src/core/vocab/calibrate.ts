@@ -97,17 +97,6 @@ export function scoreCalibration(items: readonly CalibrationItem[], picks: reado
   return { correct: answers.filter((a) => a.state === 'known').length, answers };
 }
 
-/** A rough name for an ability, for the result screen. */
-export function levelLabel(theta: number): string {
-  if (theta < -1.8) return '初中';
-  if (theta < -1.1) return '高中';
-  if (theta < -0.4) return '四级';
-  if (theta < 0.4) return '六级';
-  if (theta < 1.0) return '考研';
-  if (theta < 1.6) return '托福 / 雅思';
-  return 'GRE 及以上';
-}
-
 /** `n` distinct items from `pool` in random order (Fisher–Yates on a copy). */
 function sample<T>(pool: readonly T[], n: number, rand: () => number): T[] {
   const a = [...pool];

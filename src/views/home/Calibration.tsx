@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { loadDict } from '../../app/dict.ts';
 import type { Db } from '../../core/db/types.ts';
-import { levelLabel, pickItems, scoreCalibration, type CalibrationItem, type Pick } from '../../core/vocab/calibrate.ts';
+import { pickItems, scoreCalibration, type CalibrationItem, type Pick } from '../../core/vocab/calibrate.ts';
 import { Difficulty } from '../../core/vocab/difficulty.ts';
 import { VocabModel } from '../../core/vocab/model.ts';
+import { expectedKnown, formatVocabSize, sizeBasis } from '../../core/vocab/size.ts';
 import { markWord, setCalibrationState } from '../../core/vocab/store.ts';
 
-type Step = { kind: 'loading' } | { kind: 'ask'; items: CalibrationItem[]; answers: Pick[] } | { kind: 'result'; level: string };
+type Step = { kind: 'loading' } | { kind: 'ask'; items: CalibrationItem[]; answers: Pick[] } | { kind: 'result'; size: string };
 
 /**
  * The one-minute calibration test (P-06): one real word at a time, pick its meaning from four or say
@@ -34,8 +35,10 @@ export function Calibration({ db, onClose }: { db: Db; onClose: () => void }) {
     const { answers: scored } = scoreCalibration(step.items, answers);
     for (const a of scored) await markWord(db, a.word, a.state, 'test', a.weight);
     await setCalibrationState(db, 'done');
-    const model = await VocabModel.load(db, await loadDict());
-    setStep({ kind: 'result', level: levelLabel(model.theta) });
+    const dict = await loadDict();
+    const model = await VocabModel.load(db, dict);
+    const basis = await sizeBasis(dict, (w) => model.difficulty.of(w));
+    setStep({ kind: 'result', size: formatVocabSize(expectedKnown(basis, model.theta)) });
   };
 
   return createPortal(
@@ -61,8 +64,8 @@ export function Calibration({ db, onClose }: { db: Db; onClose: () => void }) {
       )}
       {step.kind === 'result' && (
         <div className="cal-result">
-          <p className="cal-hint">估计你的词汇量大约在</p>
-          <div className="cal-level">{step.level}</div>
+          <p className="cal-hint">估计你的词汇量大约是</p>
+          <div className="cal-level">{step.size}</div>
           <p className="cal-fine">之后查词、撤回和阅读都会继续校正这个估计。</p>
         </div>
       )}

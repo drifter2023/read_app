@@ -2,7 +2,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { describe, expect, it } from 'vitest';
 import { DictService } from '../../src/core/dict/service.ts';
 import { estimateAbility, PRIOR } from '../../src/core/vocab/ability.ts';
-import { firstMeaning, levelLabel, pickItems, scoreCalibration } from '../../src/core/vocab/calibrate.ts';
+import { firstMeaning, pickItems, scoreCalibration } from '../../src/core/vocab/calibrate.ts';
+import { expectedKnown, formatVocabSize, sizeBasis } from '../../src/core/vocab/size.ts';
 import { Difficulty } from '../../src/core/vocab/difficulty.ts';
 import { nodeDictSource } from '../helpers/nodeDict.ts';
 
@@ -77,10 +78,22 @@ describe('calibration test (P-06)', () => {
     const strong = θ(picksUpTo(1.5));
     expect(weak).toBeLessThan(PRIOR.mean);
     expect(strong).toBeGreaterThan(PRIOR.mean);
-    expect(levelLabel(weak)).not.toBe(levelLabel(strong));
   });
 
-  it('labels the prior as CET-6', () => {
-    expect(levelLabel(PRIOR.mean)).toBe('六级');
+  it('turns θ into a vocabulary size that grows with ability and stays plausible', async () => {
+    const basis = await sizeBasis(dict, of);
+    const at = (θ: number) => expectedKnown(basis, θ);
+    expect(at(-2)).toBeLessThan(at(PRIOR.mean));
+    expect(at(PRIOR.mean)).toBeLessThan(at(2));
+    expect(at(-2)).toBeGreaterThan(2500);
+    expect(at(2)).toBeLessThan(16000);
+    expect(at(PRIOR.mean)).toBeGreaterThan(6000);
+    expect(at(PRIOR.mean)).toBeLessThan(11000);
+  }, 60_000);
+
+  it('shows the size as a rounded “约 N 词”, never a grade', () => {
+    expect(formatVocabSize(8537)).toBe('约 8,500 词');
+    expect(formatVocabSize(8760)).toBe('约 9,000 词');
+    expect(formatVocabSize(120)).toBe('约 500 词');
   });
 });

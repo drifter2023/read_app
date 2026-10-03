@@ -7,6 +7,7 @@
 - Predicted footnotes look exactly like looked-up ones.
 - Settings: 预测生词 关 / 少 / 多, default 少.
 - **2026-10-03 (owner):** the calibration test trusts the reader and has no made-up words; knowledge is checked by multiple choice instead. The chance of guessing right (1 in 4) is accepted and not corrected.
+- **2026-10-03 (owner):** the result is an approximate vocabulary size (“约 8,500 词”), never a grade such as 四级 / 六级. It is the model's estimate: the scale is not validated against a published vocabulary test.
 - First version: several difficulty signals, a difficulty − ability model, exposure only from text read in the focus band, repeated exposure, hit/miss metrics.
 
 ## Model
@@ -50,6 +51,7 @@
 | `src/core/vocab/ability.ts` | Evidence → θ (Newton on the log posterior); P(unknown). |
 | `src/core/vocab/store.ts` | user.db evidence: read all, mark known/unknown, add exposures. |
 | `src/core/vocab/predict.ts` | Scan a book once (sliced) → lemma stats; θ + level → predicted lemmas. |
+| `src/core/vocab/size.ts` | θ → an approximate vocabulary size: the expected number of known words among the 15 000 most frequent entries, rounded to 500. |
 | `src/core/vocab/calibrate.ts` | Pick 24 words across difficulty, each with four meanings; score answers. |
 | `src/views/useWordLookup.tsx` | Footnotes for seen ∪ predicted; undo marks known; lookup clears known; metrics. |
 | `src/views/useExposure.ts` | Band dwell → exposures. |

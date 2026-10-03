@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react';
 import { loadDict } from '../../app/dict.ts';
 import type { Db } from '../../core/db/types.ts';
-import { levelLabel } from '../../core/vocab/calibrate.ts';
 import { VocabModel } from '../../core/vocab/model.ts';
+import { expectedKnown, formatVocabSize, sizeBasis } from '../../core/vocab/size.ts';
 import { calibrationState, setCalibrationState } from '../../core/vocab/store.ts';
 import { Calibration } from './Calibration.tsx';
 
 /**
  * Home → predicted words (P-06): the one-minute calibration test, offered until it is taken or
- * skipped, then the estimated level with a way to take it again.
+ * skipped, then the estimated vocabulary size with a way to take it again.
  */
 export function VocabCard({ db }: { db: Db }) {
   const [state, setState] = useState<'done' | 'skipped' | null | undefined>(undefined);
-  const [level, setLevel] = useState<string | null>(null);
+  const [size, setSize] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
 
   const refresh = async () => {
     setState(await calibrationState(db));
     const dict = await loadDict().catch(() => null);
-    if (dict) setLevel(levelLabel((await VocabModel.load(db, dict)).theta));
+    if (dict) {
+      const model = await VocabModel.load(db, dict);
+      setSize(formatVocabSize(expectedKnown(await sizeBasis(dict, (w) => model.difficulty.of(w)), model.theta)));
+    }
   };
   useEffect(() => { void refresh(); }, [db]);
   if (state === undefined) return null;
@@ -32,7 +35,7 @@ export function VocabCard({ db }: { db: Db }) {
     <section className="ai-card vocab-card" aria-label="预测生词">
       <div className="ai-head">
         <span className="eyebrow">预测生词</span>
-        {level && state !== null && <span className="ai-status" data-state="on">估计水平：{level}</span>}
+        {size && state !== null && <span className="ai-status" data-state="on">词汇量{size}</span>}
       </div>
       {state === null ? (
         <>
