@@ -15,6 +15,11 @@ describe('normaliseWord (README → Word tap)', () => {
 });
 
 describe('resolveLemma (R-04)', () => {
+  it('does not trip over names Object has (constructor, toString)', () => {
+    const lex = fixtureDict();
+    for (const w of ['constructor', 'toString', 'hasOwnProperty']) expect(() => resolveLemma(w, lex)).not.toThrow();
+  });
+
   const lex = fixtureDict();
   const lemma = (w: string, opts = {}) => resolveLemma(w, lex, opts)?.lemma ?? null;
 

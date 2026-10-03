@@ -45,7 +45,7 @@ function lemmaOf(w: string, lex: Lexicon): Resolution | null {
 
 export function stripClitic(w: string): string {
   const lower = w.toLowerCase();
-  if (CLITIC_WHOLE[lower]) return CLITIC_WHOLE[lower];
+  if (Object.hasOwn(CLITIC_WHOLE, lower)) return CLITIC_WHOLE[lower]!; // not `constructor`, `toString`…
   if (/s'$/.test(w)) return w.slice(0, -1);
   return w.replace(CLITIC_SUFFIX, '');
 }

@@ -51,7 +51,7 @@ test('P-04: 撤回 on a predicted word removes its footnote for good', async ({ 
   expect(await noteUnder(page, 'levity')).toBeNull(); // …but not this one
 });
 
-test('P-06: the calibration test on Home asks 30 words and shows a level', async ({ page }) => {
+test('P-06: the calibration test on Home asks 24 multiple-choice words and shows a level', async ({ page }) => {
   await fullTier(page);
   await page.goto('/');
   const card = page.getByRole('region', { name: '预测生词' });
@@ -59,11 +59,16 @@ test('P-06: the calibration test on Home asks 30 words and shows a level', async
   const dialog = page.getByRole('dialog', { name: '词汇量测试' });
   await expect(dialog.locator('.cal-word')).toBeVisible();
   const seen = new Set<string>();
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 24; i++) {
     seen.add((await dialog.locator('.cal-word').textContent())!);
-    await dialog.getByRole('button', { name: i < 15 ? '认识' : '不认识', exact: true }).click();
+    if (i < 12) {
+      await expect(dialog.locator('.cal-opt')).toHaveCount(4);
+      await dialog.locator('.cal-opt').first().click();
+    } else {
+      await dialog.getByRole('button', { name: '不认识', exact: true }).click();
+    }
   }
-  expect(seen.size).toBe(30);
+  expect(seen.size).toBe(24);
   await expect(dialog.locator('.cal-level')).not.toBeEmpty();
   await dialog.getByRole('button', { name: '完成' }).click();
   await expect(dialog).toHaveCount(0);
