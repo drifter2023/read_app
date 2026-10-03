@@ -6,6 +6,8 @@ import { ReaderEngine, type EngineBook } from '../core/reader/engine.ts';
 import { PositionSaver, savePosition } from '../core/reader/position.ts';
 import { decideTier, runProbe } from '../core/reader/probe.ts';
 import type { Anchor } from '../core/types.ts';
+import { AgentDrawer } from './agent/AgentDrawer.tsx';
+import { useAgentSwipe } from './agent/useAgentSwipe.ts';
 import { DevPanel } from './DevPanel.tsx';
 import { FpsMeter } from './FpsMeter.tsx';
 import { ReaderChrome } from './reader/ReaderChrome.tsx';
@@ -32,6 +34,13 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const [sheet, setSheet] = useState<'settings' | 'toc' | null>(null);
   const [chapter, setChapter] = useState(initialAnchor?.chapter ?? 0);
   const chromeTimer = useRef(0);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const dimRef = useRef<HTMLDivElement>(null);
+  const shieldRef = useRef<HTMLDivElement>(null);
+  const [agentOpen, setAgentOpen] = useState(false);
+  useAgentSwipe({ shell: shellRef, page: pageRef, panel: panelRef, dim: dimRef, shield: shieldRef }, setAgentOpen);
   const lookup = useWordLookup(engineRef, session.db, book, session.prefs);
   const lookupRef = useRef(lookup);
   lookupRef.current = lookup;
@@ -130,7 +139,9 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
 
   const vars = { '--focus-pct': prefs.focusPct, '--blur-max': `${prefs.blurMax}px` } as CSSProperties;
   return (
-    <div className="rd-page" style={vars} onClick={onTap}>
+    <div ref={shellRef} className="rd-shell">
+    <AgentDrawer db={session.db} book={book} engine={engineRef} open={agentOpen} panelRef={panelRef} />
+    <div ref={pageRef} className="rd-page" style={vars} onClick={onTap}>
       <div ref={scrollRef} data-testid="reader-scroll" />
       {prefs.tier === 'fallback' && (
         <>
@@ -163,6 +174,9 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
       {probing && <p className="rd-probing">正在适配这台设备…</p>}
       {devTools && <FpsMeter engine={engineRef} />}
       {devTools && <DevPanel prefs={session.prefs} />}
+      <div ref={dimRef} className="ag-dim" />
+      <div ref={shieldRef} className="ag-shield" />
+    </div>
     </div>
   );
 }

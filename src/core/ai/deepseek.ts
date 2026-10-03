@@ -1,7 +1,7 @@
 /**
  * DeepSeek chat API, called straight from the app: CORS allows the web origin and
  * capacitor://localhost, so web and iOS share this fetch-based client and both can stream.
- * The only runtime network access in Spotlight (CLAUDE.md → Scope guard).
+ * The only runtime network access in Spotlight, used by the grammar drawer and the Agent drawer (CLAUDE.md → Scope guard).
  */
 export const DEEPSEEK = 'https://api.deepseek.com';
 /** DeepSeek-V4.1-Flash. */
@@ -21,8 +21,11 @@ export class AiError extends Error {
   }
 }
 
+export interface ChatTurn { role: 'user' | 'assistant'; content: string }
 export interface ChatRequest {
   key: string; system: string; user: string; maxTokens: number; temperature: number; signal?: AbortSignal;
+  /** Earlier turns of a conversation, oldest first; sent between the system prompt and `user`. */
+  history?: ChatTurn[];
 }
 /** `length`: the token limit cut the answer. */
 export interface ChatResult { finish: 'stop' | 'length' | 'other' }
@@ -66,7 +69,7 @@ export async function streamChat(req: ChatRequest, onText: (text: string) => voi
       headers: { ...auth(req.key), 'Content-Type': 'application/json', Accept: 'text/event-stream' },
       body: JSON.stringify({
         model: MODEL, stream: true, thinking: { type: 'disabled' }, max_tokens: req.maxTokens, temperature: req.temperature,
-        messages: [{ role: 'system', content: req.system }, { role: 'user', content: req.user }],
+        messages: [{ role: 'system', content: req.system }, ...(req.history ?? []), { role: 'user', content: req.user }],
       }),
       signal: req.signal,
     });

@@ -59,3 +59,9 @@ Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.htm
 40. Reader: footnotes for looked-up ∪ predicted words; 撤回 marks known; exposure from the focus band; 预测生词 关 / 少 / 多 in settings. **P-03 P-04 P-05**
 41. One-minute calibration test from Home. **P-06**
 42. Metrics: predicted lookups, misses and false alarms. **P-07**
+
+## M8 · Agent drawer (plan: `docs/plans/2026-10-03-agent-drawer.md`, design `Agent 抽屉 · 聚焦阅读 v3`)
+43. Swipe left to push the page aside into a rounded card and reveal the drawer (parallax, dim, flick snap); swipe right, a tap on the page strip, or Esc closes. Written straight to the DOM, no React render per frame. **A-01**
+44. Drawer: sentence picker (middle line selects, tap selects), chat, suggestions that leave once used, composer (IME-safe Enter), history dropdown with new / switch conversation. Night colours follow the theme. **A-02 A-03**
+45. Migration v7 (`agent_session`, `agent_message`, deleted with the book); an exchange is stored only when its answer is complete. **A-02**
+46. `AgentService`: DeepSeek streaming with earlier turns, only the chapter text up to the page (no spoilers), answer + 出处 line, timeouts, typed errors with 重试. **A-04 A-05**

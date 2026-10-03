@@ -1,0 +1,151 @@
+/* ---- Agent drawer (design 9a). Neutral near-white (night: the 7b greys), one black accent. ---- */
+.rd-shell { position: fixed; inset: 0; touch-action: pan-y; overflow: hidden; background: var(--ag-bg); }
+.rd-shell .rd-page { z-index: 1; transform-origin: 50% 50%; }
+.ag-dim { position: absolute; inset: 0; z-index: 30; background: #111; opacity: 0; pointer-events: none; }
+.ag-shield { position: absolute; inset: 0; z-index: 31; pointer-events: none; cursor: pointer; }
+
+.rd-shell, .ag-panel {
+  --ag-bg: #f5f5f3; --ag-surface: #fff; --ag-chip: #e9e9e6; --ag-ink: #111; --ag-ink-rgb: 17, 17, 17;
+  --ag-body: #1d1d1b; --ag-on-ink: #fff; --ag-ink2: rgba(var(--ag-ink-rgb), .72); --ag-ink3: rgba(var(--ag-ink-rgb), .62);
+  --ag-hair: rgba(var(--ag-ink-rgb), .07);
+}
+:root[data-theme='night'] .rd-shell, :root[data-theme='night'] .ag-panel {
+  --ag-bg: #0b0c0f; --ag-surface: #15171c; --ag-chip: #22252d; --ag-ink: #eceef2; --ag-ink-rgb: 236, 238, 242;
+  --ag-body: #dfe2e8; --ag-on-ink: #0b0c0f;
+}
+
+.ag-panel {
+  position: absolute; inset: 0; z-index: 0; display: flex; flex-direction: column; box-sizing: border-box;
+  padding: 0 20px 0 82px; background: var(--ag-bg); color: var(--ag-ink);
+  user-select: none; -webkit-user-select: none;
+  font: 400 13.5px/1.55 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+}
+.ag-panel button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.ag-label {
+  font: 500 9.5px/1.2 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--ag-ink3);
+}
+.ag-hint { font: 400 10px/1.2 'PingFang SC', 'Noto Sans SC', sans-serif; color: var(--ag-ink3); }
+
+/* header + history */
+.ag-head-wrap { position: relative; z-index: 3; }
+.ag-head { padding: calc(env(safe-area-inset-top) + 40px) 0 10px; border-bottom: 1px solid var(--ag-hair); }
+.ag-title-btn {
+  display: block; width: calc(100% + 20px); min-height: 44px; margin: 0 -10px; padding: 6px 10px 8px; border: 0; border-radius: 12px;
+  background: transparent; text-align: left; transition: background 200ms var(--ease);
+}
+.ag-title-btn[data-open='true'] { background: var(--ag-chip); }
+.ag-meta {
+  display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--ag-ink3);
+  font: 400 10px/1.2 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase;
+}
+.ag-meta svg { flex: none; }
+.ag-meta-ch { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ag-title { margin-top: 6px; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ag-title-text {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font: 400 24px/1.25 'Newsreader Variable', 'Newsreader', Georgia, 'PingFang SC', serif; letter-spacing: -.01em;
+}
+.ag-chev { flex: none; transition: transform 250ms var(--ease); }
+.ag-title-btn[data-open='true'] .ag-chev { transform: rotate(180deg); }
+.ag-scrim {
+  position: absolute; top: 100%; left: -82px; right: -20px; height: 100vh; background: rgba(var(--ag-bg-rgb, 245, 245, 243), .72);
+  opacity: 0; pointer-events: none; transition: opacity 250ms var(--ease);
+}
+:root[data-theme='night'] .ag-scrim { --ag-bg-rgb: 11, 12, 15; }
+.ag-hist {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0; max-height: 470px; overflow-y: auto;
+  background: var(--ag-surface); border-radius: 16px; box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .25), 0 0 0 1px var(--ag-hair);
+  opacity: 0; transform: translateY(-10px); pointer-events: none; transition: opacity 220ms var(--ease), transform 280ms var(--ease);
+}
+.ag-scrim[data-open='true'], .ag-hist[data-open='true'] { opacity: 1; pointer-events: auto; }
+.ag-hist[data-open='true'] { transform: none; }
+.ag-hist-head { padding: 14px 16px 6px; display: flex; justify-content: space-between; align-items: baseline; }
+.ag-sess {
+  display: flex; gap: 10px; width: 100%; min-height: 44px; padding: 12px 16px; border: 0; background: transparent; text-align: left;
+}
+.ag-sess[data-current='true'] { background: rgba(var(--ag-ink-rgb), .045); }
+.ag-sess-dot { flex: none; width: 5px; height: 5px; margin-top: 8px; border-radius: 3px; background: var(--ag-ink); opacity: 0; }
+.ag-sess[data-current='true'] .ag-sess-dot { opacity: 1; }
+.ag-sess-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ag-sess-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.ag-sess-title { font-weight: 500; font-size: 13.5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ag-sess-when { flex: none; font: 400 10.5px/1 'IBM Plex Sans', 'PingFang SC', sans-serif; color: var(--ag-ink3); }
+.ag-sess-quote {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--ag-ink2);
+  font: italic 400 13px/1.4 'Newsreader Variable', 'Newsreader', Georgia, serif;
+}
+.ag-new {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin-top: 4px; padding: 0 16px; border: 0;
+  border-top: 1px solid var(--ag-hair); background: transparent; text-align: left; font-weight: 500; font-size: 13px;
+}
+.ag-new-plus {
+  width: 22px; height: 22px; border-radius: 11px; background: var(--ag-ink); color: var(--ag-on-ink);
+  display: flex; align-items: center; justify-content: center; font: 400 15px/1 'IBM Plex Sans', sans-serif;
+}
+
+/* conversation */
+.ag-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 0 8px; user-select: text; -webkit-user-select: text; }
+.ag-now { padding: 12px 0 4px; border-radius: 14px; background: var(--ag-surface); }
+.ag-now-head { padding: 0 14px; display: flex; justify-content: space-between; align-items: baseline; }
+.ag-pick {
+  height: 168px; margin-top: 4px; padding: 84px 14px; box-sizing: border-box; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain;
+  -webkit-mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent); mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent);
+}
+.ag-pick::-webkit-scrollbar { display: none; }
+.ag-para { margin: 0 0 8px; font: 400 13.5px/1.7 'Newsreader Variable', 'Newsreader', Georgia, serif; text-wrap: pretty; }
+.ag-sent { cursor: pointer; border-radius: 2px; opacity: .55; transition: opacity 200ms var(--ease), background 200ms var(--ease); }
+.ag-sent[data-sel='true'] { opacity: 1; background: rgba(var(--ag-ink-rgb), .06); box-shadow: inset 0 -1.5px 0 var(--ag-ink); }
+
+.ag-msg { margin-top: 18px; }
+.ag-quote {
+  max-width: 86%; margin: 0 0 6px auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--ag-ink2);
+  font: italic 400 12px/1.4 'Newsreader Variable', 'Newsreader', Georgia, serif;
+}
+.ag-user { display: flex; justify-content: flex-end; }
+.ag-bubble {
+  max-width: 86%; padding: 10px 14px; border-radius: 18px 18px 4px 18px; background: var(--ag-ink); color: var(--ag-on-ink);
+  text-wrap: pretty; overflow-wrap: anywhere;
+}
+.ag-tag { display: flex; align-items: center; gap: 6px; font: 500 9.5px/1.2 'PingFang SC', 'IBM Plex Sans', sans-serif; letter-spacing: .18em; }
+.ag-tag-dot { width: 5px; height: 5px; border-radius: 3px; background: var(--ag-ink); }
+.ag-answer {
+  margin-top: 6px; color: var(--ag-body); white-space: pre-wrap; text-wrap: pretty; overflow-wrap: anywhere;
+  font: 400 14.5px/1.8 'Songti SC', 'Noto Serif SC', 'Newsreader Variable', serif;
+}
+.ag-caret { display: inline-block; width: 2px; height: 1em; margin-left: 2px; vertical-align: -2px; background: var(--ag-ink); animation: agBlink 1s steps(2, start) infinite; }
+@keyframes agBlink { to { visibility: hidden; } }
+.ag-cite {
+  display: inline-flex; align-items: center; min-height: 28px; max-width: 100%; margin-top: 8px; padding: 0 11px; border-radius: 14px;
+  border: 1px solid rgba(var(--ag-ink-rgb), .14); color: var(--ag-ink2);
+  font: italic 400 12px/1.2 'Newsreader Variable', 'Newsreader', Georgia, 'PingFang SC', serif; overflow-wrap: anywhere;
+}
+.ag-dots { display: flex; gap: 5px; padding: 6px 0; }
+.ag-dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--ag-ink); }
+.ag-dots i:nth-child(1) { opacity: .75; } .ag-dots i:nth-child(2) { opacity: .4; } .ag-dots i:nth-child(3) { opacity: .18; }
+.ag-error { margin: 6px 0 0; color: var(--danger); font-size: 13px; }
+.ag-retry {
+  min-height: 44px; margin-top: 4px; padding: 0 16px; border: 0; border-radius: 22px; background: var(--ag-chip); font-size: 13px;
+}
+
+/* quick questions + composer */
+.ag-chips { display: flex; gap: 7px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+.ag-chips::-webkit-scrollbar { display: none; }
+.ag-chip {
+  flex: none; min-height: 44px; padding: 0 14px; border: 0; border-radius: 22px; background: var(--ag-chip); color: var(--ag-body);
+  font-size: 12.5px; white-space: nowrap;
+}
+.ag-composer {
+  display: flex; align-items: center; gap: 8px; min-height: 52px; margin-bottom: calc(env(safe-area-inset-bottom) + 20px);
+  padding: 0 4px 0 16px; border-radius: 26px; background: var(--ag-surface); box-shadow: 0 0 0 1px var(--ag-hair);
+}
+.ag-composer input {
+  flex: 1; min-width: 0; height: 44px; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ag-ink);
+  font: 400 16px/1.2 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; /* 16px: iOS Safari does not zoom the page on focus */
+  user-select: text; -webkit-user-select: text;
+}
+.ag-composer input::placeholder { color: var(--ag-ink3); }
+.ag-send {
+  flex: none; width: 44px; height: 44px; border: 0; border-radius: 22px; background: var(--ag-ink); color: var(--ag-on-ink);
+  display: flex; align-items: center; justify-content: center; transition: opacity 200ms var(--ease);
+}
+.ag-send:disabled { opacity: .35; }

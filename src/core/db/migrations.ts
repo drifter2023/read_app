@@ -33,6 +33,16 @@ export const MIGRATIONS: readonly string[] = [
   `CREATE TABLE vocab (
      lemma TEXT PRIMARY KEY, state TEXT, source TEXT, weight REAL NOT NULL DEFAULT 1,
      exposures INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL);`,
+  // v7 (M8): Agent drawer conversations, per book. An exchange (question + answer) is stored only once the answer is complete.
+  `CREATE TABLE agent_session (
+     id TEXT PRIMARY KEY, book_id TEXT NOT NULL REFERENCES book(id) ON DELETE CASCADE, chapter INTEGER NOT NULL,
+     chapter_label TEXT NOT NULL, title TEXT NOT NULL DEFAULT '', anchor_para INTEGER NOT NULL, anchor_sentence INTEGER NOT NULL,
+     updated_at INTEGER NOT NULL);
+   CREATE INDEX agent_session_book ON agent_session (book_id, updated_at DESC);
+   CREATE TABLE agent_message (
+     id INTEGER PRIMARY KEY AUTOINCREMENT, session_id TEXT NOT NULL REFERENCES agent_session(id) ON DELETE CASCADE,
+     role TEXT NOT NULL, text TEXT NOT NULL, quote TEXT, cite TEXT, at INTEGER NOT NULL);
+   CREATE INDEX agent_message_session ON agent_message (session_id, id);`,
 ];
 
 export async function migrate(db: Db, migrations: readonly string[] = MIGRATIONS): Promise<number> {

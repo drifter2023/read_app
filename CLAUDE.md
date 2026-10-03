@@ -4,16 +4,16 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Scope guard
 - Build only: Home (continue reading + shelf + import), Reader 4a, word drawer, 9px footnotes, settings sheet, open-book transition.
-- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer, analysed by DeepSeek (TASKS.md → M6, `docs/plans/2026-09-29-deepseek-grammar.md`); since 2026-09-30 the grammar drawer shows the sentence's translation on top (owner request, prompt v3). Drawers open only from the sharp text in the focus band. Predicted words (TASKS.md → M7, `docs/plans/2026-09-30-predicted-words.md`): words the reader probably does not know get their footnote in advance, learned on the device from lookups, 撤回, reading and a one-minute calibration test on Home. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged). Where these lines disagree with README's out-of-scope list (night mode, LLM), these lines win.
+- Added by the owner after the MVP (TASKS.md → M5): 撤回 (undo a mistaken lookup) in the word drawer; a grammar droplet after each sentence in the focus band that opens a grammar drawer, analysed by DeepSeek (TASKS.md → M6, `docs/plans/2026-09-29-deepseek-grammar.md`); since 2026-09-30 the grammar drawer shows the sentence's translation on top (owner request, prompt v3). Drawers open only from the sharp text in the focus band. Predicted words (TASKS.md → M7, `docs/plans/2026-09-30-predicted-words.md`): words the reader probably does not know get their footnote in advance, learned on the device from lookups, 撤回, reading and a one-minute calibration test on Home. A 纸白 / 夜读 theme capsule on Home switches the whole app (1c colours in the reader, 7b colours on Home; layout unchanged). The Agent drawer (TASKS.md → M8, `docs/plans/2026-10-03-agent-drawer.md`, design `Agent 抽屉 · 聚焦阅读 v3`): a left swipe pushes the page aside into a card and reveals a per-book chat with a reading companion (“旁注”) backed by DeepSeek; sessions are stored on the device. Where these lines disagree with README's out-of-scope list (night mode, LLM, archivist agent), these lines win.
 - Do NOT build:
   - tabs 书房 / 生词 / 我 or a tab bar;
   - today stats or streak;
   - review cards or spaced repetition;
   - auto guided reading;
   - pronunciation / TTS, or the Examples button;
-  - any LLM or agent other than the DeepSeek grammar analysis; sync, push, accounts, analytics SDKs;
+  - any LLM or agent other than the DeepSeek grammar analysis and the DeepSeek Agent drawer (no tools, no memory across books, no background runs); sync, push, accounts, analytics SDKs;
   - long-press sentence translation (the only sentence translation is the one on top of the grammar drawer).
-- **Zero network requests at runtime**, with one exception: the grammar drawer calls `https://api.deepseek.com` after a tap on a droplet, with the user's own key. Fonts, dictionary and books are all bundled; lookups, footnotes and everything else stay offline.
+- **Zero network requests at runtime**, with one exception: `https://api.deepseek.com`, called with the user's own key only after a tap on a grammar droplet or after the reader sends a question in the Agent drawer. Fonts, dictionary and books are all bundled; lookups, footnotes and everything else stay offline.
 - If a design doc and the README disagree, the README wins. If the README is silent, follow `设计文档 v2` §3 (Reader 4a) exactly.
 
 ## Identity
@@ -29,7 +29,7 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 
 ## Architecture rules
 - Keep domain modules framework-free TS under `src/core/`:
-  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`, `grammar`, `ai`, `vocab`.
+  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`, `grammar`, `ai`, `vocab`, `agent`.
   - React views live under `src/views/` and only call module APIs.
 - The reader engine owns the scroll container and writes line styles directly (`style.filter`, `style.opacity`). Never re-render body-text lines through React on scroll.
 - Build the line table once per layout. Do not call `getBoundingClientRect` per line per frame.
