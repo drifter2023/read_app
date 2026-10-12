@@ -14,7 +14,7 @@ export type FetchErrorCode =
   | 'timeout' | 'unreachable' | 'upstream_status' | 'not_html' | 'too_large' | 'too_many_redirects';
 
 export const MAX_BYTES = 3 * 1024 * 1024;
-export const TIMEOUT_MS = 10_000;
+export const TIMEOUT_MS = 15_000;
 export const MAX_REDIRECTS = 5;
 const MAX_BODY = 4096;
 const TYPES = /^(text\/html|application\/xhtml\+xml|text\/plain)\b/i;

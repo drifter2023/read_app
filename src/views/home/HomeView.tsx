@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Session } from '../../app/boot.ts';
-import { ImportError, importFile, type ImportProgress } from '../../app/importBook.ts';
+import { Capacitor } from '@capacitor/core';
+import { ImportError, importFile, importLink, type ImportProgress, type ImportResult, type LinkStage } from '../../app/importBook.ts';
 import { shareTextFile } from '../../app/share.ts';
 import { exportMetrics } from '../../core/metrics/metrics.ts';
+import { linkFrom } from '../../core/ingest/link.ts';
 import { BUNDLED } from '../../core/library/bundled.ts';
 import { dateEyebrow, minutesLeft } from '../../core/library/format.ts';
 import { deleteBook, listShelf, restoreBundled, type ShelfBook } from '../../core/library/library.ts';
@@ -10,12 +12,16 @@ import type { Theme } from '../../core/prefs/prefs.ts';
 import type { ParsedBook } from '../../core/types.ts';
 import { Confirm } from '../Confirm.tsx';
 import { AiKeyCard } from './AiKeyCard.tsx';
+import { ImportChooser } from './ImportChooser.tsx';
 import { ShelfRow } from './ShelfRow.tsx';
 import { VocabCard } from './VocabCard.tsx';
 
 export interface OpenRequest { book: ShelfBook; from: HTMLElement }
 
-type ImportState = { name: string; progress: ImportProgress | null; error: string | null } | null;
+type ImportState = { name: string; progress: ImportProgress | null; stage?: LinkStage; error: string | null } | null;
+
+/** Link import needs our Worker; the iOS app gets it later (docs/plans/2026-10-12-link-import.md). */
+const LINKS = !Capacitor.isNativePlatform();
 
 /** Home (README → Screens → 1): date eyebrow, continue block, shelf with filter, import. */
 export function HomeView({ session, onOpen, hidden, reloadRef }: {
@@ -28,6 +34,7 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
   const [swiped, setSwiped] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ShelfBook | null>(null);
   const [importing, setImporting] = useState<ImportState>(null);
+  const [choosing, setChoosing] = useState(false);
   const [theme, setTheme] = useState<Theme>(session.prefs.get().theme);
   useEffect(() => session.prefs.subscribe((p) => setTheme(p.theme)), [session]);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -48,10 +55,10 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
     if (book && el) onOpen({ book, from: el });
   }, [shelf, onOpen]);
 
-  const pick = async (file: File) => {
-    setImporting({ name: file.name, progress: null, error: null });
+  const run = async (name: string, job: () => Promise<ImportResult>) => {
+    setImporting({ name, progress: null, error: null });
     try {
-      const r = await importFile(session.db, file, (progress) => setImporting((s) => s && { ...s, progress }));
+      const r = await job();
       setImporting(null);
       const book = shelf?.find((b) => b.id === r.id);
       if (book) setFilter(book.status === 'done' ? 'done' : 'reading');
@@ -59,8 +66,13 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
       openAfterLoad.current = r.id;
       await reload();
     } catch (e) {
-      setImporting((s) => ({ name: s?.name ?? file.name, progress: null, error: e instanceof ImportError ? e.message : '导入失败，请换一个文件再试' }));
+      setImporting((s) => ({ name: s?.name ?? name, progress: null, error: e instanceof ImportError ? e.message : '导入失败，请换一个文件再试' }));
     }
+  };
+  const pick = (file: File) => run(file.name, () => importFile(session.db, file, (progress) => setImporting((s) => s && { ...s, progress })));
+  const link = (text: string) => {
+    setChoosing(false);
+    return run(linkName(text), () => importLink(session.db, text, (stage) => setImporting((s) => s && { ...s, stage })));
   };
 
   const restore = async (id: string) => {
@@ -122,7 +134,7 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
 
         <div className="shelf-head">
           <span className="eyebrow">Shelf</span>
-          <button type="button" className="import-btn" onClick={() => fileRef.current?.click()}>+ 导入</button>
+          <button type="button" className="import-btn" onClick={() => (LINKS ? setChoosing(true) : fileRef.current?.click())}>+ 导入</button>
         </div>
         <input
           ref={fileRef}
@@ -186,10 +198,18 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
           ) : (
             <>
               <div className="bar import-bar"><i style={{ width: `${importing.progress ? Math.round((100 * importing.progress.done) / Math.max(1, importing.progress.total)) : 4}%` }} /></div>
-              <p className="import-note">正在解析{importing.progress ? ` · ${importing.progress.done}/${importing.progress.total}` : '…'}</p>
+              <p className="import-note">{importing.stage === 'fetch' ? '正在抓取网页…' : `正在解析${importing.progress ? ` · ${importing.progress.done}/${importing.progress.total}` : '…'}`}</p>
             </>
           )}
         </div>
+      )}
+
+      {choosing && (
+        <ImportChooser
+          onLink={(text) => void link(text)}
+          onFile={() => { setChoosing(false); fileRef.current?.click(); }}
+          onClose={() => setChoosing(false)}
+        />
       )}
 
       {confirm && (
@@ -208,4 +228,12 @@ export function HomeView({ session, onOpen, hidden, reloadRef }: {
       )}
     </div>
   );
+}
+
+/** The progress sheet's name for a link: its host and path, else what was pasted. */
+function linkName(text: string): string {
+  const url = linkFrom(text);
+  if (!url) return text.trim().slice(0, 80);
+  const u = new URL(url);
+  return `${u.hostname.replace(/^www\./, '')}${u.pathname === '/' ? '' : u.pathname}`;
 }

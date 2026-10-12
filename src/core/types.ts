@@ -4,6 +4,9 @@ export type Paragraph = string[];
 /** One chapter as produced by an importer. */
 export interface ParsedChapter { title: string; paras: Paragraph[]; wordCount: number }
 
+/** How a book came in: an EPUB or TXT file, or a web page (link import). */
+export type BookFormat = 'epub' | 'txt' | 'web';
+
 /** A whole book as produced by an importer, before it is stored. `cover` is an image URL (file path or data URL). */
 export interface ParsedBook { id: string; title: string; author: string; chapters: ParsedChapter[]; wordCount: number; cover?: string | null }
 

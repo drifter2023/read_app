@@ -22,7 +22,7 @@ The Worker runs only for `/api/*` (`assets.run_worker_first`); every other path 
 - Same origin only: the request's `Origin` must equal the Worker's own origin.
 - URL rules: `http`/`https`, no user:password, default ports only; no IP literals in private, loopback or link-local ranges, no `localhost`, `.local`, `.internal`, and not the Worker's own host.
 - Redirects are followed by hand, at most 5, and every hop is checked by the same rules.
-- 10 s timeout; body cut off at 3 MB; only `text/html`, `application/xhtml+xml` and `text/plain`.
+- 15 s timeout (some sites take ~10 s); body cut off at 3 MB; only `text/html`, `application/xhtml+xml` and `text/plain`.
 - Per-IP rate limit (Workers Rate Limiting binding, 20 per minute).
 - Reply: the page bytes with the page's own `Content-Type` and `X-Final-Url`, `Cache-Control: no-store`. Errors: JSON `{ error }` with a code the app maps to a Chinese message.
 
@@ -32,7 +32,7 @@ The Worker runs only for `/api/*` (`assets.run_worker_first`); every other path 
 
 - Charset: `Content-Type` charset, else `<meta charset>` / `http-equiv` in the first 4 KB, else UTF-8.
 - `text/plain` pages go through the TXT importer.
-- HTML: Readability (Mozilla, Apache-2.0) on a linkedom document. Title: Readability title. Author: byline, else site name, else host name.
+- HTML: Readability (Mozilla, Apache-2.0) on a linkedom document. Title: `og:title`, else the page's only h1 when `<title>` starts with it, else Readability's title. Author: byline, else site name, else host name.
 - Paragraphs: the blocks of Readability's content (`p`, `li`, `blockquote`, `pre`, `h1`–`h6`, `dd`) in document order, nested blocks not counted twice; each split into sentences. One chapter, titled with the article title.
 - No article, or fewer than 30 words: an error the user can read.
 
@@ -40,7 +40,7 @@ The Worker runs only for `/api/*` (`assets.run_worker_first`); every other path 
 
 | ID | Check |
 |---|---|
-| **L-01** | The Worker fetches only for its own origin, only public http(s) URLs (every redirect hop too), within 10 s and 3 MB, only HTML or text; rate-limited; nothing about the URL is logged or cached. |
+| **L-01** | The Worker fetches only for its own origin, only public http(s) URLs (every redirect hop too), within 15 s and 3 MB, only HTML or text; rate-limited; nothing about the URL is logged or cached. |
 | **L-02** | A news-style page becomes title + author + paragraphs, without navigation, ads or comments; non-UTF-8 pages decode correctly; a page without an article gives a plain error. |
 | **L-03** | `+ 导入` offers 文件 and 链接. A pasted link (alone or inside shared text) imports with 抓取中 → 解析中 and opens the article; the same article twice opens the existing book; every failure shows a Chinese reason. Web only for now; iOS keeps the file picker. |
 | **L-04** | Once imported, the article opens and reads with the network off. |

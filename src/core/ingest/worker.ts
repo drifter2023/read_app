@@ -1,21 +1,27 @@
 /// <reference lib="webworker" />
 // Import runs here so parsing never blocks the UI thread (CLAUDE.md → Stack).
-import type { ParsedBook } from '../types.ts';
+import type { BookFormat, ParsedBook } from '../types.ts';
+import { parseArticle } from './article.ts';
 import { EpubError, parseEpub, type CoverImage } from './epub.ts';
 import { parseTxt } from './txt.ts';
 
-export interface ImportRequest { id: string; name: string; bytes: ArrayBuffer }
+/** A file, or a fetched web page (`web`: where it ended up and its Content-Type, L-02). */
+export interface ImportRequest { id: string; name: string; bytes: ArrayBuffer; web?: { url: string; contentType: string } }
 export type ImportMessage =
   | { type: 'progress'; done: number; total: number }
-  | { type: 'done'; book: ParsedBook; format: 'epub' | 'txt'; coverImage?: CoverImage }
+  | { type: 'done'; book: ParsedBook; format: BookFormat; coverImage?: CoverImage }
   | { type: 'error'; message: string };
 
 declare const self: DedicatedWorkerGlobalScope;
 const post = (m: ImportMessage, transfer: Transferable[] = []) => self.postMessage(m, transfer);
 
 self.onmessage = async (e: MessageEvent<ImportRequest>) => {
-  const { id, name, bytes } = e.data;
+  const { id, name, bytes, web } = e.data;
   try {
+    if (web) {
+      post({ type: 'done', book: parseArticle(bytes, web.contentType, web.url, id), format: 'web' });
+      return;
+    }
     const head = new Uint8Array(bytes, 0, Math.min(4, bytes.byteLength));
     const isZip = head[0] === 0x50 && head[1] === 0x4b;
     if (/\.epub$/i.test(name) || isZip) {

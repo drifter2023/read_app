@@ -67,6 +67,6 @@ Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.htm
 46. `AgentService`: DeepSeek streaming with earlier turns, only the chapter text up to the page (no spoilers), answer + 出处 line, timeouts, typed errors with 重试. **A-04 A-05**
 
 ## M9 · Link import (plan: `docs/plans/2026-10-12-link-import.md`)
-43. Cloudflare Worker `POST /api/fetch`: same-origin, public http(s) only (every redirect hop), 10 s, 3 MB, HTML or text, per-IP rate limit, no logging; the same handler on the Vite dev and preview servers. **L-01**
+43. Cloudflare Worker `POST /api/fetch`: same-origin, public http(s) only (every redirect hop), 15 s, 3 MB, HTML or text, per-IP rate limit, no logging; the same handler on the Vite dev and preview servers. **L-01**
 44. Article extraction in the import Worker: charset, Readability on linkedom, blocks → paragraphs → sentences. **L-02**
 45. Import sheet: 文件 / 链接; link → fetch → parse → save as format `web` → open; duplicates and errors. **L-03 L-04**

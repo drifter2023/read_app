@@ -1,8 +1,8 @@
 import type { Db } from '../db/types.ts';
-import type { ChapterData, ParsedBook } from '../types.ts';
+import type { BookFormat, ChapterData, ParsedBook } from '../types.ts';
 
 export interface BookRow {
-  id: string; title: string; author: string; cover: string | null; color: number; format: 'epub' | 'txt';
+  id: string; title: string; author: string; cover: string | null; color: number; format: BookFormat;
   wordCount: number; status: 'reading' | 'done'; pct: number; addedAt: number; openedAt: number | null; finishedAt: number | null;
 }
 
@@ -19,7 +19,7 @@ export function colorIndex(title: string): number {
   return (h >>> 0) % 8;
 }
 
-export async function saveParsedBook(db: Db, book: ParsedBook, format: 'epub' | 'txt', now: number): Promise<void> {
+export async function saveParsedBook(db: Db, book: ParsedBook, format: BookFormat, now: number): Promise<void> {
   await db.tx(async () => {
     await db.run(
       'INSERT INTO book (id, title, author, cover, color, format, word_count, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
