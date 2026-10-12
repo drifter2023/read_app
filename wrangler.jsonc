@@ -1,11 +1,21 @@
-// Mobile web build on Cloudflare: a Worker that only serves the static files in dist/.
-// Deploy with `npm run deploy:web`. Headers (service-worker caching) come from public/_headers.
+// Mobile web build on Cloudflare: static files from dist/, plus server/worker.ts for /api/* only
+// (link import, docs/plans/2026-10-12-link-import.md). Deploy with `npm run deploy:web`.
+// Headers (service-worker caching) come from public/_headers.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "spotlight-reader",
+  "main": "server/worker.ts",
   "compatibility_date": "2026-09-25",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // 20 link fetches per minute per IP (L-01).
+  "ratelimits": [
+    { "name": "FETCH_LIMIT", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
+  ],
+  // No request logs: the URLs readers import must not be kept anywhere.
+  "observability": { "enabled": false }
 }
