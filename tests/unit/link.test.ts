@@ -7,6 +7,8 @@ describe('pasted links (L-03)', () => {
     expect(linkFrom('  How to Do Great Work https://paulgraham.com/greatwork.html  ')).toBe('https://paulgraham.com/greatwork.html');
     expect(linkFrom('看看这篇：https://example.org/story，写得很好。')).toBe('https://example.org/story');
     expect(linkFrom('(see https://example.org/x).')).toBe('https://example.org/x');
+    expect(linkFrom('https://en.wikipedia.org/wiki/Focus_(optics)')).toBe('https://en.wikipedia.org/wiki/Focus_(optics)');
+    expect(linkFrom('(see https://en.wikipedia.org/wiki/Focus_(optics)).')).toBe('https://en.wikipedia.org/wiki/Focus_(optics)');
     expect(linkFrom('example.org/story')).toBe('https://example.org/story');
     expect(linkFrom('HTTP://EXAMPLE.ORG/A')).toBe('http://example.org/A');
   });

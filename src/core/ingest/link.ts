@@ -10,12 +10,26 @@ export function linkFrom(input: string): string | null {
   const candidate = found ?? (/^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(text) ? `https://${text}` : null);
   if (!candidate) return null;
   try {
-    const u = new URL(candidate.replace(/[.,;:!?)\]]+$/, ''));
+    const u = new URL(trimTrailing(candidate));
     return u.protocol === 'http:' || u.protocol === 'https:' ? u.href : null;
   } catch {
     return null;
   }
 }
+
+/** Drops sentence punctuation after a link, and a closing bracket only when the link did not open it (Focus_(optics)). */
+function trimTrailing(url: string): string {
+  let u = url;
+  for (;;) {
+    const last = u.at(-1);
+    if (last && '.,;:!?'.includes(last)) u = u.slice(0, -1);
+    else if (last === ')' && count(u, ')') > count(u, '(')) u = u.slice(0, -1);
+    else if (last === ']' && count(u, ']') > count(u, '[')) u = u.slice(0, -1);
+    else return u;
+  }
+}
+
+const count = (s: string, ch: string) => s.split(ch).length - 1;
 
 /** What to tell the reader when the Worker could not fetch the page. */
 export function fetchErrorMessage(code: FetchErrorCode | string | undefined, status?: number): string {
