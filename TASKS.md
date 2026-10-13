@@ -70,3 +70,6 @@ Each task lists its acceptance ID from `design/MVP 方案 · 聚焦阅读.dc.htm
 43. Cloudflare Worker `POST /api/fetch`: same-origin, public http(s) only (every redirect hop), 15 s, 3 MB, HTML or text, per-IP rate limit, no logging; the same handler on the Vite dev and preview servers. **L-01**
 44. Article extraction in the import Worker: charset, Readability on linkedom, blocks → paragraphs → sentences. **L-02**
 45. Import sheet: 文件 / 链接; link → fetch → parse → save as format `web` → open; duplicates and errors. **L-03 L-04**
+
+## M10 · Account sync and one-time book transfer — planned, not started
+Plan: `docs/plans/2026-10-13-sync-and-transfer.md`; checklist: `docs/todo/sync-and-transfer.md`. Needs the owner's decisions (plan §11) and a scope edit to `CLAUDE.md` before any code. Acceptance IDs C-01 to C-11.
