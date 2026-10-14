@@ -12,7 +12,7 @@
 .eyebrow { font: 400 11px/1 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--sec); }
 .home-top { display: flex; align-items: center; justify-content: space-between; margin: 0 0 20px; }
 .home-date { margin: 0; }
-/* 纸白 / 夜读 capsule (设计文档 v2: one theme for the reader and the shelf) */
+/* 纸白 / 夜读 capsule (MVP 设计与范围 B2: one theme for the reader and the shelf) */
 .theme-toggle { display: flex; margin-right: -4px; padding: 8px 4px; } /* 44px tall hit area around a 28px capsule */
 .theme-toggle button {
   position: relative; height: 28px; padding: 0 12px; border: 1px solid rgba(var(--ink-rgb), .14); background: none;

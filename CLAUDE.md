@@ -14,7 +14,7 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
   - any LLM or agent other than the DeepSeek grammar analysis and the DeepSeek Agent drawer (no tools, no memory across books, no background runs); sync, push, accounts, analytics SDKs;
   - long-press sentence translation (the only sentence translation is the one on top of the grammar drawer).
 - **Zero network requests at runtime**, with two exceptions: `https://api.deepseek.com`, called with the user's own key only after a tap on a grammar droplet or after the reader sends a question in the Agent drawer; and our own Worker's `POST /api/fetch`, only after the reader submits a link in Import. The Worker fetches public http(s) pages for its own origin only and never logs or stores the URL. Fonts, dictionary and books are all bundled; lookups, footnotes and everything else stay offline.
-- If a design doc and the README disagree, the README wins. If the README is silent, follow `设计文档 v2` §3 (Reader 4a) exactly.
+- If a design doc and the README disagree, the README wins. If the README is silent, follow `MVP 设计与范围` Part B3 (Reader 4a) exactly. The 2026-10-14 changes are in `docs/handoff/2026-10-14/CHANGES_2026-10-14.md`, with the owner's decisions in `docs/plans/2026-10-14-select-to-ask.md`.
 
 ## Identity
 - App display name: **Spotlight**. Bundle ID: `com.lin.spotlight`.

@@ -6,7 +6,16 @@ Source: `design_handoff_focus_reader_mvp 2/` (2026-10-14).
   - `design/MVP 设计与范围 · 聚焦阅读.dc.html` Part C (C1–C3) and A2 「阅读设置面板」;
   - the prototype is `design/聚焦阅读 App.dc.html`, turn 10, option 10a.
 
-**Status:** plan only. Nothing is built until the owner answers §1.
+**Status:** in progress. The owner's answers (2026-10-14) are recorded below; they win over the handoff.
+
+**Owner decisions (2026-10-14):**
+1. The top bar (`‹ 书架` + title) and the capsule (`目录 · Aa`) **stay**; only the rest of C4 is built (the top-30 % tap, the tap order, no right-edge scroll indicator). A blank tap below the top 30 % still toggles them.
+2. A tap in the top 30 % **always** opens settings, even on a word and even with 聚焦模糊 off; to look a word up there, scroll it down.
+3. Tap order: selection → close sheet / drawer → top 30 % → word → toggle the top bar and capsule.
+4. Blur off keeps a thin mask strip behind the eyebrow (a little taller than S-03's first cut, so it looks natural).
+5. a) every switch in the sheet uses the new cream style; b) **no new easing curves**: CLAUDE.md's one curve stays everywhere; c) a long-press starts a selection only on sharp lines; d) the Agent push keeps the fixed 60 px strip, and the design docs now say so.
+
+The section below is the analysis that led to these questions.
 
 ## What is new, and what we already have
 

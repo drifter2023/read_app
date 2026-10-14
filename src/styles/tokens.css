@@ -1,4 +1,4 @@
-/* Colours per theme (设计文档 v2 §2 colour table): 纸白 = 4a reader + 7a Home, 夜读 = 1c reader + 7b colours on Home. */
+/* Colours per theme (MVP 设计与范围 B2 colour table): 纸白 = 4a reader + 7a Home, 夜读 = 1c reader + 7b colours on Home. */
 :root {
   --paper: #faf8f3;
   --paper-rgb: 250, 248, 243;

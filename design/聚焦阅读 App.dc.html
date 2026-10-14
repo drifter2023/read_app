@@ -7,7 +7,128 @@
 </head>
 <body>
 <x-dc>
-<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#eeece7;font-family:"Noto Sans SC",system-ui,sans-serif}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}a{color:#2a78d6}a:hover{color:#1b5aa8}@keyframes shim{0%{background-position:-180px 0}100%{background-position:220px 0}}@keyframes sheetUp{from{transform:translateY(105%)}to{transform:translateY(0)}}@keyframes popIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}@keyframes unfold{from{opacity:0;transform:translateY(-6px);max-height:0}to{opacity:1;transform:none;max-height:200px}}@keyframes splitG{from{grid-template-rows:0fr;opacity:.4}to{grid-template-rows:1fr;opacity:1}}@keyframes collapseG{from{grid-template-rows:1fr;opacity:1}to{grid-template-rows:0fr;opacity:.25}}@keyframes split{from{max-height:0;opacity:.3}to{max-height:200px;opacity:1}}@keyframes notchOpen{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes notchShut{from{transform:scaleY(1)}to{transform:scaleY(0)}}@keyframes riseIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}@keyframes collapse{from{max-height:200px;opacity:1}to{max-height:0;opacity:.25}}@keyframes splitTall{from{max-height:0;opacity:.3}to{max-height:420px;opacity:1}}@keyframes collapseTall{from{max-height:420px;opacity:1}to{max-height:0;opacity:.25}}@keyframes splitG{from{grid-template-rows:0fr;opacity:.4}to{grid-template-rows:1fr;opacity:1}}@keyframes collapseG{from{grid-template-rows:1fr;opacity:1}to{grid-template-rows:0fr;opacity:.3}}@keyframes fadeOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(4px)}}@keyframes sheetDown{from{transform:translateY(0)}to{transform:translateY(105%)}}@keyframes popOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(5px) scale(.97)}}.shimd{background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.16),rgba(255,255,255,.05));background-size:220px 100%;animation:shim 1.1s linear infinite;border-radius:3px}@keyframes dots{0%,80%{opacity:.25}40%{opacity:1}}.shim{background:linear-gradient(90deg,rgba(34,31,27,.07),rgba(34,31,27,.14),rgba(34,31,27,.07));background-size:220px 100%;animation:shim 1.1s linear infinite;border-radius:3px}[data-reader]{scrollbar-width:none}[data-reader]::-webkit-scrollbar{display:none}</style></helmet>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#eeece7;font-family:"Noto Sans SC",system-ui,sans-serif}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}a{color:#2a78d6}a:hover{color:#1b5aa8}@keyframes shim{0%{background-position:-180px 0}100%{background-position:220px 0}}@keyframes sheetUp{from{transform:translateY(105%)}to{transform:translateY(0)}}@keyframes popIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}@keyframes unfold{from{opacity:0;transform:translateY(-6px);max-height:0}to{opacity:1;transform:none;max-height:200px}}@keyframes splitG{from{grid-template-rows:0fr;opacity:.4}to{grid-template-rows:1fr;opacity:1}}@keyframes collapseG{from{grid-template-rows:1fr;opacity:1}to{grid-template-rows:0fr;opacity:.25}}@keyframes split{from{max-height:0;opacity:.3}to{max-height:200px;opacity:1}}@keyframes notchOpen{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes notchShut{from{transform:scaleY(1)}to{transform:scaleY(0)}}@keyframes riseIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}@keyframes collapse{from{max-height:200px;opacity:1}to{max-height:0;opacity:.25}}@keyframes splitTall{from{max-height:0;opacity:.3}to{max-height:420px;opacity:1}}@keyframes collapseTall{from{max-height:420px;opacity:1}to{max-height:0;opacity:.25}}@keyframes splitG{from{grid-template-rows:0fr;opacity:.4}to{grid-template-rows:1fr;opacity:1}}@keyframes collapseG{from{grid-template-rows:1fr;opacity:1}to{grid-template-rows:0fr;opacity:.3}}@keyframes fadeOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(4px)}}@keyframes sheetDown{from{transform:translateY(0)}to{transform:translateY(105%)}}@keyframes popOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(5px) scale(.97)}}.shimd{background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.16),rgba(255,255,255,.05));background-size:220px 100%;animation:shim 1.1s linear infinite;border-radius:3px}@keyframes dots{0%,80%{opacity:.25}40%{opacity:1}}.shim{background:linear-gradient(90deg,rgba(34,31,27,.07),rgba(34,31,27,.14),rgba(34,31,27,.07));background-size:220px 100%;animation:shim 1.1s linear infinite;border-radius:3px}[data-reader]{scrollbar-width:none}[data-reader]::-webkit-scrollbar{display:none}</style><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet"></helmet>
+
+<section class="dv-turn" id="t10">
+<div class="dv-thd"><a class="dv-tid" href="#t10">10</a><span class="dv-tname">Agent 抽屉 · 定稿（在 <a class="dv-oid" href="#4a">4a</a> 上按住左滑，书页缩小退后，露出「旁注」对话；长按选词浮出「问旁注」；轻点书页上方 30% 落下阅读设置，含「聚焦模糊」开关）</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="10a">
+<div class="dv-olabel"><a class="dv-oid" href="#10a">10a</a>页边批注 × 卡片退后 · 选中文字提问 · 底部设置面板</div>
+<div style="display:flex;flex-direction:column;gap:10px;width:402px">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" width="{{ 402 }}" height="{{ 812 }}" hint-size="402px,812px">
+<div data-ag-phone="9a" style="height:100%;position:relative;overflow:hidden;background:#f5f5f3;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none">
+
+<div data-ag-panel="1" style="position:absolute;inset:0;display:flex;flex-direction:column;padding:0 20px 0 82px;box-sizing:border-box;transform:translateX(12%);opacity:.3">
+<div style="position:relative;z-index:3">
+<div style="padding:56px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(0,0,0,.07)">
+<div onClick="{{ ag_toggleHist }}" style="min-width:0;flex:1;cursor:pointer;margin:0 -10px;padding:6px 10px 8px;border-radius:12px;background:{{ ag_hBtnBg }};transition:background .2s">
+<div style="display:flex;align-items:center;gap:6px;font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(0,0,0,.5)"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" style="flex:none"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M2.2 2.6v2.6h2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 5.2V8l2 1.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>{{ ag_hBtnLabel }}</span><span style="opacity:.6">·</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ag_headCh }}</span></div>
+<div style="margin-top:6px;display:flex;align-items:center;gap:8px;min-width:0"><span style="font-family:'Newsreader',Georgia,serif;font-size:24px;letter-spacing:-.01em;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ag_headTitle }}</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex:none;transition:transform .25s;transform:rotate({{ ag_chevRot }})"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+</div>
+</div>
+<div onClick="{{ ag_closeHist }}" style="position:absolute;top:100%;left:-82px;right:-20px;height:800px;background:rgba(245,245,243,.72);opacity:{{ ag_histOp }};pointer-events:{{ ag_histPE }};transition:opacity .25s"></div>
+<div style="position:absolute;top:calc(100% + 8px);left:0;right:0;max-height:470px;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 18px 40px -16px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.05);opacity:{{ ag_histOp }};transform:translateY({{ ag_histY }});pointer-events:{{ ag_histPE }};transition:opacity .22s,transform .28s cubic-bezier(.22,.8,.24,1)">
+<div style="padding:14px 16px 6px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">本书的对话</span><span style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(0,0,0,.4)">点选继续</span></div>
+<sc-for list="{{ ag_sessions }}" as="s" hint-placeholder-count="3">
+<div onClick="{{ ag_pickSess }}" data-sid="{{ s.id }}" style="cursor:pointer;display:flex;gap:10px;padding:12px 16px;background:{{ s.bg }}">
+<span style="flex:none;width:5px;height:5px;border-radius:3px;margin-top:8px;background:#111;opacity:{{ s.dot }}"></span>
+<div style="flex:1;min-width:0">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><span style="font:500 13.5px 'Noto Sans SC',sans-serif;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.title }}</span><span style="flex:none;font:400 10.5px 'IBM Plex Sans',sans-serif;color:rgba(0,0,0,.45)">{{ s.when }}</span></div>
+<div style="margin-top:4px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:13px;color:rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.quote }}</div>
+<div style="margin-top:4px;font:400 10px 'IBM Plex Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,0,0,.45)">{{ s.meta }}</div>
+</div>
+</div>
+</sc-for>
+<div onClick="{{ ag_newSess }}" style="cursor:pointer;min-height:48px;margin:4px 0 0;display:flex;align-items:center;gap:10px;padding:0 16px;border-top:1px solid rgba(0,0,0,.07);font:500 13px 'Noto Sans SC',sans-serif;color:#111"><span style="width:22px;height:22px;border-radius:11px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font:400 15px/1 'IBM Plex Sans',sans-serif">+</span>新对话 · 从当前句开始</div>
+</div>
+</div>
+<div data-ag-list="1" style="flex:1;min-height:0;overflow-y:auto;padding:16px 0 8px;user-select:text;-webkit-user-select:text">
+<div style="padding:12px 0 4px;border-radius:14px;background:#fff">
+<div style="padding:0 14px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">当前句</span><span style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(0,0,0,.4)">{{ ag_pickHint }}</span></div>
+<div style="position:relative;margin-top:4px;opacity:{{ ag_pickOp }};transition:opacity .25s">
+<div ref="{{ ag_pickRef }}" onScroll="{{ ag_onPick }}" style="height:168px;overflow-y:auto;padding:84px 14px;box-sizing:border-box;scrollbar-width:none;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent)">
+<sc-for list="{{ ag_paras }}" as="p" hint-placeholder-count="3">
+<div style="margin:0 0 8px;text-indent:{{ p.ind }};font-family:'Newsreader',Georgia,serif;font-size:13.5px;line-height:1.7;color:#111;text-wrap:pretty"><sc-for list="{{ p.ss }}" as="s" hint-placeholder-count="2"><span onClick="{{ ag_tapSent }}" data-si="{{ s.i }}" style="cursor:pointer;opacity:{{ s.op }};background:{{ s.bg }};box-shadow:{{ s.ul }};border-radius:2px;transition:opacity .2s,background .2s">{{ s.t }} </span></sc-for></div>
+</sc-for>
+</div>
+</div>
+</div>
+<sc-for list="{{ ag_msgs }}" as="m" hint-placeholder-count="2">
+<div style="margin-top:18px">
+<sc-if value="{{ m.u }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:flex-end;margin-bottom:6px"><div style="max-width:86%;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(0,0,0,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">“{{ m.quote }}”</div></div></sc-if>
+<div style="display:flex;justify-content:flex-end"><div style="max-width:86%;padding:10px 14px;border-radius:18px 18px 4px 18px;background:#111;font:400 13.5px/1.55 'Noto Sans SC',sans-serif;color:#fff;text-wrap:pretty">{{ m.text }}</div></div>
+</sc-if>
+<sc-if value="{{ m.a }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#111"><span style="width:5px;height:5px;border-radius:3px;background:#111"></span>旁注</div>
+<div style="margin-top:6px;font:400 14.5px/1.8 'Noto Serif SC',serif;color:#1d1d1b;text-wrap:pretty">{{ m.text }}</div>
+<sc-if value="{{ m.hasCite }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;display:inline-flex;align-items:center;min-height:28px;padding:0 11px;border-radius:14px;border:1px solid rgba(0,0,0,.12);font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(0,0,0,.6)">{{ m.cite }}</div></sc-if>
+</sc-if>
+<sc-if value="{{ m.t }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:5px;padding:6px 0"><span style="width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.75)"></span><span style="width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.4)"></span><span style="width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.18)"></span></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:7px;overflow-x:auto;padding:10px 0">
+<sc-for list="{{ ag_chips }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ ag_ask }}" data-q="{{ c.q }}" style="flex:none;cursor:pointer;min-height:34px;display:flex;align-items:center;padding:0 13px;border-radius:17px;background:#e9e9e6;font:400 12px 'Noto Sans SC',sans-serif;color:#1d1d1b;white-space:nowrap">{{ c.q }}</div>
+</sc-for>
+</div>
+<sc-if value="{{ ag_hasAtt }}" hint-placeholder-val="{{ false }}">
+<div style="margin:0 0 8px;padding:10px 4px 11px 14px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);display:flex;gap:6px;align-items:flex-start">
+<div style="flex:1;min-width:0">
+<div style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">选中的文字 · 第 3 章</div>
+<div style="margin-top:5px;font-family:'Newsreader',Georgia,serif;font-size:13.5px;line-height:1.55;color:#111;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty">“{{ ag_att }}”</div>
+</div>
+<div onClick="{{ ag_clearAtt }}" style="flex:none;width:36px;height:36px;margin-top:-6px;border-radius:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(0,0,0,.45)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></div>
+</div>
+</sc-if>
+<div style="display:flex;align-items:center;gap:8px;min-height:50px;padding:0 5px 0 16px;border-radius:25px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);margin-bottom:34px">
+<input onKeyDown="{{ ag_onKey }}" placeholder="{{ ag_inPh }}" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:400 13.5px 'Noto Sans SC',sans-serif;color:#111;padding:0">
+<div onClick="{{ ag_sendBtn }}" style="cursor:pointer;flex:none;width:40px;height:40px;border-radius:20px;background:#111;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12V2M7 2L2.5 6.5M7 2l4.5 4.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+</div>
+</div>
+
+<div data-ag-reader="1" style="position:absolute;inset:0;background:#faf8f3;overflow:hidden;transform-origin:50% 50%;touch-action:none">
+<div style="position:absolute;top:93px;left:34px;right:34px">
+<sc-for list="{{ ag_rlines }}" as="ln" hint-placeholder-count="13">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:19.5px;line-height:34px;height:34px;color:#221f1b;white-space:nowrap;filter:blur({{ ln.blur }});opacity:{{ ln.op }}"><sc-for list="{{ ln.segs }}" as="sg" hint-placeholder-count="2"><span style="position:relative"><sc-for list="{{ sg.tk }}" as="t" hint-placeholder-count="3"><span data-tk="{{ t.i }}" data-word="{{ t.w }}" style="background:{{ t.bg }};transition:background .12s">{{ t.s }}</span></sc-for><sc-if value="{{ sg.g }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;top:23px;font:500 9px/1 'Noto Sans SC',sans-serif;letter-spacing:.04em;color:rgba(34,31,27,.6);white-space:nowrap">{{ sg.g }}</span></sc-if></span></sc-for></div>
+</sc-for>
+</div>
+<div style="position:absolute;top:0;left:0;right:0;height:150px;background:linear-gradient(#faf8f3 22%,rgba(250,248,243,0));pointer-events:none;opacity:{{ ag_fadeOp }};transition:opacity .3s"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:130px;background:linear-gradient(rgba(250,248,243,0),#faf8f3 72%);pointer-events:none;opacity:{{ ag_fadeOp }};transition:opacity .3s"></div>
+<div style="position:absolute;top:58px;left:0;right:0;display:flex;justify-content:space-between;padding:0 34px;font:11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.14em;color:rgba(34,31,27,.38)"><span>CHAPTER 3 · THE TREELINE</span><span>12%</span></div>
+<div data-ag-set="1" onClick="{{ ag_closeSet }}" style="position:absolute;inset:0;z-index:6;pointer-events:{{ ag_setPE }}"></div>
+<div data-ag-set="1" style="position:absolute;left:0;right:0;bottom:0;z-index:7;max-height:44%;overflow-y:auto;border-radius:18px 18px 0 0;padding:4px 22px 30px;box-sizing:border-box;background:#2c2620;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.022) 0 2px,rgba(0,0,0,.028) 2px 4px),linear-gradient(#332c25,#241f1a);box-shadow:0 -14px 30px -14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);color:#f2ead9;transform:translateY({{ ag_setY }});transition:transform {{ ag_setMs }} cubic-bezier(.22,.9,.3,1)">
+<div onClick="{{ ag_closeSet }}" style="cursor:pointer;padding:6px 0 4px"><div style="width:36px;height:4px;border-radius:2px;background:rgba(242,234,217,.25);margin:0 auto"></div></div>
+<div onClick="{{ ag_toggleBlur }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px;border-bottom:1px solid rgba(242,234,217,.1)">
+<div style="min-width:0"><div style="font:500 14px 'Noto Sans SC',sans-serif;color:#f2ead9">聚焦模糊</div><div style="margin-top:3px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.5)">{{ ag_blurSub }}</div></div>
+<div style="flex:none;position:relative;width:46px;height:28px;border-radius:14px;background:{{ ag_swBg }};transition:background .2s"><div style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:{{ ag_knBg }};transform:translateX({{ ag_knX }});transition:transform .22s cubic-bezier(.22,.9,.3,1),background .2s;box-shadow:0 1px 2px rgba(0,0,0,.5)"></div></div>
+</div>
+<div style="opacity:{{ ag_depOp }};pointer-events:{{ ag_depPE }};transition:opacity .25s">
+<div style="display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid rgba(242,234,217,.07)"><span style="flex:none;width:58px;font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">清晰带</span><input type="range" min="20" max="80" step="5" value="{{ ag_band }}" onChange="{{ ag_setBand }}" style="flex:1;min-width:0;margin:0;accent-color:#f2ead9"><span style="flex:none;width:34px;text-align:right;font:400 11.5px 'IBM Plex Sans',sans-serif;color:rgba(242,234,217,.55)">{{ ag_bandLbl }}</span></div>
+<div style="display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid rgba(242,234,217,.07)"><span style="flex:none;width:58px;font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">模糊强度</span><input type="range" min="2" max="14" step="1" value="{{ ag_bmax }}" onChange="{{ ag_setBmax }}" style="flex:1;min-width:0;margin:0;accent-color:#f2ead9"><span style="flex:none;width:34px;text-align:right;font:400 11.5px 'IBM Plex Sans',sans-serif;color:rgba(242,234,217,.55)">{{ ag_bmax }}</span></div>
+<div onClick="{{ ag_toggleSent }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;border-bottom:1px solid rgba(242,234,217,.07)"><span style="font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">整句模式</span><div style="flex:none;position:relative;width:38px;height:22px;border-radius:11px;background:{{ ag_sBg }};transition:background .2s"><div style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:8px;background:{{ ag_sKn }};transform:translateX({{ ag_sX }});transition:transform .22s cubic-bezier(.22,.9,.3,1)"></div></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px"><span style="font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">字号</span><div style="display:flex;gap:6px"><sc-for list="{{ ag_fsOpts }}" as="f" hint-placeholder-count="3"><div onClick="{{ ag_setFs }}" data-fs="{{ f.i }}" style="cursor:pointer;width:44px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Newsreader',Georgia,serif;font-size:{{ f.sz }};color:{{ f.fg }};background:{{ f.bg }}">Aa</div></sc-for></div></div>
+</div>
+<div data-ag-hs="1" style="position:absolute;left:0;top:0;width:28px;margin-left:-14px;display:none;cursor:grab;z-index:4"><div style="position:absolute;left:13px;top:6px;bottom:0;width:2px;background:#111"></div><div style="position:absolute;left:8px;top:0;width:12px;height:12px;border-radius:6px;background:#111"></div></div>
+<div data-ag-he="1" style="position:absolute;left:0;top:0;width:28px;margin-left:-14px;display:none;cursor:grab;z-index:4"><div style="position:absolute;left:13px;top:0;bottom:6px;width:2px;background:#111"></div><div style="position:absolute;left:8px;bottom:0;width:12px;height:12px;border-radius:6px;background:#111"></div></div>
+<div data-ag-ask="1" onClick="{{ ag_askSel }}" style="position:absolute;left:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 14px;border-radius:20px;background:#111;color:#fff;font:500 13.5px 'Noto Sans SC',sans-serif;white-space:nowrap;box-shadow:0 12px 26px -12px rgba(0,0,0,.5);cursor:pointer;opacity:0;pointer-events:none;transform:translate(-50%,6px) scale(.96);transition:opacity .18s,transform .24s cubic-bezier(.22,.8,.24,1)"><span style="width:5px;height:5px;border-radius:3px;background:#fff"></span>问旁注</div>
+<div data-ag-dim="1" style="position:absolute;inset:0;background:#111;opacity:0;pointer-events:none"></div>
+<div data-ag-shield="1" style="position:absolute;inset:0;pointer-events:none;cursor:pointer"></div>
+</div>
+</div>
+</x-import>
+<div style="display:flex;gap:8px">
+<div onClick="{{ ag_demoSel }}" style="cursor:pointer;padding:6px 12px;border-radius:5px;background:#1a1a1a;color:#fff;font:500 11px system-ui,sans-serif">演示 选中文字</div>
+<div onClick="{{ ag_demo }}" style="cursor:pointer;padding:6px 12px;border-radius:5px;background:rgba(0,0,0,.08);color:#1a1a1a;font:500 11px system-ui,sans-serif">演示 左滑 / 返回</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 
 <section class="dv-turn" id="t7">
 <div class="dv-thd"><a class="dv-tid" href="#t7">7</a><span class="dv-tname">主页 · 现代化方向（放掉布纹烫金：平面色块 + 排版驱动。点生词卡片翻面看释义，点「继续阅读」整卡展开成阅读页）</span></div>
@@ -262,203 +383,6 @@
 </div>
 
 
-<div class="dv-opt" id="7b">
-<div class="dv-olabel"><a class="dv-oid" href="#7b">7b</a>仪表式 · 深色卡片网格、进度环、悬浮胶囊导航</div>
-<x-import component-from-global-scope="IOSDevice" dark="{{ true }}" width="{{ 402 }}" height="{{ 812 }}" hint-size="402px,812px">
-<div data-phone="7b" style="height:100%;position:relative;overflow:hidden;background:#0b0c0f">
-
-<sc-if value="{{ tab7bToday }}" hint-placeholder-val="{{ true }}">
-<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:54px 20px 104px;box-sizing:border-box">
-
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
-<div>
-<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(236,238,242,.6)">Tue 22 Sep</div>
-<div style="margin-top:5px;font-family:'Newsreader',Georgia,serif;font-size:23px;color:#eceef2">晚上好</div>
-</div>
-<div style="width:38px;height:38px;border-radius:19px;background:#1c1f26;display:flex;align-items:center;justify-content:center;font:500 13px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.7)">L</div>
-</div>
-
-<div onClick="{{ openBook }}" data-bt="{{ cur.t }}" data-ba="{{ cur.a }}" data-bc="{{ cur.c }}" style="cursor:pointer;background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:20px;padding:20px;display:flex;gap:18px;align-items:center">
-<div style="flex:1;min-width:0">
-<div style="font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#f0b429">Reading now</div>
-<div style="margin-top:9px;font-family:'Newsreader',Georgia,serif;font-size:22px;line-height:1.18;color:#eceef2">{{ cur.t }}</div>
-<div style="margin-top:5px;font:400 11.5px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.6)">{{ cur.a }}</div>
-<div style="margin-top:16px;display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:22px;background:#f0b429;font:500 12.5px 'Noto Sans SC',sans-serif;color:#17140c">继续阅读</div>
-</div>
-<div style="flex:none;width:86px;height:86px;border-radius:43px;background:conic-gradient(#f0b429 0 38%,rgba(255,255,255,.09) 38% 100%);display:flex;align-items:center;justify-content:center">
-<div style="width:68px;height:68px;border-radius:34px;background:#15171c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
-<div style="font:500 19px 'IBM Plex Sans',system-ui,sans-serif;color:#eceef2">38<span style="font-size:11px;color:rgba(236,238,242,.62)">%</span></div>
-<div style="font:400 9px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">42 分</div>
-</div>
-</div>
-</div>
-
-<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-<sc-for list="{{ stats7b }}" as="s" hint-placeholder-count="4">
-<div style="background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:18px;padding:16px 16px 14px">
-<div style="font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(236,238,242,.6)">{{ s.cap }}</div>
-<div style="margin-top:8px;display:flex;align-items:baseline;gap:4px"><span style="font:500 26px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:-.02em;color:#eceef2">{{ s.n }}</span><span style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ s.unit }}</span></div>
-<div style="margin-top:10px;height:3px;border-radius:2px;background:rgba(255,255,255,.07);position:relative"><div style="position:absolute;left:0;top:0;bottom:0;border-radius:2px;width:{{ s.bar }};background:{{ s.tint }}"></div></div>
-</div>
-</sc-for>
-</div>
-
-<div style="margin-top:26px;display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
-<div style="font:500 14px 'Noto Sans SC',sans-serif;color:#eceef2">今日复习</div>
-<div style="font:400 11px 'Noto Sans SC',sans-serif;color:#f0b429;cursor:pointer">6 个 ›</div>
-</div>
-<div style="display:flex;flex-wrap:wrap;gap:8px">
-<sc-for list="{{ words7b }}" as="w" hint-placeholder-count="6">
-<div onClick="{{ flipWord }}" data-opt="7b" data-w="{{ w.en }}" style="cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 15px;border-radius:12px;background:{{ w.bg }};border:1px solid {{ w.bd }};font-family:{{ w.font }};font-size:13.5px;color:{{ w.fg }}">{{ w.face }}</div>
-</sc-for>
-</div>
-
-<div style="margin-top:26px;font:500 14px 'Noto Sans SC',sans-serif;color:#eceef2;margin-bottom:12px">继续读下去</div>
-<div style="display:flex;flex-direction:column;gap:10px">
-<sc-for list="{{ rows7b }}" as="bk" hint-placeholder-count="3">
-<div onClick="{{ openBook }}" data-bt="{{ bk.t }}" data-ba="{{ bk.a }}" data-bc="{{ bk.c }}" style="cursor:pointer;display:flex;align-items:center;gap:14px;background:#15171c;border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:12px 16px 12px 12px">
-<div style="flex:none;width:38px;height:52px;border-radius:6px;background:{{ bk.c }}"></div>
-<div style="flex:1;min-width:0">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:16.5px;color:#eceef2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ bk.t }}</div>
-<div style="margin-top:3px;font:400 11px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.6)">{{ bk.a }}</div>
-<div style="margin-top:9px;height:2px;background:rgba(255,255,255,.08);position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ bk.bar }};background:rgba(240,180,41,.75)"></div></div>
-</div>
-<div style="flex:none;font:500 11px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.6)">{{ bk.pct }}%</div>
-</div>
-</sc-for>
-</div>
-</div>
-</sc-if>
-
-<sc-if value="{{ tab7bShelf }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:54px 20px 104px;box-sizing:border-box">
-<div style="display:flex;align-items:baseline;justify-content:space-between">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:26px;color:#eceef2">书架</div>
-<div style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">8 本</div>
-</div>
-<div style="display:flex;gap:8px;margin:18px 0 18px">
-<sc-for list="{{ filters7b }}" as="ft" hint-placeholder-count="3">
-<div onClick="{{ setFilter }}" data-opt="7b" data-f="{{ ft.id }}" style="cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 16px;border-radius:14px;background:{{ ft.pill }};border:1px solid {{ ft.pbd }};font:400 12px 'Noto Sans SC',sans-serif;color:{{ ft.pfg }}">{{ ft.label }}</div>
-</sc-for>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-<sc-for list="{{ shelfList7b }}" as="bk" hint-placeholder-count="4">
-<div onClick="{{ openBook }}" data-bt="{{ bk.t }}" data-ba="{{ bk.a }}" data-bc="{{ bk.c }}" style="cursor:pointer;background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:16px;padding:12px">
-<div style="height:132px;border-radius:9px;background:{{ bk.c }};display:flex;align-items:flex-end;padding:12px;box-sizing:border-box">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:14px;line-height:1.2;color:rgba(255,255,255,.94)">{{ bk.t }}</div>
-</div>
-<div style="margin-top:11px;font:400 10.5px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ bk.a }}</div>
-<div style="margin-top:9px;height:3px;border-radius:2px;background:rgba(255,255,255,.08);position:relative"><div style="position:absolute;left:0;top:0;bottom:0;border-radius:2px;width:{{ bk.bar }};background:{{ bk.tintD }}"></div></div>
-<div style="margin-top:7px;font:400 10px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ bk.note }}</div>
-</div>
-</sc-for>
-</div>
-</div>
-</sc-if>
-
-<sc-if value="{{ tab7bWords }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:54px 20px 104px;box-sizing:border-box">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:26px;color:#eceef2">生词本</div>
-<div style="margin-top:5px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ vocabLine }}</div>
-<div style="margin-top:16px;background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:18px;padding:18px;display:flex;align-items:center;gap:16px">
-<div style="flex:none;width:62px;height:62px;border-radius:31px;background:conic-gradient(#f0b429 0 {{ masteryPct }}%,rgba(255,255,255,.09) {{ masteryPct }}% 100%);display:flex;align-items:center;justify-content:center">
-<div style="width:48px;height:48px;border-radius:24px;background:#15171c;display:flex;align-items:center;justify-content:center;font:500 14px 'IBM Plex Sans',system-ui,sans-serif;color:#eceef2">{{ masteryPct }}%</div>
-</div>
-<div style="flex:1;min-width:0">
-<div style="font:500 13.5px 'Noto Sans SC',sans-serif;color:#eceef2">已掌握 {{ masteredN }} / 6</div>
-<div style="margin-top:4px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">点卡片标记掌握</div>
-<div style="margin-top:12px;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:22px;background:#f0b429;font:500 12px 'Noto Sans SC',sans-serif;color:#17140c;cursor:pointer">开始复习</div>
-</div>
-</div>
-<div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
-<sc-for list="{{ vocab7b }}" as="v" hint-placeholder-count="6">
-<div onClick="{{ toggleMastered }}" data-opt="7b" data-w="{{ v.en }}" style="cursor:pointer;background:#15171c;border:1px solid {{ v.cbd }};border-radius:16px;padding:16px">
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
-<div style="display:flex;align-items:baseline;gap:9px">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:19px;color:{{ v.enFgD }}">{{ v.en }}</div>
-<div style="font:400 10.5px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.6)">{{ v.ph }}</div>
-</div>
-<div style="flex:none;font:400 10px 'Noto Sans SC',sans-serif;color:{{ v.tagFg }}">{{ v.tag }}</div>
-</div>
-<div style="margin-top:6px;font:500 13px 'Noto Sans SC',sans-serif;color:#eceef2">{{ v.zh }}</div>
-<div style="margin-top:8px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12.5px;line-height:1.5;color:rgba(236,238,242,.6)">{{ v.src }}</div>
-</div>
-</sc-for>
-</div>
-</div>
-</sc-if>
-
-<sc-if value="{{ tab7bMe }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding:54px 20px 104px;box-sizing:border-box">
-<div style="display:flex;align-items:center;gap:14px">
-<div style="flex:none;width:56px;height:56px;border-radius:28px;background:#1c1f26;display:flex;align-items:center;justify-content:center;font:500 18px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.8)">L</div>
-<div style="flex:1;min-width:0">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:22px;color:#eceef2">林晚</div>
-<div style="margin-top:3px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">连读 12 天 · 已读完 6 本</div>
-</div>
-</div>
-<div style="margin-top:18px;background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:18px;padding:18px">
-<div style="font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(236,238,242,.6)">This week</div>
-<div style="margin-top:16px;display:flex;align-items:flex-end;gap:8px;height:88px">
-<sc-for list="{{ week7b }}" as="d" hint-placeholder-count="7">
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px">
-<div style="font:400 9.5px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.6)">{{ d.n }}</div>
-<div style="width:100%;height:{{ d.h }}px;border-radius:4px;background:{{ d.tint }}"></div>
-<div style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ d.label }}</div>
-</div>
-</sc-for>
-</div>
-</div>
-<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-<sc-for list="{{ lifetime }}" as="lt" hint-placeholder-count="4">
-<div style="background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:16px;padding:15px">
-<div style="display:flex;align-items:baseline;gap:4px"><span style="font:500 24px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:-.02em;color:#eceef2">{{ lt.n }}</span><span style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ lt.unit }}</span></div>
-<div style="margin-top:6px;font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ lt.cap }}</div>
-</div>
-</sc-for>
-</div>
-<div style="margin-top:12px;background:#15171c;border:1px solid rgba(255,255,255,.055);border-radius:18px;padding:4px 16px">
-<sc-for list="{{ settings }}" as="st" hint-placeholder-count="5">
-<div style="cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.05)">
-<div style="font:400 13px 'Noto Sans SC',sans-serif;color:#eceef2">{{ st.label }}</div>
-<div style="display:flex;align-items:center;gap:8px"><span style="font:400 11.5px 'Noto Sans SC',sans-serif;color:rgba(236,238,242,.6)">{{ st.val }}</span><span style="font:400 13px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(236,238,242,.45)">›</span></div>
-</div>
-</sc-for>
-</div>
-</div>
-</sc-if>
-
-<div style="position:absolute;left:20px;right:20px;bottom:26px;height:60px;border-radius:30px;background:rgba(26,28,34,.92);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;padding:0 6px;box-sizing:border-box">
-<sc-for list="{{ nav7b }}" as="n" hint-placeholder-count="4">
-<div onClick="{{ setNav }}" data-opt="7b" data-n="{{ n.id }}" style="cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:22px;background:{{ n.pill }};font:400 11.5px 'Noto Sans SC',sans-serif;color:{{ n.fg }}">{{ n.label }}</div>
-</sc-for>
-</div>
-
-<sc-if value="{{ flyOn7b }}" hint-placeholder-val="{{ false }}">
-<div style="{{ flyStyle }}">
-<div style="{{ flyPageDark }}">
-<div style="position:absolute;top:56px;left:24px;font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.12em;color:rgba(236,238,242,.6);cursor:pointer" onClick="{{ closeBook }}">‹ 主页</div>
-<div style="position:absolute;top:104px;left:24px;right:24px">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:24px;color:#eceef2">{{ flyTitle }}</div>
-<div style="margin:4px 0 26px;font:400 11.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.06em;color:rgba(236,238,242,.6)">{{ flyAuthor }}</div>
-<sc-for list="{{ pageLines }}" as="pl" hint-placeholder-count="12">
-<div style="font-family:'Newsreader',Georgia,serif;font-size:18.5px;line-height:34px;color:#dcdfe6">{{ pl }}</div>
-</sc-for>
-</div>
-</div>
-<div style="{{ flyCoverStyle }}">
-<div style="position:absolute;inset:0;background:{{ flyCloth }}"></div>
-<div style="position:absolute;left:34px;right:34px;top:44%;transform:translateY(-50%)">
-<div style="width:26px;height:2px;background:rgba(255,255,255,.7);margin-bottom:22px"></div>
-<div style="font-family:'Newsreader',Georgia,serif;font-size:34px;line-height:1.14;color:#fff">{{ flyTitle }}</div>
-<div style="margin-top:14px;font:400 11.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6)">{{ flyAuthor }}</div>
-</div>
-</div>
-</div>
-</sc-if>
-</div>
-</x-import>
-</div>
 
 </div>
 </section>
@@ -620,6 +544,235 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;focusPct&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:30,&quot;min&quot;:20,&quot;max&quot;:80,&quot;step&quot;:5,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;焦点带&quot;},&quot;blurMax&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:5,&quot;min&quot;:2,&quot;max&quot;:14,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;焦点带&quot;},&quot;openMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:330,&quot;min&quot;:120,&quot;max&quot;:900,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;closeMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:250,&quot;min&quot;:80,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;openEasing&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;拟物 iOS Skeuomorphic&quot;,&quot;options&quot;:[&quot;拟物 iOS Skeuomorphic&quot;,&quot;柔和 Smooth&quot;,&quot;弹性回弹 Springy&quot;,&quot;重阻尼 Damped&quot;,&quot;急停 Snap&quot;,&quot;匀速 Linear&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;contentDelayMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:400,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;contentMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:250,&quot;min&quot;:80,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffb4b4&quot;,&quot;options&quot;:[&quot;#f7f2e7&quot;,&quot;#ffd7a3&quot;,&quot;#a8d8ff&quot;,&quot;#ffb4b4&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;夜读方案&quot;}}">
 class Component extends DCLogic {
   state = { playing: false, speed: 1 };
+  agc = new (class {
+  constructor(h) { this.h = h; }
+  get state() { return this.h.state.ag || this.def; }
+  setState(u) { this.h.setState(s => { const c = s.ag || this.def; return { ag: { ...c, ...(typeof u === "function" ? u(c) : u) } }; }); }
+  def = { sid: "s1", sm: {}, extra: [], used: [], hist: false, sel: 6, selA: null, selB: null, att: null, set: false, blurOn: true, band: 30, bmax: 7, sentMode: false, fs: 1 };
+  selReplies = {
+    "解释这段": ["这几句在做同一件事：把「看不见的东西」写成能摸到的东西——冷玻璃、斜雪、风，全是触觉，没有一个情绪词。情绪留给读者自己补。", "本页 · 选中段落"],
+    "这里有什么隐喻": ["「林线」是一条界限：越过它，生命停止生长。父亲把界限那边写成「very clean wind」——不是可怕，而是空、干净。", "第 3 章 · 第 2 段"],
+    "和前文有关联吗": ["有。第 1 章车窗外「only a few dry grains」的雪，和这里干净的风是同一种质地；作者一直在用「干、冷、空」铺这条线。", "第 1 章 · 第 1 段"]
+  };
+  sents = ["A thin sigh went through the carriage, and then it was quiet again.", "I stood by the door with my forehead against the cold glass.", "There was nothing to see out there — only snow, slanting all one way.", "I thought of the treeline my father walked me up to as a boy.", "Past this, he said, nothing grows.", "I asked what was past it.", "He thought for a long while, then said: very clean wind."];
+  sessMeta = [
+    { id: "s1", title: "very clean wind 的意思", ch: "Ch.3 · The Treeline", when: "刚刚", sel: 6, msgs: this.base() },
+    { id: "s2", title: "父亲是个怎样的人", ch: "Ch.2 · The Cabin", when: "昨天", sel: 3, quote: "He kept the stove going all night, and said nothing.", msgs: [{ role: "user", text: "父亲是个怎样的人？", quote: "He kept the stove going all night, and said nothing." }, { role: "agent", text: "到第 2 章为止，他几乎不说话，但一直在做事：守着炉子、修门闩、带孩子上山。作者用动作代替了性格描写。", cite: "第 2 章 · 第 3 段" }] },
+    { id: "s3", title: "slanting 的用法", ch: "Ch.1 · Night Train", when: "3 天前", sel: 2, quote: "only snow, slanting all one way.", msgs: [{ role: "user", text: "slanting 在这里怎么理解？", quote: "only snow, slanting all one way." }, { role: "agent", text: "「斜着飘」。雪被同一个方向的风吹着，全部朝一边倾斜——这也提前埋下了后面「风」的意象。", cite: "第 1 章 · 末段" }] }
+  ];
+  cfg = { k: .8, s: .9, par: .12, dim: .06, r: 22, sh: .18 };
+  replies = {
+    "这段的语气": ["很克制。整段只有动作和一句对话，没有一个形容情绪的词。「He thought for a long while」把停顿写了出来——答案本身不重要，想了很久才重要。", "本页第 4 行"],
+    "treeline 在全书里的意思": ["到目前为止它出现了 3 次：第 1 章是地理名词，第 2 章是父亲常去的地方，到这里变成了「界限」本身——过了它，什么都不长。", "第 1、2、3 章"],
+    "帮我换个说法": ["可以理解成：「那边？只有风，干干净净的风。」父亲用一个具体的感受，代替了「什么都没有」这个抽象的回答。", "then said: very clean wind."]
+  };
+  base() {
+    return [
+      { role: "user", text: "“very clean wind” 是什么意思？父亲为什么这样回答？" },
+      { role: "agent", text: "字面是「很干净的风」。林线以上没有树、土和人烟，风里什么都不带。父亲没有描述那边「有什么」，而是描述那边「什么都没有」——这和开头车窗上干冷的雪是同一种质地。", cite: "第 1 段 · only a few dry grains" }
+    ];
+  }
+  rlines() {
+    const L = [
+      [["minutes. A thin sigh went through the"]], [["carriage, and then it was quiet again."]], [["\u00a0"]],
+      [["\u2003I stood by the door with my forehead"]], [["against the cold glass. There was"]],
+      [["nothing to see out there — only snow,"]], [["slanting", "斜飞"], [" all one way."]], [["\u00a0"]],
+      [["\u2003I thought of the "], ["treeline", "林线"], [" my father"]],
+      [["walked me up to as a boy. Past this, he"]], [["said, nothing grows. I asked what was"]],
+      [["past it. He thought for a long while,"]], [["then said: very clean wind."]]
+    ];
+    const f0 = 8, f1 = 10; let n = 0; this._tok = [];
+    return L.map((segs, k) => {
+      const d = k < f0 ? f0 - k : k > f1 ? k - f1 : 0;
+      return { k, segs: segs.map(([s, g]) => ({ s, g: g || "", tk: (s.match(/\S+|\s+/g) || []).map(x => { const t = { i: n++, s: x, w: /\S/.test(x) ? "1" : "0" }; this._tok.push(t); return t; }) })), blur: (d ? Math.min(3, .7 + d * .45) : 0) + "px", op: d ? Math.max(.28, 1 - d * .16) : 1 };
+    });
+  }
+  send(q) {
+    if (!q) return;
+    const r = this.replies[q] || this.selReplies[q] || ["我只能看到你已经读过的部分（第 1–3 章）。就这一页而言，线索在最后一段父亲那句回答里——要不要我把那一段逐句拆开？", "本页最后一段"];
+    const sid = this.state.sid, quote = this.state.att || this.sents[this.state.sel];
+    this.setState(s => ({ att: null, sm: { ...s.sm, [sid]: [...this.cur(s), { role: "user", text: q, quote }, { role: "typing" }] }, used: [...s.used, q] }));
+    setTimeout(() => this.setState(s => {
+      const arr = (s.sm[sid] || []).slice(); const i = arr.findIndex(x => x.role === "typing");
+      if (i >= 0) arr[i] = { role: "agent", text: r[0], cite: r[1] };
+      return { sm: { ...s.sm, [sid]: arr } };
+    }), 900);
+  }
+  allSess(s) { return [...(s || this.state).extra, ...this.sessMeta]; }
+  cur(s) { s = s || this.state; const m = this.allSess(s).find(x => x.id === s.sid); return s.sm[s.sid] || (m ? m.msgs : []); }
+  scrollPick(i, smooth) {
+    const el = this._pick; if (!el) return;
+    const sp = el.querySelector('[data-si="' + i + '"]'); if (!sp) return;
+    const er = el.getBoundingClientRect(), r = sp.getBoundingClientRect();
+    el.scrollTo({ top: el.scrollTop + (r.top + r.height / 2) - (er.top + er.height / 2), behavior: smooth ? "smooth" : "auto" });
+  }
+  centerIdx(el) {
+    const er = el.getBoundingClientRect(), cy = er.top + er.height / 2;
+    let best = this.state.sel, bd = 1e9; const hits = [];
+    el.querySelectorAll("[data-si]").forEach(sp => { for (const r of sp.getClientRects()) { const d = cy < r.top ? r.top - cy : cy > r.bottom ? cy - r.bottom : 0; if (d === 0) hits.push(+sp.dataset.si); if (d < bd) { bd = d; best = +sp.dataset.si; } } });
+    if (hits.length) { const s = this.state.sel; return hits.includes(s) ? s : hits.reduce((a, b) => Math.abs(b - s) < Math.abs(a - s) ? b : a); }
+    return best;
+  }
+  renderVals() {
+    const st = this.state, m = this.cur(), all = this.allSess(), curS = all.find(x => x.id === st.sid) || all[0];
+    const firstQ = (mm) => { const u = mm.find(x => x.role === "user"); return u ? u.text : ""; };
+    return {
+      hist: st.hist, chat: !st.hist,
+      histOp: st.hist ? 1 : 0, histPE: st.hist ? "auto" : "none", histY: st.hist ? "0px" : "-10px",
+      hBtnBg: st.hist ? "#e9e9e6" : "transparent", chevRot: st.hist ? "180deg" : "0deg",
+      hBtnLabel: "历史 " + all.length,
+      closeHist: () => this.setState({ hist: false }),
+      headCh: curS.ch,
+      headTitle: curS.title || firstQ(m) || "新对话",
+      toggleHist: () => this.setState(s => ({ hist: !s.hist })),
+      sessions: all.map(x => { const mm = st.sm[x.id] || x.msgs; return { id: x.id, title: x.title || firstQ(mm) || "新对话", when: x.when, quote: x.quote || this.sents[x.sel], meta: x.ch + " · " + mm.filter(y => y.role !== "typing").length + " 条", dot: x.id === st.sid ? 1 : 0, bg: x.id === st.sid ? "rgba(0,0,0,.035)" : "transparent" }; }),
+      pickSess: e => { const id = e.currentTarget.dataset.sid, x = all.find(y => y.id === id); this.setState({ sid: id, hist: false, sel: x && x.ch === "Ch.3 · The Treeline" ? x.sel : st.sel }); },
+      newSess: () => { const id = "n" + Date.now(); this.setState(s => ({ extra: [{ id, title: "", ch: "Ch.3 · The Treeline", when: "刚刚", sel: s.sel, msgs: [] }, ...s.extra], sid: id, hist: false, used: [] })); },
+      paras: [[0], [1, 2], [3, 4, 5, 6]].map((ids, k) => ({ k, ind: k ? "1em" : "0", ss: ids.map(i => ({ i, t: this.sents[i], op: i === st.sel ? 1 : .42, bg: i === st.sel ? "rgba(0,0,0,.06)" : "transparent", ul: i === st.sel ? "inset 0 -1.5px 0 #111" : "none" })) })),
+      pickRef: el => { if (el) { this._pick = el; if (!el.__init) { el.__init = 1; this._tapLock = true; clearTimeout(this._tl); this._tl = setTimeout(() => { this._tapLock = false; }, 300); requestAnimationFrame(() => this.scrollPick(this.state.sel, false)); } } },
+      onPick: e => { if (this._tapLock) return; const i = this.centerIdx(e.currentTarget); if (i !== this.state.sel) this.setState({ sel: i }); },
+      tapSent: e => { const i = +e.currentTarget.dataset.si; this._tapLock = true; clearTimeout(this._tl); this._tl = setTimeout(() => { this._tapLock = false; }, 500); this.setState({ sel: i, att: null }); this.scrollPick(i, true); },
+      rlines: (this._rl || (this._rl = this.rlines())).map(ln => {
+        const a = st.selA, b = st.selB, has = a != null;
+        let hit = false;
+        const segs = ln.segs.map(sg => ({ ...sg, tk: sg.tk.map(t => { const s = has && t.i >= a && t.i <= b; if (s) hit = true; return { ...t, bg: s ? "rgba(34,31,27,.16)" : "transparent" }; }) }));
+        const half = Math.floor(13 * st.band / 200), f0 = 9 - half, f1 = 9 + half, kb = st.bmax / 7;
+        const d = ln.k < f0 ? f0 - ln.k : ln.k > f1 ? ln.k - f1 : 0, fx = st.blurOn && !hit && d > 0;
+        return { ...ln, segs, blur: fx ? Math.min(3, .7 + d * .45) * kb + "px" : "0px", op: fx ? Math.max(.28, 1 - d * .16) : 1 };
+      }),
+      fadeOp: st.blurOn ? 1 : 0,
+      openSet: e => { e.stopPropagation(); this.setState({ set: true, selA: null, selB: null }); },
+      closeSet: e => { e.stopPropagation(); this.setState({ set: false }); },
+      setPE: st.set ? "auto" : "none", setY: st.set ? "0%" : "104%", setMs: st.set ? "330ms" : "250ms",
+      toggleBlur: () => this.setState(s => ({ blurOn: !s.blurOn })),
+      blurSub: st.blurOn ? "中央清晰，上下渐隐模糊" : "已关闭 · 全文清晰",
+      swBg: st.blurOn ? "#f2ead9" : "rgba(242,234,217,.16)", knBg: st.blurOn ? "#2c2620" : "rgba(242,234,217,.7)", knX: st.blurOn ? "18px" : "0px",
+      depOp: st.blurOn ? 1 : .32, depPE: st.blurOn ? "auto" : "none",
+      band: st.band, bandLbl: st.band + "%", bmax: st.bmax,
+      setBand: e => this.setState({ band: +e.currentTarget.value }),
+      setBmax: e => this.setState({ bmax: +e.currentTarget.value }),
+      toggleSent: () => this.setState(s => ({ sentMode: !s.sentMode })),
+      sBg: st.sentMode ? "#f2ead9" : "rgba(242,234,217,.16)", sKn: st.sentMode ? "#2c2620" : "rgba(242,234,217,.7)", sX: st.sentMode ? "16px" : "0px",
+      fsOpts: [13, 15.5, 18].map((sz, i) => ({ i, sz: sz + "px", fg: i === st.fs ? "#2c2620" : "rgba(242,234,217,.75)", bg: i === st.fs ? "#f2ead9" : "rgba(242,234,217,.08)" })),
+      setFs: e => this.setState({ fs: +e.currentTarget.dataset.fs }),
+      hasAtt: !!st.att, att: st.att || "",
+      clearAtt: () => this.setState({ att: null }),
+      inPh: st.att ? "就这段文字提问" : "在页边写下你的问题",
+      pickHint: st.att ? "已改用选中的文字" : "滑动或点选一句",
+      pickOp: st.att ? .35 : 1,
+      askSel: e => { e.stopPropagation(); const t = this.selText(); if (!t) return; this.setState({ att: t, selA: null, selB: null, hist: false }); this.setOpen(true); setTimeout(() => { const i = document.querySelector("[data-ag-panel] input"); if (i) i.focus({ preventScroll: true }); }, 460); },
+      demoSel: () => { this.ph = this.ph || (document.querySelector("[data-ag-phone]") || {}).__ph; if (this.ph && this.ph.open) this.setOpen(false); const T = (this._tok || []).map(t => t.s); this.setState({ selA: T.lastIndexOf("very"), selB: T.lastIndexOf("wind.") }); },
+      msgs: m.map((x, k) => ({ k, u: x.role === "user", a: x.role === "agent", t: x.role === "typing", text: x.text || "", cite: x.cite || "", hasCite: !!x.cite, quote: x.quote || "", hasQuote: !!x.quote })),
+      chips: Object.keys(st.att ? this.selReplies : this.replies).filter(q => !this.state.used.includes(q)).map(q => ({ q })),
+      ask: e => this.send(e.currentTarget.dataset.q),
+      onKey: e => { const v = e.currentTarget.value.trim(); if (e.key === "Enter" && v) { this.send(v); e.currentTarget.value = ""; } },
+      sendBtn: e => { const inp = e.currentTarget.parentNode.querySelector("input"); if (inp && inp.value.trim()) { this.send(inp.value.trim()); inp.value = ""; } },
+      demo: () => { const r = document.querySelector("[data-ag-phone]"); if (r && r.__ph) { r.__self = this; this.ph = r.__ph; if (this.state.selA != null) this.setState({ selA: null, selB: null }); this.setOpen(!this.ph.open); } }
+    };
+  }
+  mount() { this.bind(); this.iv = setInterval(() => this.bind(), 400); }
+  unmount() { clearInterval(this.iv); }
+  selText() { const { selA: a, selB: b } = this.state; if (a == null) return ""; return (this._tok || []).filter(t => t.i >= a && t.i <= b).map(t => t.s).join("").replace(/\s+/g, " ").trim(); }
+  nearest(x, y) {
+    const R = this.ph && this.ph.reader; if (!R) return null; let best = null, bd = 1e9;
+    R.querySelectorAll('[data-word="1"]').forEach(sp => { for (const r of sp.getClientRects()) { const dy = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0, dx = x < r.left ? r.left - x : x > r.right ? x - r.right : 0, d = dy * 4 + dx; if (d < bd) { bd = d; best = +sp.dataset.tk; } } });
+    return best;
+  }
+  layoutSel() {
+    const ph = this.ph || (document.querySelector("[data-ag-phone]") || {}).__ph; if (!ph) return;
+    const R = ph.reader, hs = R.querySelector("[data-ag-hs]"), he = R.querySelector("[data-ag-he]"), ask = R.querySelector("[data-ag-ask]");
+    if (!hs || !he || !ask) return;
+    const { selA: a, selB: b } = this.state;
+    const hide = () => { ask.style.opacity = 0; ask.style.pointerEvents = "none"; ask.style.transform = "translate(-50%,6px) scale(.96)"; };
+    if (a == null) { hs.style.display = he.style.display = "none"; hide(); return; }
+    const rr = R.getBoundingClientRect(), k = rr.width / (R.offsetWidth || 1) || 1, X = v => (v - rr.left) / k, Y = v => (v - rr.top) / k;
+    const rs = []; for (let i = a; i <= b; i++) { const sp = R.querySelector('[data-tk="' + i + '"][data-word="1"]'); if (sp) rs.push(...sp.getClientRects()); }
+    if (!rs.length) return;
+    const ra = rs[0], rb = rs[rs.length - 1];
+    Object.assign(hs.style, { display: "block", left: X(ra.left) + "px", top: Y(ra.top) - 6 + "px", height: ra.height / k + 6 + "px" });
+    Object.assign(he.style, { display: "block", left: X(rb.right) + "px", top: Y(rb.top) + "px", height: rb.height / k + 6 + "px" });
+    const top = Math.min(...rs.map(r => Y(r.top))), bot = Math.max(...rs.map(r => Y(r.bottom))), l = Math.min(...rs.map(r => X(r.left))), r = Math.max(...rs.map(r => X(r.right)));
+    const W = R.offsetWidth, cx = Math.max(72, Math.min(W - 72, (l + r) / 2));
+    let ty = top - 56; if (ty < 84) ty = bot + 20;
+    ask.style.left = cx + "px"; ask.style.top = ty + "px";
+    if (this._dragSel) hide(); else { ask.style.opacity = 1; ask.style.pointerEvents = "auto"; ask.style.transform = "translate(-50%,0) scale(1)"; }
+  }
+  update(pp, ps) {
+    this.layoutSel();
+    const key = this.state.sid + ":" + this.cur().length + ":" + this.state.hist;
+    if (key !== this._lk) { this._lk = key; document.querySelectorAll("[data-ag-list]").forEach(l => { l.scrollTop = l.scrollHeight; }); }
+    if (ps && ps.sid !== this.state.sid) { if (this._pick) this._pick.__init = 0; requestAnimationFrame(() => this.scrollPick(this.state.sel, false)); }
+  }
+  apply(p, anim) {
+    const ph = this.ph = this.ph || document.querySelector("[data-ag-phone]").__ph, c = this.cfg, W = ph.root.clientWidth || 402;
+    const ez = "420ms cubic-bezier(.22,.8,.24,1)";
+    ph.reader.style.transition = anim ? `transform ${ez}, border-radius ${ez}, box-shadow ${ez}` : "none";
+    ph.reader.style.transform = `translateX(${-p * W * c.k}px) scale(${1 - p * (1 - c.s)})`;
+    ph.reader.style.borderRadius = p * c.r + "px";
+    ph.reader.style.boxShadow = `0 ${10 * p}px ${40 * p}px rgba(0,0,0,${c.sh * p})`;
+    ph.panel.style.transition = anim ? `transform ${ez}, opacity ${ez}` : "none";
+    ph.panel.style.transform = `translateX(${(1 - p) * c.par * 100}%)`;
+    ph.panel.style.opacity = .3 + .7 * p;
+    ph.dim.style.transition = anim ? `opacity ${ez}` : "none";
+    ph.dim.style.opacity = p * c.dim;
+    ph.p = p;
+  }
+  setOpen(open) { this.ph = this.ph || document.querySelector("[data-ag-phone]").__ph; this.ph.open = open; this.ph.shield.style.pointerEvents = open ? "auto" : "none"; this.apply(open ? 1 : 0, true); }
+  bind() {
+    const root = document.querySelector("[data-ag-phone]");
+    if (!root) return;
+    root.__self = this;
+    if (root.__agb) { this.ph = root.__ph; return; }
+    const q = s => root.querySelector(s);
+    const reader = q("[data-ag-reader]"), panel = q("[data-ag-panel]"), dim = q("[data-ag-dim]"), shield = q("[data-ag-shield]");
+    if (!reader || !panel || !dim || !shield) return;
+    root.__agb = true;
+    this.ph = root.__ph = { root, reader, panel, dim, shield, p: 0, open: false };
+    let g = null, justDragged = false, sl = null, lp = 0;
+    const self = () => root.__self;
+    const capture = id => { try { root.setPointerCapture(id); } catch (_) {} };
+    root.addEventListener("contextmenu", e => e.preventDefault());
+    root.addEventListener("selectstart", e => { if (e.target.closest && e.target.closest("[data-ag-reader]")) e.preventDefault(); });
+    root.addEventListener("pointerdown", e => {
+      if (e.target.closest("input")) return;
+      const S = self();
+      if (e.target.closest("[data-ag-ask],[data-ag-set]")) { g = null; return; }
+      const h = !root.__ph.open && e.target.closest("[data-ag-hs],[data-ag-he]");
+      if (h && S.state.selA != null) { sl = { an: h.hasAttribute("data-ag-hs") ? S.state.selB : S.state.selA }; S._dragSel = 1; S.layoutSel(); capture(e.pointerId); e.preventDefault(); g = null; return; }
+      g = { sx: e.clientX, sy: e.clientY, p0: root.__ph.p, drag: false, lx: e.clientX, lt: e.timeStamp, v: 0, pid: e.pointerId, rd: !root.__ph.open && !!e.target.closest("[data-ag-reader]") };
+      clearTimeout(lp);
+      if (g.rd) { const w = e.target.closest('[data-word="1"]'), g0 = g; lp = setTimeout(() => { if (g !== g0 || g.drag) return; const t = w ? +w.dataset.tk : S.nearest(g.sx, g.sy); if (t == null) return; sl = { an: t }; g = null; S._dragSel = 1; S.setState({ selA: t, selB: t }); capture(g0.pid); if (navigator.vibrate) navigator.vibrate(8); }, 380); }
+    });
+    root.addEventListener("pointermove", e => {
+      if (sl) { const S = self(), t = S.nearest(e.clientX, e.clientY); if (t != null) { const a = Math.min(sl.an, t), b = Math.max(sl.an, t); if (S.state.selA !== a || S.state.selB !== b) S.setState({ selA: a, selB: b }); } e.preventDefault(); return; }
+      if (!g) return;
+      const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+      if (Math.hypot(dx, dy) > 8) clearTimeout(lp);
+      if (!g.drag) {
+        if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2 && ((g.p0 < .5 && dx < 0) || (g.p0 >= .5 && dx > 0))) { g.drag = true; capture(g.pid); if (self().state.selA != null) self().setState({ selA: null, selB: null }); }
+        else if (Math.abs(dy) > 12) { g = null; return; } else return;
+      }
+      const W = root.clientWidth || 402;
+      const p = Math.max(0, Math.min(1, g.p0 - dx / (W * self().cfg.k)));
+      g.v = (e.clientX - g.lx) / Math.max(1, e.timeStamp - g.lt); g.lx = e.clientX; g.lt = e.timeStamp;
+      self().apply(p, false); e.preventDefault();
+    });
+    const end = () => {
+      clearTimeout(lp);
+      if (sl) { sl = null; self()._dragSel = 0; self().layoutSel(); justDragged = true; setTimeout(() => { justDragged = false; }, 60); return; }
+      if (!g) return;
+      if (!g.drag && g.rd) { const S = self(); if (S.state.selA != null) S.setState({ selA: null, selB: null }); else { const rr = root.__ph.reader.getBoundingClientRect(); if (g.sy - rr.top < rr.height * .3) S.setState({ set: true }); } }
+      if (g.drag) { self().setOpen(g.v < -.35 ? true : g.v > .35 ? false : root.__ph.p > .45); justDragged = true; setTimeout(() => { justDragged = false; }, 60); }
+      g = null;
+    };
+    root.addEventListener("pointerup", end);
+    root.addEventListener("pointercancel", end);
+    root.addEventListener("click", e => { if (justDragged) { e.stopPropagation(); e.preventDefault(); } }, true);
+    shield.addEventListener("click", () => { if (!justDragged) self().setOpen(false); });
+  }
+
+  })(this);
+  agVals() { const v = this.agc.renderVals(), o = {}; for (const k in v) o["ag_" + k] = v[k]; return o; }
 
   get lines() {
     return ["\u2003The train crossed the second pass","at four in the afternoon, and that","was when the snow began. At first only","a few dry grains, striking the window","and melting into short wet streaks, as","if someone had drawn a fingernail down","the glass.","\u00a0",
@@ -639,6 +792,7 @@ class Component extends DCLogic {
   renderVals() {
     const sp = this.state.speed;
     return {
+      ...this.agVals(),
       lines: this.lines,
       linesNf: this.linesNf,
       wlines: this._w || (this._w = this.splitWords(this.lines)),
@@ -810,6 +964,7 @@ class Component extends DCLogic {
     setTimeout(() => clearInterval(this.warm), 3000);
     this._onResize = () => this.paintAll();
     window.addEventListener("resize", this._onResize);
+    this.agc.mount();
   }
 
   componentWillUnmount() {
@@ -820,9 +975,11 @@ class Component extends DCLogic {
     clearTimeout(this.q);
     clearTimeout(this.c);
     window.removeEventListener("resize", this._onResize);
+    this.agc.unmount();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(pp, ps) {
+    this.agc.update(pp, (ps && ps.ag) || this.agc.def);
     this.loop();
     const p = this.state.pop;
     const s = this.state.sent;

@@ -1,5 +1,7 @@
 # Handoff: 聚焦阅读 (Focus Reader) — MVP
 
+> **Changes 2026-10-14:** `docs/handoff/2026-10-14/CHANGES_2026-10-14.md` (select-to-ask 问旁注, top-30 % tap opens settings, 聚焦模糊). It overrides anything below that conflicts, except where `docs/plans/2026-10-14-select-to-ask.md` records the owner's decisions (the top bar and capsule stay).
+
 ## Overview
 A focus-first English reader for Chinese-speaking learners. The MVP contains exactly two screens:
 
@@ -24,10 +26,10 @@ The reason for Web + shell: the prototype already implements per-line CSS blur, 
 **High fidelity.** Colours, type, spacing, timings and easing are final. Match them exactly.
 
 ## Source-of-truth order
-1. `design/MVP 方案 · 聚焦阅读.dc.html` — scope, acceptance criteria (IDs R-xx / H-xx / S-xx), data model, open decisions.
+1. `design/MVP 设计与范围 · 聚焦阅读.dc.html` — one document. **Part A** scope, acceptance criteria (IDs R-xx / H-xx / S-xx), data model, open decisions. **Part B** pixel spec — use only B2 design language, B3 Reader 4a, B5 figure 5.1 (Home), B6 motion, B7 parameters; ignore 书房, 生词, 我 and the full-product JSON appendix. **Part C** Agent drawer, select-to-ask, settings entry.
 2. `design/MVP 技术架构图 · 聚焦阅读.dc.html` — module split, render pipeline, key flows.
-3. `design/设计文档 · 聚焦阅读 v2.dc.html` — pixel spec. **Use only §2 design language, §3 Reader 4a, §5 figure 5.1 (Home), §6 motion, §7 parameters.** Ignore 1c, 7b, 书房, 生词, 我 and the full-product JSON appendix.
-4. `design/聚焦阅读 App.dc.html` — the working prototype. Relevant parts: turn 4 (option **4a**) for the reader and turn 7 (option **7a**, "阅读" tab) for home. `reference/reader-prototype.ts` extracts the logic worth porting.
+3. `docs/handoff/2026-10-14/AGENT_DRAWER.md` — Agent drawer dev handoff.
+4. `design/聚焦阅读 App.dc.html` — the working prototype. Relevant parts: turn 4 (option **4a**) for the reader, turn 7 (option **7a**, "阅读" tab) for home, turn 10 (**10a**) Agent drawer + select-to-ask + top-tap settings. `reference/reader-prototype.ts` extracts the logic worth porting.
 5. `spec.mvp.json` — machine-readable summary of this README.
 
 Open the `.dc.html` files directly in a browser; `support.js` must sit next to them.
@@ -73,7 +75,7 @@ References: `design/screens/fig-4a-focus.png` and `fig-4a-drawer.png`.
   - Lines inside the band are perfectly sharp. Formula in *Interactions*.
 - **Top bar (new)**:
   - 44px tall: `‹ 书架` on the left, the book title in the middle.
-  - Appears on a tap on blank space. Fades out after 3s idle or on scroll (220ms).
+  - Appears on a tap on blank space below the top 30 % (a tap in the top 30 % opens the settings sheet). Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
 - **Bottom toolbar (new)**:
   - Floating capsule with two buttons: `目录` (table of contents, P1) and `Aa` (settings).
   - Shown and hidden together with the top bar.
@@ -131,8 +133,9 @@ The footnote is out of normal flow, so line height must not change. Acceptance R
   - `closing`.
 
 ### 3. Settings sheet (`SettingsSheet`, new)
-- Rises from the bottom. Uses the drawer's leather surface and the same 330 / 250ms motion.
-- Max height 42% of the viewport, so the focus band always stays visible above it.
+- Opened by a tap in the top 30% of the reader or by `Aa`. Rises from the bottom; closes on a tap outside (transparent scrim) or on the top handle. Uses the drawer's leather surface and the same 330 / 250ms motion.
+- Max height 44% of the viewport, so the focus band always stays visible above it.
+- First row: **聚焦模糊** (`focusBlur`, default on). Off → every line blur 0, opacity 1, the fade masks shrink to a thin strip behind the eyebrow, the whole page sharp; 清晰带 / 模糊强度 / 整句模式 greyed out.
 - Changes apply live.
 
 | Item | Control | Default | Mapping |
@@ -208,9 +211,11 @@ A flight layer takes off from the shelf row's cover rectangle. Shadow: `0 18px 4
 Meanwhile, load `Position`, mount the chapter and build the line table. Going back reverses the flight to the original rectangle (300ms).
 
 ### Tap arbitration in the reader
-1. The tap hits a word → open the drawer.
-2. A drawer is open → close it.
-3. Otherwise → toggle the top bar and bottom toolbar.
+1. A text selection exists → clear it.
+2. A drawer or the settings sheet is open → close it.
+3. The tap is in the top 30% → open the settings sheet (even on a word).
+4. The tap hits a word → open the word drawer.
+5. Otherwise → toggle the top bar and bottom toolbar.
 
 ---
 
@@ -315,10 +320,10 @@ CLAUDE.md                  rules for Claude Code in the target repo (copy to rep
 TASKS.md                   milestone-ordered tasks, each tied to an acceptance ID
 spec.mvp.json              machine-readable spec
 reference/reader-prototype.ts   prototype logic worth porting (focus band, drawer, footnotes)
-design/MVP 方案 · 聚焦阅读.dc.html
+design/MVP 设计与范围 · 聚焦阅读.dc.html      (Part A scope · Part B spec: B2, B3, B5 fig 5.1, B6, B7 · Part C Agent)
 design/MVP 技术架构图 · 聚焦阅读.dc.html
-design/设计文档 · 聚焦阅读 v2.dc.html        (use only §2, §3, §5 fig 5.1, §6, §7)
-design/聚焦阅读 App.dc.html                  (prototype; turn 4 → 4a, turn 7 → 7a)
+design/聚焦阅读 App.dc.html                  (prototype; turn 4 → 4a, turn 7 → 7a, turn 10 → 10a)
+docs/handoff/2026-10-14/   the 2026-10-14 handoff as delivered (CHANGES, AGENT_DRAWER, its README/TASKS/CLAUDE)
 design/support.js, doc-page.js, ios-frame.jsx  runtime for opening the .dc.html files
 design/screens/fig-4a-focus.png, fig-4a-drawer.png, fig-7a-read.png
 ```
