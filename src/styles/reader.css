@@ -1,4 +1,8 @@
-.rd-page { position: fixed; inset: 0; overflow: hidden; background: var(--paper); }
+.rd-page {
+  position: fixed; inset: 0; overflow: hidden; background: var(--paper);
+  /* No system selection, callout or edit menu: the reader has its own (C1). */
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
 .rd-scroll {
   position: absolute; inset: 0; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain;
   overflow-anchor: none; /* the engine keeps the text still itself when chapters mount or unmount */
@@ -77,6 +81,23 @@
 .rd-sel { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; }
 .rd-sel-rect { position: absolute; left: 0; top: 0; border-radius: 3px; background: rgba(var(--reader-ink-rgb), .16); }
 .rd-sel-ui { position: absolute; left: 0; top: 0; right: 0; z-index: 2; pointer-events: none; }
+/* Handles: a 2 px bar over the line and a 12 px dot (start: dot on top, end: dot below); 28 px hit area. */
+.rd-handle {
+  position: absolute; left: 0; top: 0; width: 28px; display: flex; flex-direction: column; align-items: center;
+  pointer-events: auto; touch-action: none; cursor: grab;
+}
+.rd-handle-bar { flex: 1; width: 2px; background: var(--reader-ink); }
+.rd-handle-dot { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--reader-ink); }
+/* 问旁注 (C2): black pill, placed by askButtonAt; fades and rises in, hidden while dragging. */
+.rd-ask {
+  position: absolute; display: flex; align-items: center; gap: 7px; padding: 0 16px 0 14px; border: 0; border-radius: 20px;
+  background: #111; color: #fff; font: 500 13.5px/1 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; white-space: nowrap;
+  box-shadow: 0 12px 26px -12px rgba(0, 0, 0, .5); -webkit-tap-highlight-color: transparent;
+  opacity: 0; transform: translate(-50%, 6px) scale(.96); pointer-events: none;
+  transition: opacity 180ms var(--ease), transform 240ms var(--ease);
+}
+.rd-ask[data-on='true'] { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
+.rd-ask-dot { width: 5px; height: 5px; border-radius: 50%; background: #fff; }
 .rd-drop {
   position: absolute; left: 0; top: 0; width: 6px; height: 6px; /* placed by transform */
   border-radius: 0 50% 50% 50%; background: rgba(var(--reader-ink-rgb), .42); /* a drop, point up (rotated 45°) */

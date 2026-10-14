@@ -81,6 +81,12 @@ describe('answer format (A-04)', () => {
   it('sends the system prompt and message layout verbatim', () => {
     expect({ SYSTEM_PROMPT, user: userMessage({ title: 'T', chapter: 'C', reading: 'R', sentence: 'S', question: 'Q' }) }).toMatchSnapshot();
   });
+
+  it('N-06: text attached by 问旁注 is labelled 所选文字 instead of 所选句', () => {
+    const m = userMessage({ title: 'T', chapter: 'C', reading: 'R', sentence: 'two lines\nof text', question: 'Q', selected: true });
+    expect(m).toContain('所选文字：two lines\nof text\n问题：Q');
+    expect(m).not.toContain('所选句');
+  });
 });
 
 let bodies: { messages: { role: string; content: string }[]; max_tokens: number }[] = [];

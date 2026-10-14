@@ -6,7 +6,7 @@ Source: `design_handoff_focus_reader_mvp 2/` (2026-10-14).
   - `design/MVP 设计与范围 · 聚焦阅读.dc.html` Part C (C1–C3) and A2 「阅读设置面板」;
   - the prototype is `design/聚焦阅读 App.dc.html`, turn 10, option 10a.
 
-**Status:** in progress. The owner's answers (2026-10-14) are recorded below; they win over the handoff.
+**Status:** built 2026-10-14 (TASKS.md → M11, tasks 47–53). The owner's answers (2026-10-14) are recorded below; they win over the handoff.
 
 **Owner decisions (2026-10-14):**
 1. The top bar (`‹ 书架` + title) and the capsule (`目录 · Aa`) **stay**; only the rest of C4 is built (the top-30 % tap, the tap order, no right-edge scroll indicator). A blank tap below the top 30 % still toggles them.

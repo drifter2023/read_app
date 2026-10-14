@@ -17,8 +17,9 @@ export type AskState =
 
 export interface AskInput {
   sessionId: string; question: string;
-  /** The selected sentence. */
+  /** The selected sentence, or the text attached by 问旁注 (then `selected`). It is stored as the question's quote. */
   sentence: string;
+  selected?: boolean;
   title: string; chapter: string;
   /** The chapter text up to the end of the page (the "read so far"). */
   reading: string;
@@ -70,7 +71,7 @@ export class AgentService {
       try {
         await streamChat({
           key, system: SYSTEM_PROMPT, history, maxTokens: MAX_TOKENS, temperature: TEMPERATURE, signal: ac.signal,
-          user: userMessage({ title: input.title, chapter: input.chapter, reading: input.reading, sentence: input.sentence, question: input.question }),
+          user: userMessage({ title: input.title, chapter: input.chapter, reading: input.reading, sentence: input.sentence, question: input.question, selected: input.selected }),
         }, (piece) => {
           clearTimeout(timer);
           timer = setTimeout(expire, this.#idleMs);

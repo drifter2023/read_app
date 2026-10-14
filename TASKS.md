@@ -72,5 +72,14 @@ Each task lists its acceptance ID from `design/MVP 设计与范围 · 聚焦阅�
 44. Article extraction in the import Worker: charset, Readability on linkedom, blocks → paragraphs → sentences. **L-02**
 45. Import sheet: 文件 / 链接; link → fetch → parse → save as format `web` → open; duplicates and errors. **L-03 L-04**
 
-## M10 · Account sync and one-time book transfer — planned, not started
+## M11 · Select-to-ask and settings entry (plan: `docs/plans/2026-10-14-select-to-ask.md`, handoff `docs/handoff/2026-10-14/`)
+47. A tap in the top 30 % of the reader opens the settings sheet (even on a word, even with 聚焦模糊 off); tap order selection → close sheet / drawer → settings → word → chrome; the top bar and capsule stay (owner decision); no scroll indicator; the sheet has a transparent scrim, 44 %, radius 18. **N-01**
+48. 聚焦模糊 first in the sheet, with on/off subtitles and cream switches; dependent rows at .32 and inert; the masks shrink to a thin strip. **N-02 S-03**
+49. Engine selection: nearest word (same line first), overlay rectangles from the line table, selected lines sharp. **N-03**
+50. Long-press 380 ms on sharp text selects a word; drag extends it; two handles; a tap clears it; no system menu or callout; the Agent swipe stands down while selecting. **N-04**
+51. 问旁注 button: 56 px above the selection (20 px below when it is near the top), clamped to [72, W − 72]; hidden while dragging. **N-05**
+52. Agent drawer attachment: quote card with ×, selection chips, 就这段文字提问, picker at .35 with 已改用选中的文字; sent as 「所选文字」 and stored as the question's quote. **N-06**
+53. iOS: no edit menu, loupe or callout on a long-press (Safari, home-screen web app, Capacitor). **N-07**
+
+## M10 · Account sync and one-time book transfer — planned, not started (its task numbers 46–53 in the plan will be renumbered when it starts)
 Plan: `docs/plans/2026-10-13-sync-and-transfer.md`; checklist: `docs/todo/sync-and-transfer.md`. Needs the owner's decisions (plan §11) and a scope edit to `CLAUDE.md` before any code. Acceptance IDs C-01 to C-11.

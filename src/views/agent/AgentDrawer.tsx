@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } fro
 import { AgentService, type AskState } from '../../core/agent/service.ts';
 import { flatten, defaultIndex, pageAround, readingContext, type Page } from '../../core/agent/context.ts';
 import { formatWhen } from '../../core/agent/format.ts';
-import { SUGGESTIONS } from '../../core/agent/prompt.ts';
+import { SELECTION_SUGGESTIONS, SUGGESTIONS } from '../../core/agent/prompt.ts';
 import { createSession, listSessions, loadMessages } from '../../core/agent/store.ts';
 import type { AgentMessage, AgentSession } from '../../core/agent/types.ts';
 import { FAILURE, NO_RETRY } from '../../core/ai/failure.ts';
@@ -17,6 +17,9 @@ interface Props {
   /** True once the drawer is open (or opening): the page text is read from the reader then. */
   open: boolean;
   panelRef: RefObject<HTMLDivElement | null>;
+  /** Text selected on the page and sent here by 问旁注 (C3); asked about instead of the picked sentence. */
+  attachment: { text: string; chapter: number } | null;
+  onAttachment: (a: { text: string; chapter: number } | null) => void;
 }
 
 interface Live { sid: string; question: string; quote: string; state: AskState }
@@ -25,7 +28,7 @@ const EMPTY_PAGE: Page = { chapter: 0, chapterTitle: '', paras: [] };
 const newId = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
 /** The Agent drawer (AGENT_DRAWER.md, design 9a): a per-book chat with the reading companion 旁注. */
-export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
+export function AgentDrawer({ db, book, engine, open, panelRef, attachment, onAttachment }: Props) {
   const service = useMemo(() => new AgentService(db), [db]);
   const [sessions, setSessions] = useState<AgentSession[]>([]);
   const [sid, setSid] = useState<string | null | undefined>(undefined); // undefined: not chosen yet
@@ -36,6 +39,7 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
   const [sel, setSel] = useState(0);
   const [draft, setDraft] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const pickRef = useRef<HTMLDivElement>(null);
   const tapLock = useRef(false);
   const lockTimer = useRef(0);
@@ -66,6 +70,13 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
     void loadMessages(db, sid).then((m) => { if (!stale) setMsgs(m); });
     return () => { stale = true; };
   }, [db, sid]);
+
+  // 问旁注: the drawer slides in, then the input takes the focus (C3).
+  useEffect(() => {
+    if (!open || !attachment) return;
+    const t = window.setTimeout(() => inputRef.current?.focus(), 460);
+    return () => clearTimeout(t);
+  }, [open, attachment]);
 
   // New messages or another conversation: scroll to the end. A change of the selected sentence does not.
   const shown = live && live.sid === sid ? live : null;
@@ -122,9 +133,11 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
       setSid(id);
     }
     const sessionId = id;
-    setLive({ sid: sessionId, question, quote: sentence.text, state: { status: 'waiting' } });
+    const quote = attachment?.text ?? sentence.text;
+    if (attachment) onAttachment(null); // sent with this question; the next one is about the picked sentence again
+    setLive({ sid: sessionId, question, quote, state: { status: 'waiting' } });
     const final = await service.ask({
-      sessionId, question, sentence: sentence.text, title: book.title, chapter: page.chapterTitle,
+      sessionId, question, sentence: quote, selected: attachment !== null, title: book.title, chapter: page.chapterTitle,
       reading: readingContext(book.chapters, page),
     }, (state) => { if (alive.current) setLive((cur) => (cur && cur.sid === sessionId && cur.question === question ? { ...cur, state } : cur)); });
     if (!alive.current) return;
@@ -134,10 +147,10 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
       setMsgs(await loadMessages(db, sessionId));
       setLive((cur) => (cur && cur.sid === sessionId && cur.question === question ? null : cur));
     }
-  }, [flat, sel, shown, sid, db, book, page, service, refreshSessions]);
+  }, [flat, sel, shown, sid, db, book, page, service, refreshSessions, attachment, onAttachment]);
 
   const used = new Set(msgs.filter((m) => m.role === 'user').map((m) => m.text));
-  const chips = SUGGESTIONS.filter((q) => !used.has(q));
+  const chips = attachment ? [...SELECTION_SUGGESTIONS] : SUGGESTIONS.filter((q) => !used.has(q));
   const current = sessions.find((s) => s.id === sid);
   const title = current?.title || (shown ? shown.question : '新对话');
   const quoteOf = (s: AgentSession) => book.chapters[s.chapter]?.paras[s.anchorPara]?.[s.anchorSentence] ?? '';
@@ -193,8 +206,8 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
       </div>
 
       <div ref={listRef} className="ag-list">
-        <div className="ag-now">
-          <div className="ag-now-head"><span className="ag-label">当前句</span><span className="ag-hint">滑动或点选一句</span></div>
+        <div className="ag-now" data-off={attachment !== null}>
+          <div className="ag-now-head"><span className="ag-label">当前句</span><span className="ag-hint">{attachment ? '已改用选中的文字' : '滑动或点选一句'}</span></div>
           <div ref={pickRef} className="ag-pick" onScroll={(e) => onPick(e.currentTarget)} data-noswipe="">
             {page.paras.map((p, pi) => (
               <p key={p.para} className="ag-para" style={{ textIndent: pi ? '1em' : 0 }}>
@@ -202,7 +215,7 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
                   const i = ++k;
                   return (
                     <span key={s.sentence} data-si={i} className="ag-sent" data-sel={i === sel}
-                      onClick={() => { lock(500); setSel(i); scrollPick(i, true); }}>{s.text}{' '}</span>
+                      onClick={() => { lock(500); setSel(i); scrollPick(i, true); onAttachment(null); }}>{s.text}{' '}</span>
                   );
                 })}
               </p>
@@ -234,8 +247,21 @@ export function AgentDrawer({ db, book, engine, open, panelRef }: Props) {
       <div className="ag-chips" data-noswipe="">
         {chips.map((q) => <button type="button" key={q} className="ag-chip" onClick={() => void send(q)}>{q}</button>)}
       </div>
+      {attachment && (
+        <div className="ag-attach" data-noswipe="">
+          <div className="ag-attach-body">
+            <div className="ag-label">选中的文字 · 第 {attachment.chapter + 1} 章</div>
+            <div className="ag-attach-quote">“{attachment.text}”</div>
+          </div>
+          <button type="button" className="ag-attach-x" aria-label="移除选中的文字" onClick={() => onAttachment(null)}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+      )}
       <form className="ag-composer" onSubmit={(e) => { e.preventDefault(); const q = draft; setDraft(''); void send(q); }}>
-        <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="在页边写下你的问题" aria-label="问题" enterKeyHint="send" />
+        <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={attachment ? '就这段文字提问' : '在页边写下你的问题'} aria-label="问题" enterKeyHint="send" />
         <button type="submit" className="ag-send" aria-label="发送" disabled={!draft.trim()}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M7 12V2M7 2L2.5 6.5M7 2l4.5 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />

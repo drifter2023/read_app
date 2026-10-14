@@ -14,6 +14,7 @@ import { FpsMeter } from './FpsMeter.tsx';
 import { ReaderChrome } from './reader/ReaderChrome.tsx';
 import { SettingsSheet } from './reader/SettingsSheet.tsx';
 import { TocSheet } from './reader/TocSheet.tsx';
+import { useTextSelection } from './reader/useTextSelection.tsx';
 import { useExposure } from './useExposure.ts';
 import { drawerInner, useWordLookup } from './useWordLookup.tsx';
 
@@ -42,10 +43,30 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const dimRef = useRef<HTMLDivElement>(null);
   const shieldRef = useRef<HTMLDivElement>(null);
   const [agentOpen, setAgentOpen] = useState(false);
-  useAgentSwipe({ shell: shellRef, page: pageRef, panel: panelRef, dim: dimRef, shield: shieldRef }, setAgentOpen);
+  const agentOpenRef = useRef(false);
+  /** The text handed to the Agent drawer by 问旁注 (C3). */
+  const [attachment, setAttachment] = useState<{ text: string; chapter: number } | null>(null);
+  const agentSwipe = useAgentSwipe({ shell: shellRef, page: pageRef, panel: panelRef, dim: dimRef, shield: shieldRef }, (open) => {
+    agentOpenRef.current = open;
+    setAgentOpen(open);
+    if (open) selectionRef.current.clear(); // a left swipe cancels the selection (and opens the drawer)
+  });
   const lookup = useWordLookup(engineRef, session.db, book, session.prefs);
   const lookupRef = useRef(lookup);
   lookupRef.current = lookup;
+  const sheetRef = useRef(sheet);
+  sheetRef.current = sheet;
+  const selection = useTextSelection({
+    engine: engineRef, page: pageRef, shell: shellRef, book,
+    enabled: () => !sheetRef.current && !lookupRef.current.isOpen() && !agentOpenRef.current,
+    onAsk: (text, chapter) => {
+      setAttachment({ text, chapter });
+      showChrome(false);
+      agentSwipe.setOpen(true);
+    },
+  });
+  const selectionRef = useRef(selection);
+  selectionRef.current = selection;
   useExposure(scrollRef, engineRef, book, lookup);
 
   useEffect(() => {
@@ -72,7 +93,8 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
         setChapter(p.chapter);
       },
       onAnchor: (a) => saver.push(a, pct),
-      onRelayout: () => lookupRef.current.reset(),
+      onRelayout: () => { lookupRef.current.reset(); selectionRef.current.clear(); },
+      onSelection: () => selectionRef.current.refresh(),
     });
     engineRef.current = engine;
     exposeDevHandle({ engine, prefs: session.prefs });
@@ -132,7 +154,8 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const onTap = (e: MouseEvent) => {
     if (drawerInner(e.target)) return;
     const box = pageRef.current!.getBoundingClientRect();
-    const action = routeTap({ selection: false, sheet: sheet !== null, drawer: lookup.isOpen(), y: e.clientY, pageTop: box.top, pageH: box.height });
+    const action = routeTap({ selection: selection.has(), sheet: sheet !== null, drawer: lookup.isOpen(), y: e.clientY, pageTop: box.top, pageH: box.height });
+    if (action === 'clear-selection') { selection.clear(); return; }
     if (action === 'close-sheet') { setSheet(null); return; }
     if (action === 'settings') { showChrome(false); setSheet('settings'); return; }
     if (action === 'drawer') {
@@ -152,7 +175,8 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const vars = { '--focus-pct': prefs.focusPct, '--blur-max': `${prefs.blurMax}px` } as CSSProperties;
   return (
     <div ref={shellRef} className="rd-shell">
-    <AgentDrawer db={session.db} book={book} engine={engineRef} open={agentOpen} panelRef={panelRef} />
+    <AgentDrawer db={session.db} book={book} engine={engineRef} open={agentOpen} panelRef={panelRef}
+      attachment={attachment} onAttachment={setAttachment} />
     <div ref={pageRef} className={prefs.focusBlur ? 'rd-page' : 'rd-page rd-clear'} style={vars} onClick={onTap}>
       <div ref={scrollRef} data-testid="reader-scroll" />
       {prefs.tier === 'fallback' && prefs.focusBlur && (
@@ -168,6 +192,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
         <span ref={pctRef} className="rd-eyebrow-pct">1%</span>
       </div>
       {lookup.drawer}
+      {selection.ui}
       <ReaderChrome
         visible={chrome && !sheet}
         title={book.title}

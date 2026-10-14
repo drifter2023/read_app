@@ -79,6 +79,7 @@ export function useAgentSwipe(els: Els, onSettle: (open: boolean) => void): { se
     };
     const move = (e: PointerEvent) => {
       if (!g) return;
+      if (shell.dataset.selecting) { g = null; return; } // a long-press selection owns this gesture (useTextSelection)
       const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
       if (!g.drag) {
         if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2 && ((g.p0 < 0.5 && dx < 0) || (g.p0 >= 0.5 && dx > 0))) {
