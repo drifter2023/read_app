@@ -1,6 +1,6 @@
 # Handoff: 聚焦阅读 (Focus Reader) — MVP
 
-> **Changes 2026-10-14:** `docs/handoff/2026-10-14/CHANGES_2026-10-14.md` (select-to-ask 问旁注, top-30 % tap opens settings, 聚焦模糊). It overrides anything below that conflicts, except where `docs/plans/2026-10-14-select-to-ask.md` records the owner's decisions (the top bar and capsule stay).
+> **Changes 2026-10-14:** `docs/handoff/2026-10-14/CHANGES_2026-10-14.md` (select-to-ask 问旁注, top-30 % tap opens settings, 聚焦模糊). It overrides anything below that conflicts, except where `docs/plans/2026-10-14-select-to-ask.md` records the owner's decisions (the top bar and capsule stay; since 2026-10-15 only a tap in the title area shows them, and the settings sheet keeps its MVP look).
 
 ## Overview
 A focus-first English reader for Chinese-speaking learners. The MVP contains exactly two screens:
@@ -75,7 +75,7 @@ References: `design/screens/fig-4a-focus.png` and `fig-4a-drawer.png`.
   - Lines inside the band are perfectly sharp. Formula in *Interactions*.
 - **Top bar (new)**:
   - 44px tall: `‹ 书架` on the left, the book title in the middle.
-  - Appears on a tap in the top 30 % (even on a word) or on blank space below it; the same tap hides it again. Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
+  - Appears only on a tap in the title area: the top of the page down to 22px below the eyebrow (章节名 · 进度), even on a word; a tap there again, or anywhere else, hides it (owner decision 2026-10-15). Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
 - **Bottom toolbar (new)**:
   - Floating capsule with two buttons: `目录` (table of contents, P1) and `Aa` (settings).
   - Shown and hidden together with the top bar.
@@ -133,9 +133,9 @@ The footnote is out of normal flow, so line height must not change. Acceptance R
   - `closing`.
 
 ### 3. Settings sheet (`SettingsSheet`, new)
-- Opened by `Aa` (a tap in the top 30 % shows the toolbar with `Aa`). Rises from the bottom; closes on a tap outside (transparent scrim) or on the top handle. Uses the drawer's leather surface and the same 330 / 250ms motion.
-- Max height 44% of the viewport, so the focus band always stays visible above it.
-- First row: **聚焦模糊** (`focusBlur`, default on). Off → every line blur 0, opacity 1, the fade masks shrink to a thin strip behind the eyebrow, the whole page sharp; 清晰带 / 模糊强度 / 整句模式 greyed out.
+- Opened by `Aa` (a tap in the title area shows the toolbar with `Aa`). Rises from the bottom; closes on a tap outside (transparent scrim) or on the top handle. Uses the drawer's leather surface and the same 330 / 250ms motion.
+- Max height 42% of the viewport, so the focus band always stays visible above it.
+- Rows: 字号, **聚焦模糊** (`focusBlur`, default on; red switch, hint 关闭后整页清晰), 清晰带, 模糊强度, 预测生词, 整句模式 (the MVP sheet; owner restored it on 2026-10-15). Off → every line blur 0, opacity 1, the fade masks shrink to a thin strip behind the eyebrow, the whole page sharp; 清晰带 / 模糊强度 / 整句模式 greyed out.
 - Changes apply live.
 
 | Item | Control | Default | Mapping |
@@ -213,9 +213,9 @@ Meanwhile, load `Position`, mount the chapter and build the line table. Going ba
 ### Tap arbitration in the reader
 1. A text selection exists → clear it.
 2. A drawer or the settings sheet is open → close it.
-3. The tap is in the top 30% → toggle the top bar and bottom toolbar (even on a word; owner decision 2026-10-15).
+3. The tap is in the title area (top of the page to 22px below the eyebrow) → toggle the top bar and bottom toolbar (even on a word; owner decision 2026-10-15).
 4. The tap hits a word → open the word drawer.
-5. Otherwise → toggle the top bar and bottom toolbar.
+5. Otherwise → hide the top bar and bottom toolbar if they are shown; nothing else.
 
 ---
 

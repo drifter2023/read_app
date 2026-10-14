@@ -47,9 +47,10 @@ export async function wordInBand(page: Page, word: string, nth = 0): Promise<{ x
 }
 
 /** A tap on blank space (the left gutter at mid-height): toggles the chrome. */
-export async function tapBlank(page: Page) {
+/** A tap in the title area (the eyebrow strip at the top): shows or hides ‹ 书架, 目录 and Aa (N-01). */
+export async function tapTitle(page: Page) {
   const vp = page.viewportSize()!;
-  await page.mouse.click(12, vp.height / 2);
+  await page.mouse.click(vp.width / 2, 64);
 }
 
 /** Scrolls the end of sentence `s` of paragraph `p` (Gatsby, chapter 0) to the band centre; returns its droplet's centre. */

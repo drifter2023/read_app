@@ -5,7 +5,7 @@ import { logMetric } from '../core/metrics/metrics.ts';
 import { ReaderEngine, type EngineBook } from '../core/reader/engine.ts';
 import { PositionSaver, savePosition } from '../core/reader/position.ts';
 import { decideTier, runProbe } from '../core/reader/probe.ts';
-import { MENU_ZONE, routeTap } from '../core/reader/tap.ts';
+import { MENU_PAD, routeTap } from '../core/reader/tap.ts';
 import type { Anchor } from '../core/types.ts';
 import { AgentDrawer } from './agent/AgentDrawer.tsx';
 import { useAgentSwipe } from './agent/useAgentSwipe.ts';
@@ -27,6 +27,7 @@ const MIN_SESSION_MS = 5000;
 export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chapterRef = useRef<HTMLSpanElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
   const pctRef = useRef<HTMLSpanElement>(null);
   const engineRef = useRef<ReaderEngine | null>(null);
   const saverRef = useRef<PositionSaver | null>(null);
@@ -132,7 +133,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
     };
   }, [session, book, initialAnchor]);
 
-  // Chrome: shown by a tap on blank space, hidden after 3 s idle or when scrolling starts.
+  // Chrome: shown by a tap in the title area, hidden after 3 s idle, on any other tap or when scrolling starts.
   const showChrome = (on: boolean) => {
     clearTimeout(chromeTimer.current);
     setChrome(on);
@@ -149,24 +150,25 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
 
   /**
    * Tap arbitration (README, routeTap): a tap inside a drawer is the drawer's own; otherwise an open
-   * sheet or drawer closes first, a tap in the top 30 % shows or hides the top bar and capsule (even on
-   * a word), then a word or droplet opens its drawer, and blank space toggles the top bar and capsule.
+   * sheet or drawer closes first, a tap in the title area (down to just below the eyebrow) shows or
+   * hides the top bar and capsule (even on a word), then a word or droplet opens its drawer. Anywhere
+   * else a tap only hides the top bar and capsule (owner decision 2026-10-15).
    */
   const onTap = (e: MouseEvent) => {
     if (drawerInner(e.target)) return;
     const box = pageRef.current!.getBoundingClientRect();
-    const action = routeTap({ selection: selection.has(), sheet: sheet !== null, drawer: lookup.isOpen(), y: e.clientY, pageTop: box.top, pageH: box.height });
+    const menuH = eyebrowRef.current!.getBoundingClientRect().bottom - box.top + MENU_PAD;
+    const action = routeTap({ selection: selection.has(), sheet: sheet !== null, drawer: lookup.isOpen(), y: e.clientY, pageTop: box.top, menuH });
     if (action === 'clear-selection') { selection.clear(); return; }
     if (action === 'close-sheet') { setSheet(null); return; }
     if (action === 'menu') { showChrome(!chrome); return; }
     if (action === 'drawer') {
-      // Close; a tap on another word below the settings zone then opens it (R-05).
-      const inZone = e.clientY - box.top < box.height * MENU_ZONE;
-      lookup.onTap(e.clientX, e.clientY, e.timeStamp, inZone);
+      // Close; a tap on another word below the title area then opens it (R-05).
+      lookup.onTap(e.clientX, e.clientY, e.timeStamp, e.clientY - box.top < menuH);
       return;
     }
-    if (lookup.onTap(e.clientX, e.clientY, e.timeStamp)) { if (chrome) showChrome(false); return; }
-    showChrome(!chrome);
+    lookup.onTap(e.clientX, e.clientY, e.timeStamp);
+    if (chrome) showChrome(false);
   };
 
   const back = () => {
@@ -188,7 +190,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
       )}
       <div className="rd-mask rd-mask-top" />
       <div className="rd-mask rd-mask-bottom" />
-      <div className="rd-eyebrow">
+      <div ref={eyebrowRef} className="rd-eyebrow">
         <span ref={chapterRef} className="rd-eyebrow-chapter" />
         <span ref={pctRef} className="rd-eyebrow-pct">1%</span>
       </div>

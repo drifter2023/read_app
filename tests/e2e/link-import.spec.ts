@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { fullTier, openFromHome, ready, tapBlank } from './helpers.ts';
+import { fullTier, openFromHome, ready, tapTitle } from './helpers.ts';
 
 // With the offline service worker registered, page.route misses the page's requests.
 test.use({ serviceWorkers: 'block' });
@@ -19,7 +19,7 @@ async function chooseLink(page: Page, text: string) {
 }
 
 async function back(page: Page) {
-  await tapBlank(page);
+  await tapTitle(page);
   await page.getByRole('button', { name: '‹ 书架' }).click();
   await expect(page.locator('.reader-layer')).toHaveCount(0);
   await expect(page.getByTestId('flight')).toHaveCount(0);
