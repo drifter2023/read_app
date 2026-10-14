@@ -98,6 +98,9 @@
 }
 .rd-ask[data-on='true'] { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
 .rd-ask-dot { width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+/* 夜读: a black pill would vanish into the page; it inverts like the handles. */
+:root[data-theme='night'] .rd-ask { background: var(--reader-ink); color: var(--paper); }
+:root[data-theme='night'] .rd-ask-dot { background: var(--paper); }
 .rd-drop {
   position: absolute; left: 0; top: 0; width: 6px; height: 6px; /* placed by transform */
   border-radius: 0 50% 50% 50%; background: rgba(var(--reader-ink-rgb), .42); /* a drop, point up (rotated 45°) */
