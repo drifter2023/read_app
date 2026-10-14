@@ -73,6 +73,10 @@
 
 /* ---- Grammar droplets: one overlay layer, only for sentences ending in the focus band ---- */
 .rd-drops { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; } /* tapped by geometry: engine.dropAt */
+/* Select-to-ask (C1): rectangles above the lines, placed by transform from the line table. */
+.rd-sel { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; }
+.rd-sel-rect { position: absolute; left: 0; top: 0; border-radius: 3px; background: rgba(var(--reader-ink-rgb), .16); }
+.rd-sel-ui { position: absolute; left: 0; top: 0; right: 0; z-index: 2; pointer-events: none; }
 .rd-drop {
   position: absolute; left: 0; top: 0; width: 6px; height: 6px; /* placed by transform */
   border-radius: 0 50% 50% 50%; background: rgba(var(--reader-ink-rgb), .42); /* a drop, point up (rotated 45°) */

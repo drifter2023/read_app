@@ -5,7 +5,7 @@ import type { Anchor, ChapterData, Paragraph } from '../types.ts';
 import { lineOffset, lineRange, renderLine, type Footnote } from './decorate.ts';
 import { bandFor, blurPx, opacityFor, tFor, withSentencePenalty } from './focus.ts';
 import { ChapterLayout, type LineMeta } from './layout.ts';
-import { wordBounds, wordContext } from './words.ts';
+import { nearestWord, wordBounds, wordContext } from './words.ts';
 
 export interface EngineBook { id: string; wordCount: number; chapters: ChapterData[] }
 /** `words` is the book-level word index at the band centre, for session metrics. */
@@ -15,6 +15,8 @@ export interface EngineCallbacks {
   onAnchor?: (a: Anchor) => void;
   /** Lines were rebuilt (font size or width change); anything attached to old lines is gone. */
   onRelayout?: () => void;
+  /** The selection was redrawn (it changed, or chapters mounted above it moved it). */
+  onSelection?: () => void;
 }
 
 /** Footnotes for one paragraph; the engine calls it for mounted paragraphs only (R-06). */
@@ -27,6 +29,12 @@ export interface WordHit {
   lineIndex: number; rect: DOMRect;
 }
 export interface Highlight { chapter: number; para: number; start: number; end: number }
+/** A word on a mounted line (select-to-ask). Offsets are in the paragraph text. */
+export interface WordRef { chapter: number; para: number; start: number; end: number; lineIndex: number }
+/** A text selection inside one chapter, from a word start to a word end (CHANGES 2026-10-14 · C1). */
+export interface TextSelection { chapter: number; from: { para: number; at: number }; to: { para: number; at: number } }
+/** The selection's first and last line boxes, in viewport coordinates (handles and the 问旁注 button). */
+export interface SelectionBox { startX: number; startTop: number; startBottom: number; endX: number; endTop: number; endBottom: number; left: number; right: number }
 /**
  * A tapped grammar droplet: the sentence that ends there, the sentence before it (for pronouns;
  * the last one of the previous paragraph when this one opens a paragraph), and the droplet's centre x.
@@ -77,6 +85,16 @@ export class ReaderEngine {
    */
   #dropLayer: HTMLElement;
   #drops = new Map<string, { el: HTMLElement; i: number; e: number; t: string }>();
+  /**
+   * Select-to-ask: the selection, drawn as rectangles in an overlay layer above the lines (never
+   * inside them, so line height never changes). Each rectangle keeps its line and horizontal extent;
+   * the vertical position comes from the line table, so a window change re-places it without reading layout.
+   */
+  #sel: TextSelection | null = null;
+  #selLayer: HTMLElement;
+  #selRects: { line: HTMLElement; left: number; width: number; h: number; el: HTMLElement }[] = [];
+  /** React renders the handles and the 问旁注 button in here, in the same content coordinates. */
+  readonly selectionUi: HTMLElement;
   #dropTop = 0;
   #win: [number, number] = [0, 0];
   #H = 0;
@@ -117,7 +135,11 @@ export class ReaderEngine {
     this.#probe.className = 'rd-probe';
     this.#dropLayer = document.createElement('div');
     this.#dropLayer.className = 'rd-drops';
-    scroller.append(this.#content, this.#dropLayer, this.#probe);
+    this.#selLayer = document.createElement('div');
+    this.#selLayer.className = 'rd-sel';
+    this.selectionUi = document.createElement('div');
+    this.selectionUi.className = 'rd-sel-ui';
+    scroller.append(this.#content, this.#selLayer, this.#dropLayer, this.selectionUi, this.#probe);
     scroller.addEventListener('scroll', this.#onScroll, { passive: true });
     this.#ro = new ResizeObserver(this.#onResize);
   }
@@ -170,10 +192,12 @@ export class ReaderEngine {
       if (cur && !(line.chapter === cur.chapter && line.para === cur.para && line.sFirst <= cur.sFirst && cur.sFirst <= line.sLast)) {
         t = withSentencePenalty(t);
       }
+      const shown = t; // droplets follow the band, not the selection
+      if (this.#sel && this.#inSelection(i)) t = 0; // selected lines are sharp (C1)
       // With 聚焦模糊 off every line is sharp; droplets still mark the sentences in the band.
       const b = full && focus ? blurPx(t, bmax) : 0;
       const o = focus ? opacityFor(t) : 1;
-      if (t === 0 && line.ends.length) sharp.push(i);
+      if (shown === 0 && line.ends.length) sharp.push(i);
       if (b !== this.#blur[i]) {
         line.el.style.filter = b > 0 ? `blur(${b}px)` : 'none';
         this.#blur[i] = b;
@@ -269,17 +293,7 @@ export class ReaderEngine {
 
   /** Word under a viewport point, or null for blank space, punctuation or the chapter heading. */
   hitTest(x: number, y: number): WordHit | null {
-    const doc = this.#scroller.ownerDocument;
-    let node: Node | null = null;
-    let offset = 0;
-    const d = doc as Document & { caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null };
-    if (typeof doc.caretRangeFromPoint === 'function') {
-      const r = doc.caretRangeFromPoint(x, y);
-      if (r) { node = r.startContainer; offset = r.startOffset; }
-    } else if (d.caretPositionFromPoint) {
-      const p = d.caretPositionFromPoint(x, y);
-      if (p) { node = p.offsetNode; offset = p.offset; }
-    }
+    const { node, offset } = this.#caretAt(x, y);
     const el = (node instanceof HTMLElement ? node : node?.parentElement)?.closest<HTMLElement>('.rd-line');
     if (!node || !el || el.classList.contains('rd-head')) return null;
     const lineIndex = this.#index.get(el);
@@ -341,6 +355,155 @@ export class ReaderEngine {
       out.push({ chapter: line.chapter, para: line.para, start: line.start, end });
     }
     return out;
+  }
+
+  /** The text position under a viewport point (WebKit: caretRangeFromPoint; others: caretPositionFromPoint). */
+  #caretAt(x: number, y: number): { node: Node | null; offset: number } {
+    const doc = this.#scroller.ownerDocument;
+    const d = doc as Document & { caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null };
+    if (typeof doc.caretRangeFromPoint === 'function') {
+      const r = doc.caretRangeFromPoint(x, y);
+      if (r) return { node: r.startContainer, offset: r.startOffset };
+    } else if (d.caretPositionFromPoint) {
+      const p = d.caretPositionFromPoint(x, y);
+      if (p) return { node: p.offsetNode, offset: p.offset };
+    }
+    return { node: null, offset: 0 };
+  }
+
+  /**
+   * The word nearest to a viewport point (C1 drag-extend): the line by vertical distance ×4 plus
+   * horizontal distance to its text (so the same line wins), then the nearest word on that line.
+   * Only lines of `chapter` when given; never the chapter heading.
+   */
+  wordNear(x: number, y: number, chapter?: number): WordRef | null {
+    if (!this.#lines.length) return null;
+    const box = this.#scroller.getBoundingClientRect();
+    const i0 = this.#lineAtY(y - box.top + this.#scroller.scrollTop);
+    let best: { i: number; r: DOMRect; len: number } | null = null;
+    let bestD = Infinity;
+    for (let i = i0 - 2; i <= i0 + 2; i++) {
+      const line = this.#lines[i];
+      if (!line || line.para < 0 || (chapter !== undefined && line.chapter !== chapter)) continue;
+      const len = this.#lineText(line.el).length;
+      if (!len) continue;
+      const r = lineRange(line.el, 0, len).getBoundingClientRect();
+      const dy = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0;
+      const dx = x < r.left ? r.left - x : x > r.right ? x - r.right : 0;
+      if (dy * 4 + dx < bestD) { bestD = dy * 4 + dx; best = { i, r, len }; }
+    }
+    if (!best) return null;
+    const line = this.#lines[best.i]!;
+    const cx = Math.min(best.r.right - 1, Math.max(best.r.left + 1, x));
+    const { node, offset } = this.#caretAt(cx, (best.r.top + best.r.bottom) / 2);
+    const at = node && line.el.contains(node) ? line.start + lineOffset(line.el, node, offset) : (cx > (best.r.left + best.r.right) / 2 ? line.start + best.len : line.start);
+    const text = paragraphText(this.#book.chapters[line.chapter]!.paras[line.para]!);
+    const w = nearestWord(text, at, line.start, line.start + best.len);
+    if (!w) return null;
+    // A word broken across lines (a hyphenated break) still selects whole.
+    const whole = wordBounds(text, w[0]) ?? w;
+    return { chapter: line.chapter, para: line.para, start: whole[0], end: whole[1], lineIndex: best.i };
+  }
+
+  /** The selection, or null. */
+  get selection(): TextSelection | null {
+    return this.#sel;
+  }
+
+  /** Shows a selection (or clears it with null): overlay rectangles, and its lines painted sharp. */
+  setSelection(sel: TextSelection | null): void {
+    const same = sel && this.#sel && sel.chapter === this.#sel.chapter && sel.from.para === this.#sel.from.para
+      && sel.from.at === this.#sel.from.at && sel.to.para === this.#sel.to.para && sel.to.at === this.#sel.to.at;
+    if (same || (!sel && !this.#sel)) return;
+    this.#sel = sel;
+    this.#measureSelection();
+    this.#placeSelection();
+    this.paintNow();
+  }
+
+  /** The selected text, paragraphs joined by a newline. */
+  selectionText(): string {
+    const s = this.#sel;
+    if (!s) return '';
+    const paras = this.#book.chapters[s.chapter]!.paras;
+    const out: string[] = [];
+    for (let p = s.from.para; p <= s.to.para; p++) {
+      const text = paragraphText(paras[p]!);
+      out.push(text.slice(p === s.from.para ? s.from.at : 0, p === s.to.para ? s.to.at : text.length).trim());
+    }
+    return out.filter(Boolean).join('\n');
+  }
+
+  /** Where the selection's first and last rectangles are on screen, or null. */
+  selectionBox(): SelectionBox | null {
+    const rects = this.#selRects.filter((r) => r.el.isConnected && r.el.style.display !== 'none');
+    if (!rects.length) return null;
+    const box = this.#scroller.getBoundingClientRect();
+    const st = this.#scroller.scrollTop;
+    const at = (r: (typeof rects)[number]) => {
+      const i = this.#index.get(r.line)!;
+      const top = box.top + this.#top[i]! - st + (this.#lh - r.h) / 2;
+      return { left: box.left + r.left, right: box.left + r.left + r.width, top, bottom: top + r.h };
+    };
+    const a = at(rects[0]!);
+    const b = at(rects.at(-1)!);
+    const all = rects.map(at);
+    return {
+      startX: a.left, startTop: a.top, startBottom: a.bottom, endX: b.right, endTop: b.top, endBottom: b.bottom,
+      left: Math.min(...all.map((r) => r.left)), right: Math.max(...all.map((r) => r.right)),
+    };
+  }
+
+  /** True if line `i` holds part of the selection. */
+  #inSelection(i: number): boolean {
+    const s = this.#sel!;
+    const line = this.#lines[i]!;
+    if (line.chapter !== s.chapter || line.para < 0) return false;
+    const next = this.#lines[i + 1];
+    const end = next && next.chapter === line.chapter && next.para === line.para ? next.start : Number.MAX_SAFE_INTEGER;
+    const before = (p: number, at: number, q: number, bt: number) => p < q || (p === q && at < bt);
+    return before(line.para, line.start, s.to.para, s.to.at) && before(s.from.para, s.from.at, line.para, end);
+  }
+
+  /** Measures the selection's rectangles once per change (one range read per selected line). */
+  #measureSelection(): void {
+    for (const r of this.#selRects) r.el.remove();
+    this.#selRects = [];
+    const s = this.#sel;
+    if (!s) return;
+    const box = this.#scroller.getBoundingClientRect();
+    for (let i = 0; i < this.#lines.length; i++) {
+      if (!this.#inSelection(i)) continue;
+      const line = this.#lines[i]!;
+      const len = this.#lineText(line.el).length;
+      const a = line.para === s.from.para ? Math.max(0, s.from.at - line.start) : 0;
+      const b = line.para === s.to.para ? Math.min(len, s.to.at - line.start) : len;
+      const text = this.#lineText(line.el);
+      let a2 = a;
+      let b2 = b;
+      while (a2 < b2 && text[a2] === ' ') a2++;
+      while (b2 > a2 && text[b2 - 1] === ' ') b2--;
+      if (b2 <= a2) continue;
+      const r = lineRange(line.el, a2, b2).getBoundingClientRect();
+      const el = this.#scroller.ownerDocument.createElement('span');
+      el.className = 'rd-sel-rect';
+      this.#selLayer.append(el);
+      this.#selRects.push({ line: line.el, left: r.left - box.left, width: r.width, h: r.height, el });
+    }
+  }
+
+  /** Places the rectangles from the line table (no layout reads); hides those whose line is unmounted. */
+  #placeSelection(): void {
+    for (const r of this.#selRects) {
+      const i = this.#index.get(r.line);
+      if (i === undefined || !r.line.isConnected) { r.el.style.display = 'none'; continue; }
+      r.el.style.display = '';
+      const top = this.#top[i]! + (this.#lh - r.h) / 2 - 2;
+      r.el.style.transform = `translate(${r.left - 2}px, ${top}px)`;
+      r.el.style.width = `${r.width + 4}px`;
+      r.el.style.height = `${r.h + 4}px`;
+    }
+    this.#cb.onSelection?.();
   }
 
   /** The grammar droplet under a viewport point, if one is showing there (sentences in the focus band only). */
@@ -411,6 +574,10 @@ export class ReaderEngine {
     this.#content.remove();
     this.#dropLayer.remove();
     this.#drops.clear();
+    this.#selLayer.remove();
+    this.selectionUi.remove();
+    this.#selRects = [];
+    this.#sel = null;
     this.#probe.remove();
     this.#blocks.clear();
     this.#lines = [];
@@ -597,6 +764,8 @@ export class ReaderEngine {
     this.#gapLine = -1;
     this.#gap = 0;
     this.#decorated.clear();
+    this.#sel = null; // its rectangles belonged to the old lines
+    this.#measureSelection();
     this.#applyTypography();
     this.#measureViewport();
     for (const { block } of this.#blocks.values()) block.remove();
@@ -677,6 +846,7 @@ export class ReaderEngine {
     this.#blur = new Float64Array(n).fill(Number.NaN);
     this.#opa = new Float64Array(n).fill(Number.NaN);
     this.#win = [0, 0];
+    if (this.#selRects.length) this.#placeSelection();
   }
 
   /** Shows a droplet for each sentence ending on the sharp lines `sharp`; others fade out and go. */

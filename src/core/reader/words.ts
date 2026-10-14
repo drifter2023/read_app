@@ -36,3 +36,21 @@ export function wordContext(p: Paragraph, start: number): WordContext {
 export function* words(text: string): Generator<{ word: string; start: number; end: number }> {
   for (const m of text.matchAll(/[A-Za-z]+(?:['’‐‑⁠-][A-Za-z]+)*/g)) yield { word: m[0], start: m.index, end: m.index + m[0].length };
 }
+
+/**
+ * The word in `text[lo, hi)` nearest to `at` (select-to-ask drags land between words too):
+ * the word containing `at`, else the closest one by characters, ties to the left. Null if none.
+ */
+export function nearestWord(text: string, at: number, lo = 0, hi = text.length): [number, number] | null {
+  let best: [number, number] | null = null;
+  let bestD = Infinity;
+  for (const w of words(text)) {
+    if (w.end <= lo) continue;
+    if (w.start >= hi) break;
+    const a = Math.max(w.start, lo);
+    const b = Math.min(w.end, hi);
+    const d = at < a ? a - at : at >= b ? at - b + 1 : 0;
+    if (d < bestD) { bestD = d; best = [a, b]; }
+  }
+  return best;
+}
