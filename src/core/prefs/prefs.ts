@@ -9,10 +9,12 @@ export interface Prefs {
   fontSize: FontSize; focusPct: number; blurMax: number; sentenceMode: boolean; tier: Tier | null; theme: Theme;
   /** 预测生词 关 / 少 / 多 (P-05). */
   predict: PredictLevel;
+  /** 聚焦模糊 on/off: off makes the whole page sharp and lets any word open its drawer (S-03). */
+  focusBlur: boolean;
 }
 export type PrefsListener = (prefs: Prefs, changed: keyof Prefs) => void;
 
-export const DEFAULT_PREFS: Prefs = { fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper', predict: 'few' };
+export const DEFAULT_PREFS: Prefs = { fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper', predict: 'few', focusBlur: true };
 
 export const TYPE_SCALE: Record<FontSize, { size: number; line: number }> = {
   S: { size: 17.5, line: 30 },
@@ -31,6 +33,7 @@ export function sanitise(p: Prefs): Prefs {
     tier: p.tier === 'full' || p.tier === 'fallback' ? p.tier : null,
     theme: p.theme === 'night' ? 'night' : 'paper',
     predict: p.predict === 'off' || p.predict === 'many' ? p.predict : 'few',
+    focusBlur: p.focusBlur !== false,
   };
 }
 

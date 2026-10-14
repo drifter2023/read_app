@@ -24,6 +24,9 @@
 .rd-mask { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 2; }
 .rd-mask-top { top: 0; height: 150px; background: linear-gradient(var(--paper) 22%, transparent); }
 .rd-mask-bottom { bottom: 0; height: 130px; background: linear-gradient(transparent, var(--paper) 72%); }
+/* 聚焦模糊 off (S-03): the masks shrink to the strips behind the eyebrow and the home indicator. */
+.rd-clear .rd-mask-top { height: 104px; background: linear-gradient(var(--paper) 76%, transparent); }
+.rd-clear .rd-mask-bottom { height: 40px; background: linear-gradient(transparent, var(--paper) 60%); }
 .rd-eyebrow {
   position: absolute; top: 58px; left: 0; right: 0; padding: 0 34px; z-index: 3; pointer-events: none;
   display: flex; justify-content: space-between;
@@ -250,6 +253,7 @@
 }
 .set-switch:checked { background: #c1452f; }
 .set-switch:checked::after { transform: translateX(18px); }
+.set-row[aria-disabled='true'] { opacity: .4; }
 .toc { list-style: none; margin: 0; padding: 0; }
 .toc li + li { border-top: 1px solid rgba(242, 234, 217, .08); }
 .toc button {

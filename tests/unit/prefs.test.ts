@@ -9,7 +9,7 @@ beforeEach(async () => { db = nodeDb(); await migrate(db); });
 
 describe('PrefsStore', () => {
   it('starts from the spec defaults', async () => {
-    expect((await PrefsStore.load(db)).get()).toEqual({ fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper', predict: 'few' });
+    expect((await PrefsStore.load(db)).get()).toEqual({ fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper', predict: 'few', focusBlur: true });
   });
 
   it('S-01: persists changes across reloads', async () => {
@@ -35,6 +35,8 @@ describe('PrefsStore', () => {
   it('clamps to the settings ranges', () => {
     expect(sanitise({ ...DEFAULT_PREFS, focusPct: 83, blurMax: 20 })).toMatchObject({ focusPct: 80, blurMax: 14 });
     expect(sanitise({ ...DEFAULT_PREFS, focusPct: 33, blurMax: 0 })).toMatchObject({ focusPct: 35, blurMax: 2 });
+    expect(sanitise({ ...DEFAULT_PREFS, focusBlur: 'no' as unknown as boolean }).focusBlur).toBe(true);
+    expect(sanitise({ ...DEFAULT_PREFS, focusBlur: false }).focusBlur).toBe(false);
     expect(sanitise({ ...DEFAULT_PREFS, fontSize: 'XL' as never, tier: 'turbo' as never })).toMatchObject({ fontSize: 'M', tier: null });
     expect(sanitise({ ...DEFAULT_PREFS, theme: 'sepia' as never })).toMatchObject({ theme: 'paper' });
     expect(sanitise({ ...DEFAULT_PREFS, theme: 'night' })).toMatchObject({ theme: 'night' });

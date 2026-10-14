@@ -334,11 +334,12 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
 
   /**
    * A tap right on a word's glyphs opens the word; otherwise a droplet within reach opens its
-   * sentence. Only the sharp text in the focus band opens anything; blurred text is blank space.
+   * sentence. Only sharp text opens anything (the focus band, or every line with 聚焦模糊 off);
+   * blurred text is blank space.
    */
   const targetAt = (e: ReaderEngine, x: number, y: number): Target | null => {
     const tapped = e.hitTest(x, y);
-    const word = tapped && e.isInBand(tapped.lineIndex) ? tapped : null;
+    const word = tapped && e.isTappable(tapped.lineIndex) ? tapped : null;
     const r = word?.rect;
     const onGlyphs = r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
     const drop = onGlyphs ? null : e.dropAt(x, y);

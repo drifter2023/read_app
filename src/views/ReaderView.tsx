@@ -141,9 +141,9 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   return (
     <div ref={shellRef} className="rd-shell">
     <AgentDrawer db={session.db} book={book} engine={engineRef} open={agentOpen} panelRef={panelRef} />
-    <div ref={pageRef} className="rd-page" style={vars} onClick={onTap}>
+    <div ref={pageRef} className={prefs.focusBlur ? 'rd-page' : 'rd-page rd-clear'} style={vars} onClick={onTap}>
       <div ref={scrollRef} data-testid="reader-scroll" />
-      {prefs.tier === 'fallback' && (
+      {prefs.tier === 'fallback' && prefs.focusBlur && (
         <>
           <div className="rd-bblur rd-bblur-top" />
           <div className="rd-bblur rd-bblur-bottom" />

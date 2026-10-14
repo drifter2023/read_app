@@ -158,6 +158,7 @@ export class ReaderEngine {
     const hi = lowerBound(this.#top, st + 2 * H);
     this.#moveWindow(lo, hi);
     const full = this.#prefs.tier !== 'fallback';
+    const focus = this.#prefs.focusBlur;
     const bmax = this.#prefs.blurMax;
     const cur = this.#prefs.sentenceMode ? this.#lines[this.#lineAtY(mid)] : undefined;
     const sharp: number[] = [];
@@ -169,8 +170,9 @@ export class ReaderEngine {
       if (cur && !(line.chapter === cur.chapter && line.para === cur.para && line.sFirst <= cur.sFirst && cur.sFirst <= line.sLast)) {
         t = withSentencePenalty(t);
       }
-      const b = full ? blurPx(t, bmax) : 0;
-      const o = opacityFor(t);
+      // With 聚焦模糊 off every line is sharp; droplets still mark the sentences in the band.
+      const b = full && focus ? blurPx(t, bmax) : 0;
+      const o = focus ? opacityFor(t) : 1;
       if (t === 0 && line.ends.length) sharp.push(i);
       if (b !== this.#blur[i]) {
         line.el.style.filter = b > 0 ? `blur(${b}px)` : 'none';
@@ -198,8 +200,8 @@ export class ReaderEngine {
       this.#relayout(a);
       return;
     }
-    if (p.tier !== prev.tier) {
-      for (const l of this.#lines) l.el.style.filter = '';
+    if (p.tier !== prev.tier || p.focusBlur !== prev.focusBlur) {
+      for (const l of this.#lines) { l.el.style.filter = ''; l.el.style.willChange = ''; }
       this.#blur.fill(Number.NaN);
       this.#win = [0, 0];
     }
@@ -300,6 +302,11 @@ export class ReaderEngine {
       chapter: line.chapter, para: line.para, start: b[0], end: b[1], word: text.slice(b[0], b[1]),
       lineIndex, rect, ...ctx,
     } as WordHit;
+  }
+
+  /** True if a tap on line `i` may open a drawer: any line with 聚焦模糊 off, else only the band (isInBand). */
+  isTappable(i: number): boolean {
+    return !this.#prefs.focusBlur ? i >= 0 && i < this.#lines.length : this.isInBand(i);
   }
 
   /**
@@ -711,7 +718,7 @@ export class ReaderEngine {
   #moveWindow(lo: number, hi: number): void {
     const [plo, phi] = this.#win;
     if (lo === plo && hi === phi) return;
-    const wc = this.#prefs.tier === 'fallback' ? 'opacity' : 'filter, opacity';
+    const wc = !this.#prefs.focusBlur ? '' : this.#prefs.tier === 'fallback' ? 'opacity' : 'filter, opacity';
     for (let i = plo; i < phi; i++) if (i < lo || i >= hi) this.#lines[i]!.el.style.willChange = '';
     for (let i = lo; i < hi; i++) if (i < plo || i >= phi) this.#lines[i]!.el.style.willChange = wc;
     this.#win = [lo, hi];

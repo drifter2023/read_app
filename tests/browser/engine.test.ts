@@ -94,6 +94,32 @@ describe('ReaderEngine', () => {
     expect(opacities).toContain(opacityFor(0.18));
   });
 
+  it('S-03: with 聚焦模糊 off every line is sharp and tappable; turning it back on restores the band', async () => {
+    const { el, e } = await open({ focusBlur: false, sentenceMode: true });
+    el.scrollTop = 1500;
+    e.paintNow();
+    const lines = Array.from(el.querySelectorAll<HTMLElement>('.rd-line')).filter((l) => l.style.opacity !== '');
+    expect(lines.length).toBeGreaterThan(15);
+    for (const l of lines) {
+      expect(l.style.filter).toBe('none');
+      expect(l.style.opacity).toBe('1');
+      expect(l.style.willChange).toBe('');
+    }
+    const top = Array.from(el.querySelectorAll<HTMLElement>('.rd-line'))
+      .findIndex((l) => l.getBoundingClientRect().top > el.getBoundingClientRect().top + 40);
+    expect(e.isInBand(top)).toBe(false);
+    expect(e.isTappable(top)).toBe(true);
+
+    e.setPrefs({ ...DEFAULT_PREFS, tier: 'full', focusBlur: true });
+    expect(e.isTappable(top)).toBe(false);
+    const m = mid(el);
+    const box = el.getBoundingClientRect();
+    const far = lines.find((l) => { const t = l.getBoundingClientRect().top; return t > box.top && t < box.bottom && Math.abs(t - m) > 300; })!;
+    expect(far.style.filter).toMatch(/^blur\(/);
+    expect(Number(far.style.opacity)).toBeLessThan(1);
+    expect(lineAt(el, m).style.willChange).toBe('filter, opacity');
+  });
+
   it('R-07: a font-size change keeps the anchor paragraph inside the band', async () => {
     const { el, e } = await open();
     el.scrollTop = 2400;

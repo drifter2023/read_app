@@ -76,6 +76,42 @@ test('S-01: settings apply live, keep the paragraph in the band, and persist', a
   expect(await page.evaluate(() => window.__spotlight!.prefs.get())).toMatchObject({ fontSize: 'L', focusPct: 50, sentenceMode: true });
 });
 
+test('S-03: 聚焦模糊 off makes the whole page sharp, any word opens its drawer, and it persists', async ({ page }) => {
+  await fullTier(page);
+  await page.goto('/?book=gatsby&dev=1');
+  await ready(page);
+  await tapBlank(page);
+  await page.getByRole('button', { name: '阅读设置' }).click();
+  await page.getByRole('switch', { name: '聚焦模糊' }).uncheck();
+  await expect(page.getByRole('slider', { name: '模糊强度' })).toBeDisabled();
+  await expect(page.getByRole('switch', { name: '整句模式' })).toBeDisabled();
+  await page.getByRole('button', { name: '关闭' }).click();
+  await expect(page.getByRole('dialog', { name: '阅读设置' })).toHaveCount(0);
+
+  const vp = page.viewportSize()!;
+  const shown = (h: number) => page.evaluate((h) => [...document.querySelectorAll<HTMLElement>('.rd-line[data-p]')]
+    .filter((l) => { const b = l.getBoundingClientRect(); return b.top > 90 && b.bottom < h - 40; })
+    .map((l) => [l.style.filter, l.style.opacity]), h);
+  const lines = await shown(vp.height);
+  expect(lines.length).toBeGreaterThan(10);
+  expect(new Set(lines.map(String))).toEqual(new Set(['none,1']));
+
+  // A word near the top, far outside the band, opens its drawer.
+  const high = await page.evaluate(() => {
+    const line = [...document.querySelectorAll<HTMLElement>('.rd-line[data-p]')].find((l) => l.getBoundingClientRect().top > 110)!;
+    const b = line.getBoundingClientRect();
+    return { x: b.left + 40, y: b.top + b.height / 2 };
+  });
+  await page.mouse.click(high.x, high.y);
+  await expect(page.getByTestId('drawer')).toHaveAttribute('data-state', 'ready');
+
+  await page.waitForTimeout(1000); // the web db is written to IndexedDB 300 ms after the last change
+  await page.reload();
+  await ready(page);
+  expect(await page.evaluate(() => window.__spotlight!.prefs.get().focusBlur)).toBe(false);
+  expect(new Set((await shown(vp.height)).map(String))).toEqual(new Set(['none,1']));
+});
+
 test('R-10: the contents list marks the current chapter and jumps to a chapter start in the band', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby');
