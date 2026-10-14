@@ -86,10 +86,8 @@
 
 /* conversation */
 .ag-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 0 8px; user-select: text; -webkit-user-select: text; }
-.ag-now { padding: 12px 0 4px; border-radius: 14px; background: var(--ag-surface); }
-.ag-now .ag-pick { transition: opacity 250ms var(--ease); }
-.ag-now[data-off='true'] .ag-pick { opacity: .35; }
-/* 问旁注 attachment (C3): the selected text, right above the input. */
+/* 当前句 and the 问旁注 attachment share one slot right above the input, never both (C3). */
+.ag-now { margin-bottom: 8px; padding: 12px 0 4px; border-radius: 16px; background: var(--ag-surface); box-shadow: 0 0 0 1px var(--ag-hair); }
 .ag-attach {
   display: flex; align-items: flex-start; gap: 4px; margin-bottom: 8px; padding: 10px 4px 11px 14px;
   border-radius: 16px; background: var(--ag-surface); box-shadow: 0 0 0 1px var(--ag-hair);
@@ -102,7 +100,7 @@
 .ag-attach-x { flex: none; width: 36px; height: 36px; margin-top: -6px; border: 0; background: none; display: grid; place-items: center; color: var(--ag-ink3); }
 .ag-now-head { padding: 0 14px; display: flex; justify-content: space-between; align-items: baseline; }
 .ag-pick {
-  height: 168px; margin-top: 4px; padding: 84px 14px; box-sizing: border-box; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain;
+  height: 132px; margin-top: 4px; padding: 66px 14px; box-sizing: border-box; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain;
   -webkit-mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent); mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent);
 }
 .ag-pick::-webkit-scrollbar { display: none; }

@@ -50,6 +50,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
     agentOpenRef.current = open;
     setAgentOpen(open);
     if (open) selectionRef.current.clear(); // a left swipe cancels the selection (and opens the drawer)
+    else setAttachment(null); // closing drops the attachment: the next left swipe shows 当前句 (C3)
   });
   const lookup = useWordLookup(engineRef, session.db, book, session.prefs);
   const lookupRef = useRef(lookup);

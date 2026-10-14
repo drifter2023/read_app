@@ -43,16 +43,6 @@
 </div>
 </div>
 <div data-ag-list="1" style="flex:1;min-height:0;overflow-y:auto;padding:16px 0 8px;user-select:text;-webkit-user-select:text">
-<div style="padding:12px 0 4px;border-radius:14px;background:#fff">
-<div style="padding:0 14px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">当前句</span><span style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(0,0,0,.4)">{{ ag_pickHint }}</span></div>
-<div style="position:relative;margin-top:4px;opacity:{{ ag_pickOp }};transition:opacity .25s">
-<div ref="{{ ag_pickRef }}" onScroll="{{ ag_onPick }}" style="height:168px;overflow-y:auto;padding:84px 14px;box-sizing:border-box;scrollbar-width:none;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent)">
-<sc-for list="{{ ag_paras }}" as="p" hint-placeholder-count="3">
-<div style="margin:0 0 8px;text-indent:{{ p.ind }};font-family:'Newsreader',Georgia,serif;font-size:13.5px;line-height:1.7;color:#111;text-wrap:pretty"><sc-for list="{{ p.ss }}" as="s" hint-placeholder-count="2"><span onClick="{{ ag_tapSent }}" data-si="{{ s.i }}" style="cursor:pointer;opacity:{{ s.op }};background:{{ s.bg }};box-shadow:{{ s.ul }};border-radius:2px;transition:opacity .2s,background .2s">{{ s.t }} </span></sc-for></div>
-</sc-for>
-</div>
-</div>
-</div>
 <sc-for list="{{ ag_msgs }}" as="m" hint-placeholder-count="2">
 <div style="margin-top:18px">
 <sc-if value="{{ m.u }}" hint-placeholder-val="{{ true }}">
@@ -75,6 +65,18 @@
 <div onClick="{{ ag_ask }}" data-q="{{ c.q }}" style="flex:none;cursor:pointer;min-height:34px;display:flex;align-items:center;padding:0 13px;border-radius:17px;background:#e9e9e6;font:400 12px 'Noto Sans SC',sans-serif;color:#1d1d1b;white-space:nowrap">{{ c.q }}</div>
 </sc-for>
 </div>
+<sc-if value="{{ ag_noAtt }}" hint-placeholder-val="{{ true }}">
+<div style="margin:0 0 8px;padding:12px 0 4px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06)">
+<div style="padding:0 14px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">当前句</span><span style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(0,0,0,.4)">滑动或点选一句</span></div>
+<div style="position:relative;margin-top:4px">
+<div ref="{{ ag_pickRef }}" onScroll="{{ ag_onPick }}" style="height:132px;overflow-y:auto;padding:66px 14px;box-sizing:border-box;scrollbar-width:none;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent)">
+<sc-for list="{{ ag_paras }}" as="p" hint-placeholder-count="3">
+<div style="margin:0 0 8px;text-indent:{{ p.ind }};font-family:'Newsreader',Georgia,serif;font-size:13.5px;line-height:1.7;color:#111;text-wrap:pretty"><sc-for list="{{ p.ss }}" as="s" hint-placeholder-count="2"><span onClick="{{ ag_tapSent }}" data-si="{{ s.i }}" style="cursor:pointer;opacity:{{ s.op }};background:{{ s.bg }};box-shadow:{{ s.ul }};border-radius:2px;transition:opacity .2s,background .2s">{{ s.t }} </span></sc-for></div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
 <sc-if value="{{ ag_hasAtt }}" hint-placeholder-val="{{ false }}">
 <div style="margin:0 0 8px;padding:10px 4px 11px 14px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);display:flex;gap:6px;align-items:flex-start">
 <div style="flex:1;min-width:0">
@@ -658,8 +660,7 @@ class Component extends DCLogic {
       hasAtt: !!st.att, att: st.att || "",
       clearAtt: () => this.setState({ att: null }),
       inPh: st.att ? "就这段文字提问" : "在页边写下你的问题",
-      pickHint: st.att ? "已改用选中的文字" : "滑动或点选一句",
-      pickOp: st.att ? .35 : 1,
+      noAtt: !st.att,
       askSel: e => { e.stopPropagation(); const t = this.selText(); if (!t) return; this.setState({ att: t, selA: null, selB: null, hist: false }); this.setOpen(true); setTimeout(() => { const i = document.querySelector("[data-ag-panel] input"); if (i) i.focus({ preventScroll: true }); }, 460); },
       demoSel: () => { this.ph = this.ph || (document.querySelector("[data-ag-phone]") || {}).__ph; if (this.ph && this.ph.open) this.setOpen(false); const T = (this._tok || []).map(t => t.s); this.setState({ selA: T.lastIndexOf("very"), selB: T.lastIndexOf("wind.") }); },
       msgs: m.map((x, k) => ({ k, u: x.role === "user", a: x.role === "agent", t: x.role === "typing", text: x.text || "", cite: x.cite || "", hasCite: !!x.cite, quote: x.quote || "", hasQuote: !!x.quote })),
@@ -717,7 +718,7 @@ class Component extends DCLogic {
     ph.dim.style.opacity = p * c.dim;
     ph.p = p;
   }
-  setOpen(open) { this.ph = this.ph || document.querySelector("[data-ag-phone]").__ph; this.ph.open = open; this.ph.shield.style.pointerEvents = open ? "auto" : "none"; this.apply(open ? 1 : 0, true); }
+  setOpen(open) { if (!open && this.state.att) this.setState({ att: null }); this.ph = this.ph || document.querySelector("[data-ag-phone]").__ph; this.ph.open = open; this.ph.shield.style.pointerEvents = open ? "auto" : "none"; this.apply(open ? 1 : 0, true); }
   bind() {
     const root = document.querySelector("[data-ag-phone]");
     if (!root) return;
@@ -749,7 +750,7 @@ class Component extends DCLogic {
       const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
       if (Math.hypot(dx, dy) > 8) clearTimeout(lp);
       if (!g.drag) {
-        if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2 && ((g.p0 < .5 && dx < 0) || (g.p0 >= .5 && dx > 0))) { g.drag = true; capture(g.pid); if (self().state.selA != null) self().setState({ selA: null, selB: null }); }
+        if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2 && ((g.p0 < .5 && dx < 0) || (g.p0 >= .5 && dx > 0))) { g.drag = true; capture(g.pid); const S = self(); if (S.state.selA != null) S.setState({ selA: null, selB: null }); if (g.p0 < .5 && S.state.att) S.setState({ att: null }); }
         else if (Math.abs(dy) > 12) { g = null; return; } else return;
       }
       const W = root.clientWidth || 402;

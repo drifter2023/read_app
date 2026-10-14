@@ -78,7 +78,7 @@ Each task lists its acceptance ID from `design/MVP 设计与范围 · 聚焦阅�
 49. Engine selection: nearest word (same line first), overlay rectangles from the line table, selected lines sharp. **N-03**
 50. Long-press 380 ms on sharp text selects a word; drag extends it; two handles; a tap clears it; no system menu or callout; the Agent swipe stands down while selecting. **N-04**
 51. 问旁注 button: 56 px above the selection (20 px below when it is near the top), clamped to [72, W − 72]; hidden while dragging. **N-05**
-52. Agent drawer attachment: quote card with ×, selection chips, 就这段文字提问, picker at .35 with 已改用选中的文字; sent as 「所选文字」 and stored as the question's quote. **N-06**
+52. Agent drawer attachment: quote card with ×, selection chips, 就这段文字提问; 当前句 and the attachment share one slot right above the input (never both; 当前句 picker 132 px, radius 16); closing the drawer drops the attachment; sent as 「所选文字」 and stored as the question's quote. **N-06**
 53. iOS: no edit menu, loupe or callout on a long-press (Safari, home-screen web app, Capacitor). **N-07**
 
 ## M10 · Account sync and one-time book transfer — planned, not started (its task numbers 46–53 in the plan will be renumbered when it starts)

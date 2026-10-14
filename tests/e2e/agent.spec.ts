@@ -89,5 +89,12 @@ for (const vp of [{ name: 'phone', width: 402, height: 874 }, { name: 'iPad', wi
       const left = await page.locator(sel).first().evaluate((el) => el.getBoundingClientRect().left);
       expect(left, sel).toBeGreaterThanOrEqual(pageRight + 12);
     }
+    // C3: 当前句 sits between the chips and the input, and the conversation keeps room above it.
+    const box = (sel: string) => page.locator(sel).first().evaluate((el) => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height }; });
+    const [chips, now, composer, list] = [await box('.ag-chips'), await box('.ag-now'), await box('.ag-composer'), await box('.ag-list')];
+    expect(chips.bottom).toBeLessThanOrEqual(now.top + 0.5);
+    expect(now.bottom).toBeLessThanOrEqual(composer.top + 0.5);
+    expect(composer.bottom).toBeLessThanOrEqual(vp.height);
+    expect(list.h).toBeGreaterThan(200);
   });
 }

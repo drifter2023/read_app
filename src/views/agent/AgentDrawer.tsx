@@ -94,14 +94,16 @@ export function AgentDrawer({ db, book, engine, open, panelRef, attachment, onAt
     el.scrollTo({ top: el.scrollTop + (r.top + r.height / 2) - (er.top + er.height / 2), behavior: smooth ? 'smooth' : 'auto' });
   }, []);
   const lock = (ms: number) => { tapLock.current = true; clearTimeout(lockTimer.current); lockTimer.current = window.setTimeout(() => { tapLock.current = false; }, ms); };
+  // The picker is remounted when an attachment leaves its slot: centre the selected sentence again.
+  const picking = attachment === null;
   useEffect(() => {
-    if (!open || !flat.length) return;
+    if (!open || !flat.length || !picking) return;
     lock(300);
     const id = requestAnimationFrame(() => scrollPick(sel, false));
     return () => cancelAnimationFrame(id);
     // Only when the page or the conversation changes; `sel` changes come from the picker itself.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, flat, sid, scrollPick]);
+  }, [open, flat, sid, picking, scrollPick]);
   const onPick = (el: HTMLDivElement) => {
     if (tapLock.current) return;
     const cy = el.getBoundingClientRect().top + el.clientHeight / 2;
@@ -206,23 +208,6 @@ export function AgentDrawer({ db, book, engine, open, panelRef, attachment, onAt
       </div>
 
       <div ref={listRef} className="ag-list">
-        <div className="ag-now" data-off={attachment !== null}>
-          <div className="ag-now-head"><span className="ag-label">当前句</span><span className="ag-hint">{attachment ? '已改用选中的文字' : '滑动或点选一句'}</span></div>
-          <div ref={pickRef} className="ag-pick" onScroll={(e) => onPick(e.currentTarget)} data-noswipe="">
-            {page.paras.map((p, pi) => (
-              <p key={p.para} className="ag-para" style={{ textIndent: pi ? '1em' : 0 }}>
-                {p.sentences.map((s) => {
-                  const i = ++k;
-                  return (
-                    <span key={s.sentence} data-si={i} className="ag-sent" data-sel={i === sel}
-                      onClick={() => { lock(500); setSel(i); scrollPick(i, true); onAttachment(null); }}>{s.text}{' '}</span>
-                  );
-                })}
-              </p>
-            ))}
-          </div>
-        </div>
-
         {msgs.map((m, i) => <Message key={i} m={m} />)}
         {shown && (
           <>
@@ -247,7 +232,7 @@ export function AgentDrawer({ db, book, engine, open, panelRef, attachment, onAt
       <div className="ag-chips" data-noswipe="">
         {chips.map((q) => <button type="button" key={q} className="ag-chip" onClick={() => void send(q)}>{q}</button>)}
       </div>
-      {attachment && (
+      {attachment ? (
         <div className="ag-attach" data-noswipe="">
           <div className="ag-attach-body">
             <div className="ag-label">选中的文字 · 第 {attachment.chapter + 1} 章</div>
@@ -258,6 +243,23 @@ export function AgentDrawer({ db, book, engine, open, panelRef, attachment, onAt
               <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
+        </div>
+      ) : (
+        <div className="ag-now">
+          <div className="ag-now-head"><span className="ag-label">当前句</span><span className="ag-hint">滑动或点选一句</span></div>
+          <div ref={pickRef} className="ag-pick" onScroll={(e) => onPick(e.currentTarget)} data-noswipe="">
+            {page.paras.map((p, pi) => (
+              <p key={p.para} className="ag-para" style={{ textIndent: pi ? '1em' : 0 }}>
+                {p.sentences.map((s) => {
+                  const i = ++k;
+                  return (
+                    <span key={s.sentence} data-si={i} className="ag-sent" data-sel={i === sel}
+                      onClick={() => { lock(500); setSel(i); scrollPick(i, true); }}>{s.text}{' '}</span>
+                  );
+                })}
+              </p>
+            ))}
+          </div>
         </div>
       )}
       <form className="ag-composer" onSubmit={(e) => { e.preventDefault(); const q = draft; setDraft(''); void send(q); }}>

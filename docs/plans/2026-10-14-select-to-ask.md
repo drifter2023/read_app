@@ -23,7 +23,7 @@ The section below is the analysis that led to these questions.
 |---|---|---|
 | **C1** Selection layer | Long-press 380 ms selects a word; drag extends word by word (nearest word, vertical distance ×4); two black handles; selection bg `rgba(34,31,27,.16)`; selected lines unblurred; no OS menu | Nothing. A tap opens the word drawer; a left swipe opens the Agent drawer |
 | **C2** 问旁注 button | Black pill 56 px above the selection, clamped `[72, W−72]`, below it if top < 84 px; 180/240 ms in; hidden while dragging | Nothing |
-| **C3** Attachment in the Agent drawer | Quote card above the input (× removes it); selection chips; placeholder 就这段文字提问; picker at .35 with 已改用选中的文字; send uses the attachment as the quote | Drawer asks about the picked sentence only; `agent_message.quote` already exists (no migration needed) |
+| **C3** Attachment in the Agent drawer | Quote card in 当前句's slot right above the input, never both (× brings 当前句 back; closing the drawer drops it); selection chips; placeholder 就这段文字提问; send uses the attachment as the quote | Drawer asks about the picked sentence only; `agent_message.quote` already exists (no migration needed) |
 | **C4** No chrome on the page | Remove the top bar, the `目录 · Aa` capsule and the right-edge scroll indicator; a tap in the top 30 % opens settings; new tap priority | `ReaderChrome` (‹ 书架 + title, 目录 / Aa) toggles on a blank tap |
 | **C5** Sheet from the bottom | Leather; radius 18; padding `4px 22px 30px`; max 44 %; transparent scrim; handle; `cubic-bezier(.22,.9,.3,1)` 330/250 ms; page gestures off while open | Already a bottom sheet with a grip, max 42 %, app easing, closes on any page tap |
 | **C6** 聚焦模糊 | First row; on/off subtitle; cream switch; off → no blur, no fade, **masks hidden**; dependent rows .32 and inert | **Shipped 2026-10-14 (S-03, `focusBlur`).** Deltas: row order, subtitles, switch colours, .32, masks (see §1-4) |
@@ -85,7 +85,7 @@ The section below is the analysis that led to these questions.
   - `ReaderView` keeps `attachment: { text, chapterLabel } | null`.
   - Tapping 问旁注 clears the selection, sets the attachment, calls `agentSwipe.setOpen(true)` and focuses the input after 460 ms.
 - **Agent drawer and service.**
-  - **Drawer:** an attachment card, `SELECTION_CHIPS`, the placeholder, the picker at .35 with its hint, and a tap on a sentence in the picker clears the attachment.
+  - **Drawer:** an attachment card, `SELECTION_CHIPS` and the placeholder. Update of the same day (the second handoff): the 当前句 picker moved out of the message list into one slot right above the input, shared with the attachment card (never both); × brings 当前句 back and closing the drawer drops the attachment.
   - **Service:** `AgentService.ask` takes `quote` (the attachment, or else the picked sentence).
   - **Prompt:** `userMessage` says 「所选文字：」 for an attachment and keeps 「所选句：」 otherwise. That is a prompt version bump, and is covered by a unit test.
 - **Tap router (`ReaderView.onTap`).** One function, `routeTap(state, x, y) → action`, made pure so it can be unit-tested. The order follows decision 3.
@@ -100,7 +100,7 @@ The section below is the analysis that led to these questions.
 | 3 | **C1a engine:** `wordNear`, `setSelection`, overlay, unblur the selected lines | **N-03** The nearest word prefers the same line; overlay rectangles match the words' rectangles; the selected lines paint at blur 0 and opacity 1; paint does no layout reads (extend the existing test). |
 | 4 | **C1b gestures:** long-press, drag-extend, handles, cancel, no OS menu | **N-04** 380 ms selects one word; a move > 8 px before that scrolls instead; dragging extends word by word; the handles adjust either end; a tap cancels; `contextmenu` and `selectstart` are blocked. |
 | 5 | **C2 button:** placement and motion | **N-05** `askButtonAt` unit table: above, below when top < 84, clamped at both edges; hidden while dragging. |
-| 6 | **C3 drawer:** attachment card, chips, placeholder, picker state, quote on send, prompt 「所选文字」 | **N-06** 问旁注 → drawer open, card shows the text and 第 N 章, input focused; × or a picker tap removes it; the sent message and DeepSeek body carry the selection; the attachment clears after send. |
+| 6 | **C3 drawer:** attachment card, chips, placeholder, picker state, quote on send, prompt 「所选文字」 | **N-06** 问旁注 → drawer open, card shows the text and 第 N 章, input focused; × removes it (当前句 returns, its sentence centred); closing the drawer drops it; the sent message and DeepSeek body carry the selection; the attachment clears after send. |
 | 7 | **iOS check:** on the simulator and an iPad, a long-press shows no edit menu, loupe or callout. Add a native override (a `CAPBridgeViewController` subclass that turns the edit menu off) **only if** CSS is not enough | **N-07** No OS menu on iOS Safari, the home-screen web app or the Capacitor app. |
 
 Order: 0 → 1 → 2 (small, shippable alone) → 3 → 4 → 5 → 6 → 7. Tasks 1–2 can go live before the selection work.

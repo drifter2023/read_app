@@ -109,7 +109,7 @@ test('N-04: a long-press on blurred text selects nothing (owner decision 5c)', a
   await expect(rects(page)).toHaveCount(0);
 });
 
-test('N-06: 问旁注 opens the Agent drawer with the selection attached; it is asked about, quoted and then cleared', async ({ page }) => {
+test('N-06: 问旁注 opens the Agent drawer with the selection in 当前句\'s slot; it is asked about, quoted and then cleared; closing drops it', async ({ page }) => {
   await fullTier(page);
   const bodies = await fakeDeepSeek(page);
   await page.goto('/');
@@ -134,17 +134,41 @@ test('N-06: 问旁注 opens the Agent drawer with the selection attached; it is 
   await expect(attach.locator('.ag-attach-quote')).toHaveText(`“${text}”`);
   await expect(panel.getByLabel('问题')).toHaveAttribute('placeholder', '就这段文字提问');
   await expect(panel.locator('.ag-chip')).toHaveText(['解释这段', '这里有什么隐喻', '和前文有关联吗']);
-  await expect(panel.locator('.ag-now .ag-hint')).toHaveText('已改用选中的文字');
+  // The attachment takes 当前句's slot above the input: never both.
+  await expect(panel.locator('.ag-now')).toHaveCount(0);
   await expect(panel.getByLabel('问题')).toBeFocused({ timeout: 1500 });
 
-  // × removes it; the picked sentence is back.
+  // × removes it; 当前句 is back in the slot, its selected sentence centred.
   await attach.getByRole('button', { name: '移除选中的文字' }).click();
   await expect(attach).toHaveCount(0);
   await expect(panel.locator('.ag-now .ag-hint')).toHaveText('滑动或点选一句');
   await expect(panel.getByLabel('问题')).toHaveAttribute('placeholder', '在页边写下你的问题');
+  await expect.poll(() => panel.locator('.ag-pick').evaluate((el) => {
+    const s = el.querySelector('.ag-sent[data-sel="true"]')!.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return Math.abs((s.top + s.bottom) / 2 - (r.top + r.bottom) / 2) < s.height / 2 + 2;
+  })).toBe(true);
+
+  // Closing the drawer drops an attachment: the next left swipe shows 当前句.
+  await page.mouse.click(30, 400); // the page strip closes the drawer
+  await expect(panel).toHaveAttribute('aria-hidden', 'true');
+  await page.waitForTimeout(500);
+  const r = await wordInBand(page, 'advice');
+  await longPress(page, r);
+  await ask(page).click();
+  await expect(panel.locator('.ag-attach')).toHaveCount(1);
+  await page.mouse.click(30, 400);
+  await expect(panel).toHaveAttribute('aria-hidden', 'true');
+  await page.waitForTimeout(500);
+  await page.mouse.move(330, 400); await page.mouse.down(); await page.mouse.move(40, 410, { steps: 10 }); await page.mouse.up();
+  await expect(panel).toHaveAttribute('aria-hidden', 'false');
+  await expect(panel.locator('.ag-attach')).toHaveCount(0);
+  await expect(panel.locator('.ag-now')).toHaveCount(1);
+  await expect(panel.getByLabel('问题')).toHaveAttribute('placeholder', '在页边写下你的问题');
 
   // Again, and send: the question carries the selected text, quoted above it; then it is cleared.
-  await page.mouse.click(30, 400); // the page strip closes the drawer
+  await page.waitForTimeout(500); // the drawer has finished sliding in
+  await page.mouse.click(30, 400);
   await expect(panel).toHaveAttribute('aria-hidden', 'true');
   await page.waitForTimeout(500);
   const q = await wordInBand(page, 'advice');
