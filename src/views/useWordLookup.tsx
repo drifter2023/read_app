@@ -37,7 +37,8 @@ export interface WordLookup {
   /** Call from the engine's onRelayout. */
   reset(): void;
   /** Tap arbitration steps 1 and 2. Returns false when the tap should toggle the chrome instead. */
-  onTap(x: number, y: number, timeStamp: number): boolean;
+  /** `closeOnly`: close an open drawer without opening what is under the tap (the settings zone). */
+  onTap(x: number, y: number, timeStamp: number, closeOnly?: boolean): boolean;
   isOpen(): boolean;
   drawer: ReactNode;
   /** For counting what the reader reads: the dictionary, the vocabulary model and the words with footnotes. */
@@ -352,11 +353,11 @@ export function useWordLookup(engine: RefObject<ReaderEngine | null>, db: Db, bo
     return a.kind === 'word' ? a.hit.start === (b.hit as WordHit).start : a.hit.sentence === (b.hit as SentenceHit).sentence;
   };
 
-  const onTap = (x: number, y: number, timeStamp: number): boolean => {
+  const onTap = (x: number, y: number, timeStamp: number, closeOnly = false): boolean => {
     const e = engine.current;
     if (!e) return false;
     const p = popRef.current;
-    const target = targetAt(e, x, y);
+    const target = closeOnly ? null : targetAt(e, x, y);
     if (p) {
       if (p.closing) { if (target) pending.current = target; return true; }
       if (target && !sameTarget(target, p.target)) pending.current = target; // close first, then open after the close duration

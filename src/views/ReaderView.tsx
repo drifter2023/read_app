@@ -5,6 +5,7 @@ import { logMetric } from '../core/metrics/metrics.ts';
 import { ReaderEngine, type EngineBook } from '../core/reader/engine.ts';
 import { PositionSaver, savePosition } from '../core/reader/position.ts';
 import { decideTier, runProbe } from '../core/reader/probe.ts';
+import { routeTap, SETTINGS_ZONE } from '../core/reader/tap.ts';
 import type { Anchor } from '../core/types.ts';
 import { AgentDrawer } from './agent/AgentDrawer.tsx';
 import { useAgentSwipe } from './agent/useAgentSwipe.ts';
@@ -34,6 +35,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const [sheet, setSheet] = useState<'settings' | 'toc' | null>(null);
   const [chapter, setChapter] = useState(initialAnchor?.chapter ?? 0);
   const chromeTimer = useRef(0);
+  const scrimDown = useRef<{ x: number; y: number } | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -123,12 +125,22 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   useEffect(() => () => clearTimeout(chromeTimer.current), []);
 
   /**
-   * Tap arbitration (README): sheet open → close it; inside the drawer → nothing (its buttons handle
-   * themselves); word → drawer; drawer open → close; else chrome.
+   * Tap arbitration (README, routeTap): a tap inside a drawer is the drawer's own; otherwise an open
+   * sheet or drawer closes first, a tap in the top 30 % opens settings (even on a word), then a word
+   * or droplet opens its drawer, and blank space toggles the top bar and capsule.
    */
   const onTap = (e: MouseEvent) => {
-    if (sheet) { setSheet(null); return; }
     if (drawerInner(e.target)) return;
+    const box = pageRef.current!.getBoundingClientRect();
+    const action = routeTap({ selection: false, sheet: sheet !== null, drawer: lookup.isOpen(), y: e.clientY, pageTop: box.top, pageH: box.height });
+    if (action === 'close-sheet') { setSheet(null); return; }
+    if (action === 'settings') { showChrome(false); setSheet('settings'); return; }
+    if (action === 'drawer') {
+      // Close; a tap on another word below the settings zone then opens it (R-05).
+      const inZone = e.clientY - box.top < box.height * SETTINGS_ZONE;
+      lookup.onTap(e.clientX, e.clientY, e.timeStamp, inZone);
+      return;
+    }
     if (lookup.onTap(e.clientX, e.clientY, e.timeStamp)) { if (chrome) showChrome(false); return; }
     showChrome(!chrome);
   };
@@ -163,6 +175,18 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
         onToc={() => { showChrome(false); setSheet('toc'); }}
         onSettings={() => { showChrome(false); setSheet('settings'); }}
       />
+      {sheet && (
+        <div
+          className="sheet-scrim"
+          data-noswipe
+          onPointerDown={(e) => { scrimDown.current = { x: e.clientX, y: e.clientY }; }}
+          onClick={(e) => {
+            e.stopPropagation();
+            const d = scrimDown.current;
+            if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) <= 8) setSheet(null); // a drag is not a tap
+          }}
+        />
+      )}
       <SettingsSheet prefs={session.prefs} open={sheet === 'settings'} onClose={() => setSheet(null)} />
       <TocSheet
         chapters={book.chapters}

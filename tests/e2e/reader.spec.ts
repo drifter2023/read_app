@@ -76,7 +76,7 @@ test('S-01: settings apply live, keep the paragraph in the band, and persist', a
   expect(await page.evaluate(() => window.__spotlight!.prefs.get())).toMatchObject({ fontSize: 'L', focusPct: 50, sentenceMode: true });
 });
 
-test('S-03: 聚焦模糊 off makes the whole page sharp, any word opens its drawer, and it persists', async ({ page }) => {
+test('S-03: 聚焦模糊 off makes the whole page sharp, any word below the settings zone opens its drawer, and it persists', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby&dev=1');
   await ready(page);
@@ -96,20 +96,65 @@ test('S-03: 聚焦模糊 off makes the whole page sharp, any word opens its draw
   expect(lines.length).toBeGreaterThan(10);
   expect(new Set(lines.map(String))).toEqual(new Set(['none,1']));
 
-  // A word near the top, far outside the band, opens its drawer.
-  const high = await page.evaluate(() => {
-    const line = [...document.querySelectorAll<HTMLElement>('.rd-line[data-p]')].find((l) => l.getBoundingClientRect().top > 110)!;
+  // A word low on the page, far outside the band, opens its drawer.
+  await page.evaluate(() => { document.querySelector('.rd-scroll')!.scrollTop += 2000; });
+  await page.waitForTimeout(300);
+  const lineIn = (lo: number, hi: number) => page.evaluate(({ lo, hi }) => {
+    const line = [...document.querySelectorAll<HTMLElement>('.rd-line[data-p]')].find((l) => {
+      const b = l.getBoundingClientRect();
+      return b.top > lo && b.bottom < hi && (l.textContent ?? '').trim().length > 20;
+    })!;
     const b = line.getBoundingClientRect();
     return { x: b.left + 40, y: b.top + b.height / 2 };
-  });
-  await page.mouse.click(high.x, high.y);
+  }, { lo, hi });
+  const low = await lineIn(vp.height - 260, vp.height - 80);
+  await page.mouse.click(low.x, low.y);
   await expect(page.getByTestId('drawer')).toHaveAttribute('data-state', 'ready');
+  await page.mouse.click(12, vp.height / 2); // closes the drawer
+  await expect(page.getByTestId('drawer')).toHaveCount(0);
+
+  // A word in the top 30 % opens the settings sheet instead, even with the blur off (owner decision 2).
+  const high = await lineIn(130, vp.height * 0.3 - 10);
+  await page.mouse.click(high.x, high.y);
+  await expect(page.getByRole('dialog', { name: '阅读设置' })).toBeVisible();
+  await expect(page.getByTestId('drawer')).toHaveCount(0);
+  await expect(page.getByText('已关闭 · 全文清晰')).toBeVisible();
 
   await page.waitForTimeout(1000); // the web db is written to IndexedDB 300 ms after the last change
   await page.reload();
   await ready(page);
   expect(await page.evaluate(() => window.__spotlight!.prefs.get().focusBlur)).toBe(false);
   expect(new Set((await shown(vp.height)).map(String))).toEqual(new Set(['none,1']));
+});
+
+test('N-01: a tap in the top 30 % opens settings; outside closes it; an open drawer only closes; no scroll indicator', async ({ page }) => {
+  await fullTier(page);
+  await page.goto('/?book=gatsby');
+  await ready(page);
+  const vp = page.viewportSize()!;
+  const sheet = page.getByRole('dialog', { name: '阅读设置' });
+  expect(await page.locator('.rd-scroll').evaluate((el) => getComputedStyle(el).scrollbarWidth)).toBe('none');
+
+  await page.mouse.click(vp.width / 2, vp.height * 0.15);
+  await expect(sheet).toBeVisible();
+  await expect(page.locator('.rd-top')).not.toHaveClass(/rd-chrome-on/);
+  // While the sheet is open the page takes no swipe: the Agent drawer stays shut.
+  await page.mouse.move(330, 200); await page.mouse.down(); await page.mouse.move(40, 204, { steps: 8 }); await page.mouse.up();
+  await expect(page.locator('.ag-panel')).toHaveAttribute('aria-hidden', 'true');
+  await page.mouse.click(vp.width / 2, vp.height * 0.15); // outside the sheet: the scrim closes it
+  await expect(sheet).toHaveCount(0);
+
+  // A word drawer is open: a tap in the top 30 % closes it and opens nothing else.
+  const p = await wordInBand(page, 'advice');
+  await page.mouse.click(p.x, p.y);
+  await expect(page.getByTestId('drawer')).toHaveAttribute('data-state', 'ready');
+  await page.mouse.click(vp.width / 2, vp.height * 0.1);
+  await expect(page.getByTestId('drawer')).toHaveCount(0);
+  await expect(sheet).toHaveCount(0);
+
+  // The top bar and capsule are still there (owner decision 1): a blank tap below the zone shows them.
+  await tapBlank(page);
+  await expect(page.locator('.rd-top')).toHaveClass(/rd-chrome-on/);
 });
 
 test('R-10: the contents list marks the current chapter and jumps to a chapter start in the band', async ({ page }) => {
