@@ -5,7 +5,7 @@ import { logMetric } from '../core/metrics/metrics.ts';
 import { ReaderEngine, type EngineBook } from '../core/reader/engine.ts';
 import { PositionSaver, savePosition } from '../core/reader/position.ts';
 import { decideTier, runProbe } from '../core/reader/probe.ts';
-import { routeTap, SETTINGS_ZONE } from '../core/reader/tap.ts';
+import { MENU_ZONE, routeTap } from '../core/reader/tap.ts';
 import type { Anchor } from '../core/types.ts';
 import { AgentDrawer } from './agent/AgentDrawer.tsx';
 import { useAgentSwipe } from './agent/useAgentSwipe.ts';
@@ -149,8 +149,8 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
 
   /**
    * Tap arbitration (README, routeTap): a tap inside a drawer is the drawer's own; otherwise an open
-   * sheet or drawer closes first, a tap in the top 30 % opens settings (even on a word), then a word
-   * or droplet opens its drawer, and blank space toggles the top bar and capsule.
+   * sheet or drawer closes first, a tap in the top 30 % shows or hides the top bar and capsule (even on
+   * a word), then a word or droplet opens its drawer, and blank space toggles the top bar and capsule.
    */
   const onTap = (e: MouseEvent) => {
     if (drawerInner(e.target)) return;
@@ -158,10 +158,10 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
     const action = routeTap({ selection: selection.has(), sheet: sheet !== null, drawer: lookup.isOpen(), y: e.clientY, pageTop: box.top, pageH: box.height });
     if (action === 'clear-selection') { selection.clear(); return; }
     if (action === 'close-sheet') { setSheet(null); return; }
-    if (action === 'settings') { showChrome(false); setSheet('settings'); return; }
+    if (action === 'menu') { showChrome(!chrome); return; }
     if (action === 'drawer') {
       // Close; a tap on another word below the settings zone then opens it (R-05).
-      const inZone = e.clientY - box.top < box.height * SETTINGS_ZONE;
+      const inZone = e.clientY - box.top < box.height * MENU_ZONE;
       lookup.onTap(e.clientX, e.clientY, e.timeStamp, inZone);
       return;
     }

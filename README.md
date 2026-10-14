@@ -75,7 +75,7 @@ References: `design/screens/fig-4a-focus.png` and `fig-4a-drawer.png`.
   - Lines inside the band are perfectly sharp. Formula in *Interactions*.
 - **Top bar (new)**:
   - 44px tall: `‹ 书架` on the left, the book title in the middle.
-  - Appears on a tap on blank space below the top 30 % (a tap in the top 30 % opens the settings sheet). Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
+  - Appears on a tap in the top 30 % (even on a word) or on blank space below it; the same tap hides it again. Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
 - **Bottom toolbar (new)**:
   - Floating capsule with two buttons: `目录` (table of contents, P1) and `Aa` (settings).
   - Shown and hidden together with the top bar.
@@ -133,7 +133,7 @@ The footnote is out of normal flow, so line height must not change. Acceptance R
   - `closing`.
 
 ### 3. Settings sheet (`SettingsSheet`, new)
-- Opened by a tap in the top 30% of the reader or by `Aa`. Rises from the bottom; closes on a tap outside (transparent scrim) or on the top handle. Uses the drawer's leather surface and the same 330 / 250ms motion.
+- Opened by `Aa` (a tap in the top 30 % shows the toolbar with `Aa`). Rises from the bottom; closes on a tap outside (transparent scrim) or on the top handle. Uses the drawer's leather surface and the same 330 / 250ms motion.
 - Max height 44% of the viewport, so the focus band always stays visible above it.
 - First row: **聚焦模糊** (`focusBlur`, default on). Off → every line blur 0, opacity 1, the fade masks shrink to a thin strip behind the eyebrow, the whole page sharp; 清晰带 / 模糊强度 / 整句模式 greyed out.
 - Changes apply live.
@@ -213,7 +213,7 @@ Meanwhile, load `Position`, mount the chapter and build the line table. Going ba
 ### Tap arbitration in the reader
 1. A text selection exists → clear it.
 2. A drawer or the settings sheet is open → close it.
-3. The tap is in the top 30% → open the settings sheet (even on a word).
+3. The tap is in the top 30% → toggle the top bar and bottom toolbar (even on a word; owner decision 2026-10-15).
 4. The tap hits a word → open the word drawer.
 5. Otherwise → toggle the top bar and bottom toolbar.
 

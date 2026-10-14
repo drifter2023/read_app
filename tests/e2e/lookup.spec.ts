@@ -179,7 +179,7 @@ test('Undo: 撤回 forgets a mistaken word; its footnotes are gone, also after a
 test('Only the focus band opens drawers: a blurred word is blank space', async ({ page }) => {
   await open(page);
   await wordInBand(page, 'politician');
-  // Below the band: the top 30 % opens the settings sheet instead (N-01).
+  // Below the band: the top 30 % shows the menu instead (N-01).
   const blurred = await page.evaluate(() => {
     const h = window.innerHeight;
     const line = [...document.querySelectorAll<HTMLElement>('.rd-line[data-p]')].find((l) => {

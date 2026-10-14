@@ -10,7 +10,7 @@ Source: `design_handoff_focus_reader_mvp 2/` (2026-10-14).
 
 **Owner decisions (2026-10-14):**
 1. The top bar (`‹ 书架` + title) and the capsule (`目录 · Aa`) **stay**; only the rest of C4 is built (the top-30 % tap, the tap order, no right-edge scroll indicator). A blank tap below the top 30 % still toggles them.
-2. A tap in the top 30 % **always** opens settings, even on a word and even with 聚焦模糊 off; to look a word up there, scroll it down.
+2. A tap in the top 30 % **always** wins over a word, even with 聚焦模糊 off; to look a word up there, scroll it down. It first opened the settings sheet; **changed 2026-10-15** (owner): it shows or hides the top bar and capsule (‹ 书架 · 目录 · Aa) instead, and `Aa` opens settings.
 3. Tap order: selection → close sheet / drawer → top 30 % → word → toggle the top bar and capsule.
 4. Blur off keeps a thin mask strip behind the eyebrow (a little taller than S-03's first cut, so it looks natural).
 5. a) every switch in the sheet uses the new cream style; b) **no new easing curves**: CLAUDE.md's one curve stays everywhere; c) a long-press starts a selection only on sharp lines; d) the Agent push keeps the fixed 60 px strip, and the design docs now say so.

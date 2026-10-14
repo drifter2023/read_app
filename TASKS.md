@@ -73,7 +73,7 @@ Each task lists its acceptance ID from `design/MVP 设计与范围 · 聚焦阅�
 45. Import sheet: 文件 / 链接; link → fetch → parse → save as format `web` → open; duplicates and errors. **L-03 L-04**
 
 ## M11 · Select-to-ask and settings entry (plan: `docs/plans/2026-10-14-select-to-ask.md`, handoff `docs/handoff/2026-10-14/`)
-47. A tap in the top 30 % of the reader opens the settings sheet (even on a word, even with 聚焦模糊 off); tap order selection → close sheet / drawer → settings → word → chrome; the top bar and capsule stay (owner decision); no scroll indicator; the sheet has a transparent scrim, 44 %, radius 18. **N-01**
+47. A tap in the top 30 % of the reader shows or hides the top bar and capsule (‹ 书架 · 目录 · Aa), even on a word, even with 聚焦模糊 off (owner decision 2026-10-15; it first opened the settings sheet); tap order selection → close sheet / drawer → menu → word → chrome; the top bar and capsule stay (owner decision); no scroll indicator; the sheet has a transparent scrim, 44 %, radius 18. **N-01**
 48. 聚焦模糊 first in the sheet, with on/off subtitles and cream switches; dependent rows at .32 and inert; the masks shrink to a thin strip. **N-02 S-03**
 49. Engine selection: nearest word (same line first), overlay rectangles from the line table, selected lines sharp. **N-03**
 50. Long-press 380 ms on sharp text selects a word; drag extends it; two handles; a tap clears it; no system menu or callout; the Agent swipe stands down while selecting. **N-04**

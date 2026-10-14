@@ -76,7 +76,7 @@ test('S-01: settings apply live, keep the paragraph in the band, and persist', a
   expect(await page.evaluate(() => window.__spotlight!.prefs.get())).toMatchObject({ fontSize: 'L', focusPct: 50, sentenceMode: true });
 });
 
-test('S-03: 聚焦模糊 off makes the whole page sharp, any word below the settings zone opens its drawer, and it persists', async ({ page }) => {
+test('S-03: 聚焦模糊 off makes the whole page sharp, any word below the menu zone opens its drawer, and it persists', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby&dev=1');
   await ready(page);
@@ -113,11 +113,12 @@ test('S-03: 聚焦模糊 off makes the whole page sharp, any word below the sett
   await page.mouse.click(12, vp.height / 2); // closes the drawer
   await expect(page.getByTestId('drawer')).toHaveCount(0);
 
-  // A word in the top 30 % opens the settings sheet instead, even with the blur off (owner decision 2).
+  // A word in the top 30 % shows ‹ 书架 / 目录 / Aa instead, even with the blur off (owner decision 2).
   const high = await lineIn(130, vp.height * 0.3 - 10);
   await page.mouse.click(high.x, high.y);
-  await expect(page.getByRole('dialog', { name: '阅读设置' })).toBeVisible();
+  await expect(page.locator('.rd-top')).toHaveClass(/rd-chrome-on/);
   await expect(page.getByTestId('drawer')).toHaveCount(0);
+  await page.getByRole('button', { name: '阅读设置' }).click();
   await expect(page.getByText('已关闭 · 全文清晰')).toBeVisible();
 
   await page.waitForTimeout(1000); // the web db is written to IndexedDB 300 ms after the last change
@@ -127,7 +128,7 @@ test('S-03: 聚焦模糊 off makes the whole page sharp, any word below the sett
   expect(new Set((await shown(vp.height)).map(String))).toEqual(new Set(['none,1']));
 });
 
-test('N-01: a tap in the top 30 % opens settings; outside closes it; an open drawer only closes; no scroll indicator', async ({ page }) => {
+test('N-01: a tap in the top 30 % shows and hides ‹ 书架 / 目录 / Aa, even on a word; Aa opens settings, outside closes it; an open drawer only closes; no scroll indicator', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby');
   await ready(page);
@@ -135,9 +136,18 @@ test('N-01: a tap in the top 30 % opens settings; outside closes it; an open dra
   const sheet = page.getByRole('dialog', { name: '阅读设置' });
   expect(await page.locator('.rd-scroll').evaluate((el) => getComputedStyle(el).scrollbarWidth)).toBe('none');
 
+  // A tap in the top 30 %: the three buttons, no sheet; a second tap there hides them.
   await page.mouse.click(vp.width / 2, vp.height * 0.15);
-  await expect(sheet).toBeVisible();
+  await expect(page.locator('.rd-top')).toHaveClass(/rd-chrome-on/);
+  await expect(page.locator('.rd-capsule')).toHaveClass(/rd-chrome-on/);
+  await expect(sheet).toHaveCount(0);
+  await page.mouse.click(vp.width / 2, vp.height * 0.15);
   await expect(page.locator('.rd-top')).not.toHaveClass(/rd-chrome-on/);
+
+  // Aa opens the settings sheet.
+  await page.mouse.click(vp.width / 2, vp.height * 0.15);
+  await page.getByRole('button', { name: '阅读设置' }).click();
+  await expect(sheet).toBeVisible();
   // While the sheet is open the page takes no swipe: the Agent drawer stays shut.
   await page.mouse.move(330, 200); await page.mouse.down(); await page.mouse.move(40, 204, { steps: 8 }); await page.mouse.up();
   await expect(page.locator('.ag-panel')).toHaveAttribute('aria-hidden', 'true');
@@ -152,7 +162,7 @@ test('N-01: a tap in the top 30 % opens settings; outside closes it; an open dra
   await expect(page.getByTestId('drawer')).toHaveCount(0);
   await expect(sheet).toHaveCount(0);
 
-  // The top bar and capsule are still there (owner decision 1): a blank tap below the zone shows them.
+  // A blank tap below the zone shows them too.
   await tapBlank(page);
   await expect(page.locator('.rd-top')).toHaveClass(/rd-chrome-on/);
 });
