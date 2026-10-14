@@ -72,3 +72,22 @@ test('A-01…A-05: swipe left opens the Agent drawer, a question is answered wit
   await swipe(page, 330, 40);
   await expect(panel.locator('.ag-answer')).toHaveText('很克制，没有形容情绪的词。');
 });
+
+for (const vp of [{ name: 'phone', width: 402, height: 874 }, { name: 'iPad', width: 820, height: 1180 }, { name: 'iPad landscape', width: 1180, height: 820 }]) {
+  test(`A-01: on a ${vp.name} the pushed page leaves the same strip and never covers the drawer`, async ({ page }) => {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    await fullTier(page);
+    await page.goto('/?book=gatsby');
+    await ready(page);
+    await swipe(page, vp.width - 70, 40);
+    await expect(page.locator('.ag-panel')).toHaveAttribute('aria-hidden', 'false');
+    await page.waitForTimeout(500);
+    const pageRight = await page.locator('.rd-page').evaluate((el) => el.getBoundingClientRect().right);
+    expect(pageRight).toBeGreaterThan(50);
+    expect(pageRight).toBeLessThan(70);
+    for (const sel of ['.ag-head', '.ag-now', '.ag-chips', '.ag-composer']) {
+      const left = await page.locator(sel).first().evaluate((el) => el.getBoundingClientRect().left);
+      expect(left, sel).toBeGreaterThanOrEqual(pageRight + 12);
+    }
+  });
+}

@@ -16,6 +16,7 @@
 
 .ag-panel {
   position: absolute; inset: 0; z-index: 0; display: flex; flex-direction: column; box-sizing: border-box;
+  /* 82 = the 60 px strip of pushed page (STRIP in useAgentSwipe.ts) + 22 */
   padding: 0 20px 0 82px; background: var(--ag-bg); color: var(--ag-ink);
   user-select: none; -webkit-user-select: none;
   font: 400 13.5px/1.55 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;

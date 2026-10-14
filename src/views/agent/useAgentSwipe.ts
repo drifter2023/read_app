@@ -2,8 +2,14 @@ import { useEffect, useRef, type RefObject } from 'react';
 import { EASE } from '../../core/motion.ts';
 
 /** AGENT_DRAWER.md §2. Progress p runs 0 (closed) … 1 (open). */
-const K = 0.8; // how far the page travels, as a share of the screen width
 const SCALE = 0.9;
+/**
+ * The strip of page left on the left edge when open, in px (60 on a 402 px phone, as designed).
+ * Fixed, not a share of the width: the drawer's 82 px left padding must clear it on an iPad too.
+ */
+const STRIP = 60;
+/** How far the page travels when open: its scaled right edge (centre + half its scaled width) lands at STRIP. */
+const travel = (W: number) => W * (1 + SCALE) / 2 - STRIP;
 const PARALLAX = 0.12;
 const DIM = 0.06;
 const RADIUS = 22;
@@ -41,7 +47,7 @@ export function useAgentSwipe(els: Els, onSettle: (open: boolean) => void): { se
       const W = shell.clientWidth || 402;
       const tr = anim ? `${MS}ms ${EASE}` : 'none';
       page.style.transition = anim ? `transform ${tr}, border-radius ${tr}, box-shadow ${tr}` : 'none';
-      page.style.transform = to === 0 && !anim ? '' : `translateX(${-to * W * K}px) scale(${1 - to * (1 - SCALE)})`;
+      page.style.transform = to === 0 && !anim ? '' : `translateX(${-to * travel(W)}px) scale(${1 - to * (1 - SCALE)})`;
       page.style.borderRadius = `${to * RADIUS}px`;
       page.style.boxShadow = to === 0 ? 'none' : `0 ${10 * to}px ${40 * to}px rgba(0,0,0,${SHADOW * to})`;
       panel.style.transition = anim ? `transform ${tr}, opacity ${tr}` : 'none';
@@ -83,7 +89,7 @@ export function useAgentSwipe(els: Els, onSettle: (open: boolean) => void): { se
       const W = shell.clientWidth || 402;
       g.v = (e.clientX - g.lx) / Math.max(1, e.timeStamp - g.lt);
       g.lx = e.clientX; g.lt = e.timeStamp;
-      apply(Math.max(0, Math.min(1, g.p0 - dx / (W * K))), false);
+      apply(Math.max(0, Math.min(1, g.p0 - dx / travel(W))), false);
       e.preventDefault();
     };
     const end = () => {
