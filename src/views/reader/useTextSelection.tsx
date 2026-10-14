@@ -64,6 +64,8 @@ export function useTextSelection(opts: {
     if (!el) return;
     let timer = 0;
     let press: { x: number; y: number; id: number } | null = null;
+    /** The touch that made or adjusted the selection is ending (pointerup comes before touchend). */
+    let endingTouch = false;
 
     const select = (anchor: WordPos, focus: WordPos, chapter: number) => {
       engine.current?.setSelection(spanOf(chapter, anchor, focus));
@@ -127,11 +129,12 @@ export function useTextSelection(opts: {
       if (w) select(d.anchor, w, w.chapter);
     };
 
-    const onUp = () => {
+    const onUp = (e: PointerEvent) => {
       clearTimeout(timer);
       press = null;
       if (!drag.current) return;
       drag.current = null;
+      endingTouch = e.pointerType === 'touch';
       if (shell.current) delete shell.current.dataset.selecting;
       swallowClick.current = true;
       setPhase(engine.current?.selection ? 'shown' : 'none');
@@ -148,6 +151,9 @@ export function useTextSelection(opts: {
     };
     // While selecting, the finger extends the selection instead of scrolling the page.
     const onTouchMove = (e: TouchEvent) => { if (drag.current) e.preventDefault(); };
+    // iOS: cancelling that touch's end keeps WebKit from treating it as its own long-press, which
+    // otherwise swallows the next tap (the first tap on 问旁注 did nothing).
+    const onTouchEnd = (e: TouchEvent) => { if (endingTouch) { endingTouch = false; e.preventDefault(); } };
     const block = (e: Event) => e.preventDefault();
 
     el.addEventListener('pointerdown', onDown, true);
@@ -156,6 +162,7 @@ export function useTextSelection(opts: {
     el.addEventListener('pointercancel', onUp);
     el.addEventListener('click', onClick, true);
     el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: false });
     el.addEventListener('contextmenu', block);
     el.addEventListener('selectstart', block);
     return () => {
@@ -166,6 +173,7 @@ export function useTextSelection(opts: {
       el.removeEventListener('pointercancel', onUp);
       el.removeEventListener('click', onClick, true);
       el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
       el.removeEventListener('contextmenu', block);
       el.removeEventListener('selectstart', block);
     };
