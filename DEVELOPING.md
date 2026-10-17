@@ -54,6 +54,19 @@ npm run e2e
 - `npm test`: unit tests (Node) and browser tests (WebKit + Chromium). `tests/unit/dict-data.test.ts` also checks the real `dict.db` when it has been built.
 - `npm run e2e`: the whole app at iPhone size in WebKit. It covers every acceptance ID: zero network, R-04 to R-07, R-09, R-10, H-01 to H-05, S-01, the log export, and offline use (that one runs in Chromium; see `playwright.config.ts`).
 
+## Component stories (Storybook)
+
+```bash
+npm run storybook
+```
+
+Opens on http://localhost:6006 (dev only; nothing in it ships in the app). Each component has its stories next to it (`*.stories.tsx`): 单词抽屉, 语法抽屉, 阅读设置, 顶部栏与胶囊, 目录, 选中与问旁注, Agent 抽屉, 导入. The toolbar switches 纸白 / 夜读.
+
+- Stories run on fixtures in `src/views/_stories/`: Gatsby's opening lines, a still reader page (`ReaderPage`) in a 402 × 874 phone frame (`Phone`), and an in-memory `user.db` (`memDb`, `bookDb`, `prefsWith`). No DeepSeek calls: AI answers are written into the stories.
+- Home components need the `.home` root around them (it sets `--zh` and `--sec`); reader overlays go in `ReaderPage`'s `overlay`, drawers in its gap (`gapAfter`).
+- When a component changes, update its stories in the same commit. They are also the source for `/design-sync` (the design system in Claude Design).
+- `npm run build-storybook` builds the static site into `storybook-static/` (gitignored).
+
 ## Scripts
 
 | Script | What it does |
@@ -66,5 +79,5 @@ npm run e2e
 
 - `src/core/`: framework-free domain code — `ingest` (EPUB/TXT, Worker), `library`, `db`, `prefs`, `reader` (engine, layout, hit test, decorations), `dict` (lemma, gloss, service), `annot` (Lookup rows, footnotes), `metrics`.
 - `src/app/`: platform glue — boot, dictionary loader, import, share, haptics, offline.
-- `src/views/`: React — `home/`, `reader/`, `WordDrawer`, `Flight`.
+- `src/views/`: React — `home/`, `reader/`, `agent/`, `WordDrawer`, `Flight`; `*.stories.tsx` next to the components, story fixtures in `_stories/`.
 - `docs/plans/`: plans and decision notes. `docs/research/`: research. `docs/perf/`: measurements.

@@ -18,7 +18,9 @@
     "e2e": "playwright test",
     "build:ios": "npm run build && npx cap sync ios",
     "build:ios:dev": "VITE_DEV_TOOLS=1 npm run build && npx cap sync ios",
-    "deploy:web": "npm run build && wrangler deploy"
+    "deploy:web": "npm run build && wrangler deploy",
+    "storybook": "storybook dev -p 6006 --no-open --no-version-updates",
+    "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^8.1.1",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",
     "@playwright/test": "^1.63.0",
+    "@storybook/react-vite": "^10.6.2",
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -46,6 +49,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/browser-playwright": "^5.0.2",
     "playwright": "^1.63.0",
+    "storybook": "^10.6.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
     "vitest": "^5.0.2",

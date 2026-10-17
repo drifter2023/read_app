@@ -26,6 +26,7 @@ Read `README.md` (in the handoff folder) before any work. It is the implementati
 - SQLite, two files: `user.db` (read/write) and a read-only `dict.db`. `user.db` uses the Capacitor plugin on iOS and sql.js + IndexedDB on the web. `dict.db` is read into sql.js on both, so lookups are synchronous (see `docs/plans/2026-09-26-m2-m4-notes.md`).
 - Haptics are iOS-only; iOS Safari has no vibration API, so the web build skips them.
 - EPUB and TXT parsing in a Web Worker (JSZip + linkedom, since `DOMParser` is not available in workers).
+- Storybook (dev only, `npm run storybook`): stories next to the components; fixtures in `src/views/_stories/`. Update a component's stories when you change it (DEVELOPING.md → Component stories).
 
 ## Architecture rules
 - Keep domain modules framework-free TS under `src/core/`:

@@ -28,3 +28,4 @@ public/covers/
 .wrangler
 .dev.vars*
 !.dev.vars.example
+storybook-static/
