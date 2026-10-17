@@ -32,6 +32,19 @@ export function VocabCard({ db }: { db: Db }) {
   };
 
   return (
+    <>
+      <VocabCardView state={state} size={size} onSkip={() => void skip()} onTest={() => setTesting(true)} />
+      {testing && <Calibration db={db} onClose={() => { setTesting(false); void refresh(); }} />}
+    </>
+  );
+}
+
+/** The card itself: the test offer (开始测试 / 跳过) until it is taken or skipped, then the estimate. */
+export function VocabCardView({ state, size, onSkip, onTest }: {
+  /** null: not taken or skipped yet. */
+  state: 'done' | 'skipped' | null; size: string | null; onSkip: () => void; onTest: () => void;
+}) {
+  return (
     <section className="ai-card vocab-card" aria-label="预测生词">
       <div className="ai-head">
         <span className="eyebrow">预测生词</span>
@@ -41,17 +54,16 @@ export function VocabCard({ db }: { db: Db }) {
         <>
           <p className="vocab-copy">花一分钟测一下词汇量，提前标出的生词会更准。</p>
           <div className="ai-actions">
-            <button type="button" className="ai-link" onClick={() => void skip()}>跳过</button>
-            <button type="button" className="ai-primary" onClick={() => setTesting(true)}>开始测试</button>
+            <button type="button" className="ai-link" onClick={onSkip}>跳过</button>
+            <button type="button" className="ai-primary" onClick={onTest}>开始测试</button>
           </div>
         </>
       ) : (
         <div className="ai-actions">
-          <button type="button" className="ai-link" onClick={() => setTesting(true)}>{state === 'done' ? '重新测试' : '测一测词汇量'}</button>
+          <button type="button" className="ai-link" onClick={onTest}>{state === 'done' ? '重新测试' : '测一测词汇量'}</button>
         </div>
       )}
       <p className="ai-fine">根据你查过的词、撤回的词和读过的内容估计，只在这台设备上计算。</p>
-      {testing && <Calibration db={db} onClose={() => { setTesting(false); void refresh(); }} />}
     </section>
   );
 }

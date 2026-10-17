@@ -8,14 +8,14 @@ import { VocabModel } from '../../core/vocab/model.ts';
 import { expectedKnown, formatVocabSize, sizeBasis } from '../../core/vocab/size.ts';
 import { markWord, setCalibrationState } from '../../core/vocab/store.ts';
 
-type Step = { kind: 'loading' } | { kind: 'ask'; items: CalibrationItem[]; answers: Pick[] } | { kind: 'result'; size: string };
+export type CalibrationStep = { kind: 'loading' } | { kind: 'ask'; items: CalibrationItem[]; answers: Pick[] } | { kind: 'result'; size: string };
 
 /**
  * The one-minute calibration test (P-06): one real word at a time, pick its meaning from four or say
  * 不认识. Nothing is made up and no answer is marked right or wrong on screen. Answers stay on the device.
  */
 export function Calibration({ db, onClose }: { db: Db; onClose: () => void }) {
-  const [step, setStep] = useState<Step>({ kind: 'loading' });
+  const [step, setStep] = useState<CalibrationStep>({ kind: 'loading' });
 
   useEffect(() => {
     let live = true;
@@ -41,7 +41,12 @@ export function Calibration({ db, onClose }: { db: Db; onClose: () => void }) {
     setStep({ kind: 'result', size: formatVocabSize(expectedKnown(basis, model.theta)) });
   };
 
-  return createPortal(
+  return createPortal(<CalibrationScreen step={step} onAnswer={(p) => void answer(p)} onClose={onClose} />, document.body);
+}
+
+/** What the test shows at each step: preparing, one word with four meanings and 不认识, the estimate. */
+export function CalibrationScreen({ step, onAnswer, onClose }: { step: CalibrationStep; onAnswer: (pick: Pick) => void; onClose: () => void }) {
+  return (
     <div className="cal" role="dialog" aria-modal="true" aria-label="词汇量测试">
       <button type="button" className="cal-close" onClick={onClose}>{step.kind === 'result' ? '完成' : '退出'}</button>
       {step.kind === 'loading' && <p className="cal-note">正在准备…</p>}
@@ -55,9 +60,9 @@ export function Calibration({ db, onClose }: { db: Db; onClose: () => void }) {
           <div className="cal-word" lang="en">{step.items[step.answers.length]!.word}</div>
           <div className="cal-options">
             {step.items[step.answers.length]!.options.map((o, k) => (
-              <button type="button" key={o} className="cal-opt" onClick={() => void answer(k)}>{o}</button>
+              <button type="button" key={o} className="cal-opt" onClick={() => onAnswer(k)}>{o}</button>
             ))}
-            <button type="button" className="cal-no" onClick={() => void answer(null)}>不认识</button>
+            <button type="button" className="cal-no" onClick={() => onAnswer(null)}>不认识</button>
           </div>
           <p className="cal-fine">不确定就选「不认识」，不会扣分，结果更准。</p>
         </>
@@ -69,7 +74,6 @@ export function Calibration({ db, onClose }: { db: Db; onClose: () => void }) {
           <p className="cal-fine">之后查词、撤回和阅读都会继续校正这个估计。</p>
         </div>
       )}
-    </div>,
-    document.body,
+    </div>
   );
 }
