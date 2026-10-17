@@ -60,10 +60,11 @@ npm run e2e
 npm run storybook
 ```
 
-Opens on http://localhost:6006 (dev only; nothing in it ships in the app). Each component has its stories next to it (`*.stories.tsx`): 单词抽屉, 语法抽屉, 阅读设置, 顶部栏与胶囊, 目录, 选中与问旁注, Agent 抽屉, 导入. The toolbar switches 纸白 / 夜读.
+Opens on http://localhost:6006 (dev only; nothing in it ships in the app). Each component has its stories next to it (`*.stories.tsx`). Reader: 单词抽屉, 语法抽屉, 阅读设置, 顶部栏与胶囊, 目录, 选中与问旁注, Agent 抽屉. Home: 首页 (the whole page), 书架行, 导入, 确认, 预测生词, 词汇量测试, AI 语法分析. The toolbar switches 纸白 / 夜读. Like the app it serves `public/` (covers, dict.db), so run `npm run assets` once first.
 
-- Stories run on fixtures in `src/views/_stories/`: Gatsby's opening lines, a still reader page (`ReaderPage`) in a 402 × 874 phone frame (`Phone`), and an in-memory `user.db` (`memDb`, `bookDb`, `prefsWith`). No DeepSeek calls: AI answers are written into the stories.
-- Home components need the `.home` root around them (it sets `--zh` and `--sec`); reader overlays go in `ReaderPage`'s `overlay`, drawers in its gap (`gapAfter`).
+- Stories run on fixtures in `src/views/_stories/`: Gatsby's opening lines, a still reader page (`ReaderPage`) in a 402 × 874 phone frame (`Phone`, or `HomeScreen` for Home), a shelf (`SHELF`, `shelfDb`), and an in-memory `user.db` (`memDb`, `bookDb`, `prefsWith`). No DeepSeek calls: AI answers are written into the stories.
+- Home components need the `.home` root around them (it sets `--zh` and `--sec`; `HomeScreen` does that); reader overlays go in `ReaderPage`'s `overlay`, drawers in its gap (`gapAfter`).
+- Components that load data themselves have a display part for stories: `VocabCardView`, `CalibrationScreen`. No story may press 确认 with a key or send a question: that would call DeepSeek.
 - When a component changes, update its stories in the same commit. They are also the source for `/design-sync` (the design system in Claude Design).
 - `npm run build-storybook` builds the static site into `storybook-static/` (gitignored).
 

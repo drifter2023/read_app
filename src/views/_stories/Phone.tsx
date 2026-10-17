@@ -62,3 +62,12 @@ function withHighlight(text: string, word: string): ReactNode {
   if (at < 0) return text;
   return <>{text.slice(0, at)}<span className="rd-hl">{word}</span>{text.slice(at + word.length)}</>;
 }
+
+/** A Home screen around a card or row: the `.home` root (fonts, --sec) and Home's own scroll padding. */
+export function HomeScreen({ children }: { children: ReactNode }) {
+  return (
+    <Phone bg="var(--home-bg)">
+      <div className="home"><div className="home-scroll">{children}</div></div>
+    </Phone>
+  );
+}

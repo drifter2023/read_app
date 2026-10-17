@@ -1,6 +1,6 @@
 // Story fixtures (Storybook only; never imported by the app). Real text from the bundled Gatsby.
 import { migrate } from '../../core/db/migrations.ts';
-import { saveParsedBook } from '../../core/library/library.ts';
+import { colorIndex, markOpened, saveParsedBook, type ShelfBook } from '../../core/library/library.ts';
 import { loadSqlJs } from '../../core/db/sqljs.ts';
 import type { Db, SqlValue } from '../../core/db/types.ts';
 import { PrefsStore, type Prefs } from '../../core/prefs/prefs.ts';
@@ -69,5 +69,47 @@ export async function bookDb(): Promise<Db> {
     id: BOOK.id, title: BOOK.title, author: 'F. Scott Fitzgerald', wordCount: BOOK.wordCount,
     chapters: CHAPTERS.map((c) => ({ title: c.title, paras: c.paras, wordCount: 5000 })),
   }, 'epub', Date.now());
+  return db;
+}
+
+const DAY = 86_400_000;
+const NOW = Date.UTC(2026, 9, 15, 1, 0); // fixed, so finished dates read the same in every story
+
+/** Shelf rows as Home lists them. Covers are the bundled ones (Storybook serves public/, like the app). */
+export const SHELF: Record<'reading' | 'fresh' | 'done' | 'web', ShelfBook> = {
+  reading: {
+    id: 'gatsby', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', cover: 'covers/gatsby.jpg', color: colorIndex('The Great Gatsby'),
+    format: 'epub', wordCount: 47094, status: 'reading', pct: 23, addedAt: NOW - 9 * DAY, openedAt: NOW - DAY, finishedAt: null,
+    chapter: 2, chapterTitle: 'Chapter III', chapters: 9,
+  },
+  fresh: {
+    id: 'farewell', title: 'A Farewell to Arms', author: 'Ernest Hemingway', cover: 'covers/farewell.jpg', color: colorIndex('A Farewell to Arms'),
+    format: 'epub', wordCount: 88792, status: 'reading', pct: 0, addedAt: NOW - 9 * DAY, openedAt: null, finishedAt: null,
+    chapter: 0, chapterTitle: 'Chapter I', chapters: 41,
+  },
+  done: {
+    id: 'falcon', title: 'The Maltese Falcon', author: 'Dashiell Hammett', cover: 'covers/falcon.jpg', color: colorIndex('The Maltese Falcon'),
+    format: 'epub', wordCount: 65062, status: 'done', pct: 100, addedAt: NOW - 30 * DAY, openedAt: NOW - 20 * DAY, finishedAt: NOW - 20 * DAY,
+    chapter: 19, chapterTitle: 'XX', chapters: 20,
+  },
+  web: {
+    id: 'web-1', title: 'How to Read a Book Slowly', author: 'aeon.co', cover: null, color: colorIndex('How to Read a Book Slowly'),
+    format: 'web', wordCount: 3200, status: 'reading', pct: 0, addedAt: NOW - 2 * DAY, openedAt: null, finishedAt: null,
+    chapter: 0, chapterTitle: '', chapters: 1,
+  },
+};
+
+/** user.db with the shelf above: Gatsby being read (the continue block), the others as listed. */
+export async function shelfDb(): Promise<Db> {
+  const db = await memDb();
+  for (const b of Object.values(SHELF)) {
+    await saveParsedBook(db, {
+      id: b.id, title: b.title, author: b.author, cover: b.cover, wordCount: b.wordCount,
+      chapters: Array.from({ length: b.chapters }, (_, i) => ({ title: i === b.chapter ? b.chapterTitle : `Chapter ${i + 1}`, paras: [['…']], wordCount: Math.round(b.wordCount / b.chapters) })),
+    }, b.format, b.addedAt);
+    await db.run('UPDATE book SET status = ?, pct = ?, finished_at = ? WHERE id = ?', [b.status, b.pct, b.finishedAt, b.id]);
+    if (b.openedAt) await markOpened(db, b.id, b.openedAt);
+    if (b.chapter) await db.run('INSERT INTO position (book_id, chapter, para, sentence, updated_at) VALUES (?, ?, 0, 0, ?)', [b.id, b.chapter, NOW]);
+  }
   return db;
 }
