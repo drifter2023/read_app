@@ -3,8 +3,9 @@ import { createPortal } from 'react-dom';
 import { lightHaptic } from '../../app/haptics.ts';
 import { paragraphText } from '../../core/ingest/text.ts';
 import type { EngineBook, ReaderEngine, SelectionBox } from '../../core/reader/engine.ts';
-import { ASK_H, askButtonAt, spanOf, type WordPos } from '../../core/reader/selection.ts';
+import { askButtonAt, spanOf, type WordPos } from '../../core/reader/selection.ts';
 import { wordBounds } from '../../core/reader/words.ts';
+import { AskButton, SelectionHandle } from './SelectionUi.tsx';
 
 /** CHANGES 2026-10-14 · C1: hold this long on a word to select it; moving further first is a scroll or swipe. */
 const LONG_PRESS_MS = 380;
@@ -202,22 +203,11 @@ export function useTextSelection(opts: {
       <>
         {handles && (
           <>
-            <span className="rd-handle" data-end="start" data-noswipe="" aria-hidden="true"
-              style={{ transform: `translate(${cx(box.startX) - 14}px, ${cy(box.startTop) - 14}px)`, height: box.startBottom - box.startTop + 14 }}>
-              <i className="rd-handle-dot" /><i className="rd-handle-bar" />
-            </span>
-            <span className="rd-handle rd-handle-end" data-end="end" data-noswipe="" aria-hidden="true"
-              style={{ transform: `translate(${cx(box.endX) - 14}px, ${cy(box.endTop)}px)`, height: box.endBottom - box.endTop + 14 }}>
-              <i className="rd-handle-bar" /><i className="rd-handle-dot" />
-            </span>
+            <SelectionHandle end="start" x={cx(box.startX)} top={cy(box.startTop)} height={box.startBottom - box.startTop} />
+            <SelectionHandle end="end" x={cx(box.endX)} top={cy(box.endTop)} height={box.endBottom - box.endTop} />
           </>
         )}
-        <button type="button" className="rd-ask" data-noswipe="" data-on={phase === 'shown'} tabIndex={phase === 'shown' ? 0 : -1}
-          style={{ left: btn.x, top: btn.y + sc.scrollTop, height: ASK_H }}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => { e.stopPropagation(); ask(); }}>
-          <i className="rd-ask-dot" />问旁注
-        </button>
+        <AskButton x={btn.x} y={btn.y + sc.scrollTop} on={phase === 'shown'} onAsk={ask} />
       </>,
       host,
     );
