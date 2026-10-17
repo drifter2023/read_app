@@ -1,12 +1,13 @@
-// Story frames (Storybook only). A 402 × 874 phone; `transform` makes it the containing block for the
-// app's position:fixed layers, so a reader page or sheet stays inside the frame.
+// Story frames (Storybook only). A 402 × 874 phone screen; `transform` makes it the containing block for the
+// app's position:fixed layers, so a reader page or sheet stays inside the frame. Square corners: a rounded
+// frame would clip the components' own (square) bottom edges and look like part of their design.
 import type { CSSProperties, ReactNode } from 'react';
 import { LINES } from './fixtures.ts';
 
 export function Phone({ children, bg = 'var(--paper)' }: { children: ReactNode; bg?: string }) {
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, boxSizing: 'border-box', background: 'rgba(127,127,127,.12)' }}>
-      <div style={{ position: 'relative', width: 402, height: 874, overflow: 'hidden', transform: 'translateZ(0)', borderRadius: 36, background: bg, boxShadow: '0 20px 60px rgba(0,0,0,.18)' }}>
+      <div style={{ position: 'relative', width: 402, height: 874, overflow: 'hidden', transform: 'translateZ(0)', background: bg, boxShadow: '0 20px 60px rgba(0,0,0,.18)' }}>
         {children}
       </div>
     </div>
