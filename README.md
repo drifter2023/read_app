@@ -2,6 +2,8 @@
 
 > **Changes 2026-10-14:** `docs/handoff/2026-10-14/CHANGES_2026-10-14.md` (select-to-ask 问旁注, top-30 % tap opens settings, 聚焦模糊). It overrides anything below that conflicts, except where `docs/plans/2026-10-14-select-to-ask.md` records the owner's decisions (the top bar and capsule stay; since 2026-10-15 only a tap in the title area shows them, and the settings sheet keeps its MVP look).
 
+> **Night reading 2026-10-20:** `docs/handoff/2026-10-20/NIGHT_MODE_1c.md` (夜读 1c in the reader, 带读 auto guided reading). It lifts the night mode 1c / auto guided reading exclusion below; the owner's decisions are in `docs/plans/2026-10-20-night-guide.md` (the Home capsule stays the only switch, for the whole app; the layout does not change at night).
+
 ## Overview
 A focus-first English reader for Chinese-speaking learners. The MVP contains exactly two screens:
 
@@ -10,7 +12,7 @@ A focus-first English reader for Chinese-speaking learners. The MVP contains exa
 
 Fully offline. No account, no network requests, no analytics SDK.
 
-**Out of scope (do not build):** tabs 书房 / 生词 / 我 and the bottom tab bar; today stats and streak; review word cards and spaced repetition; night mode 1c and auto guided reading; pronunciation / TTS; the Examples button; the archivist agent / LLM; sync, push, accounts; theme editing; the long-press sentence translation that exists in the prototype.
+**Out of scope (do not build):** tabs 书房 / 生词 / 我 and the bottom tab bar; today stats and streak; review word cards and spaced repetition; ~~night mode 1c and auto guided reading~~ (in scope since 2026-10-20, see above); pronunciation / TTS; the Examples button; the archivist agent / LLM; sync, push, accounts; theme editing; the long-press sentence translation that exists in the prototype.
 
 ## About the design files
 Everything in `design/` is a **design reference built in HTML**. It shows the intended look and behaviour; it is not production code. Recreate it in a real app. The recommended stack, since no codebase exists yet, is:

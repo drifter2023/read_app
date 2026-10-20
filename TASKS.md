@@ -81,5 +81,14 @@ Each task lists its acceptance ID from `design/MVP 设计与范围 · 聚焦阅�
 52. Agent drawer attachment: quote card with ×, selection chips, 就这段文字提问; 当前句 and the attachment share one slot right above the input (never both; 当前句 picker 132 px, radius 16); closing the drawer drops the attachment; sent as 「所选文字」 and stored as the question's quote. **N-06**
 53. iOS: no edit menu, loupe or callout on a long-press (Safari, home-screen web app, Capacitor). **N-07**
 
+## M12 · 夜读 1c and 带读 (plan: `docs/plans/2026-10-20-night-guide.md`, handoff `docs/handoff/2026-10-20/NIGHT_MODE_1c.md`; the handoff's N-xx are NM-xx here)
+54. Theme: the Home capsule stays the only switch, for the whole app (owner decision); `guideSpeed` in Settings; both persist. **NM-10**
+55. Night tokens in the reader: accent `#ffb4b4`, tapped word, footnotes, the vignette instead of the fade masks; layout unchanged (owner decision). **NM-01**
+56. Night drawer material (violet-grey stripes, accent headword, Save gradient), 4a timings and notches. **NM-09**
+57. Night focus band: opacity 1 − 0.92 t, 9 px blur until the reader sets one, accent on the t = 0 lines (only the lit sentence while guiding). **NM-02 NM-03**
+58. 带读: sentence-stepped guide, dwell max(1200, words × 60000 / (200 × speed)), 600 ms step to the centre, stops at the chapter's end, every pause trigger stops it at once, only Play resumes. **NM-04 NM-05 NM-06 NM-07**
+59. 带读 control bar (夜读 only): play / pause, progress, 0.6× / 1× / 1.6×; fades after 3 s while playing; steps aside while the top bar and capsule are up (owner decision); 44 px targets, 4.5:1 labels. **NM-08**
+60. Fallback tier: no per-line blur; opacity, accent and vignette as usual; guiding unchanged. **NM-02 NM-03**
+
 ## M10 · Account sync and one-time book transfer — planned, not started (its task numbers 46–53 in the plan will be renumbered when it starts)
 Plan: `docs/plans/2026-10-13-sync-and-transfer.md`; checklist: `docs/todo/sync-and-transfer.md`. Needs the owner's decisions (plan §11) and a scope edit to `CLAUDE.md` before any code. Acceptance IDs C-01 to C-11.
