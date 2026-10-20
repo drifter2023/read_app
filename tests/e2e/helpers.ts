@@ -46,7 +46,6 @@ export async function wordInBand(page: Page, word: string, nth = 0): Promise<{ x
   return pt;
 }
 
-/** A tap on blank space (the left gutter at mid-height): toggles the chrome. */
 /** A tap in the title area (the eyebrow strip at the top): shows or hides ‹ 书架, 目录 and Aa (N-01). */
 export async function tapTitle(page: Page) {
   const vp = page.viewportSize()!;

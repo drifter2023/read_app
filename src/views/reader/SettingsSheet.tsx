@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { FontSize, PrefsStore } from '../../core/prefs/prefs.ts';
+import { blurMaxFor, type FontSize, type PrefsStore } from '../../core/prefs/prefs.ts';
 import type { PredictLevel } from '../../core/vocab/predict.ts';
 import { Sheet } from './Sheet.tsx';
 
@@ -41,9 +41,9 @@ export function SettingsSheet({ prefs, open, onClose }: { prefs: PrefsStore; ope
       </label>
       <label className="set-row" aria-disabled={!p.focusBlur}>
         <span className="set-label">模糊强度</span>
-        <input type="range" min={2} max={14} step={1} value={p.blurMax} aria-label="模糊强度" disabled={!p.focusBlur}
+        <input type="range" min={2} max={14} step={1} value={blurMaxFor(p)} aria-label="模糊强度" disabled={!p.focusBlur}
           onChange={(e) => void prefs.set('blurMax', Number(e.target.value))} />
-        <span className="set-val">{p.blurMax}</span>
+        <span className="set-val">{blurMaxFor(p)}</span>
       </label>
       <div className="set-row">
         <span className="set-label">预测生词</span>
