@@ -21,6 +21,7 @@ export function blurPx(t: number, blurMax: number): number {
   return Math.round(blurMax * t * 2) / 2;
 }
 
-export function opacityFor(t: number): number {
-  return Math.round((1 - 0.85 * t) * 100) / 100;
+/** Line opacity at depth t: 4a fades to .15; 夜读 (1c) fades further, to .08 (NIGHT_MODE_1c.md → N3). */
+export function opacityFor(t: number, night = false): number {
+  return Math.round((1 - (night ? 0.92 : 0.85) * t) * 100) / 100;
 }

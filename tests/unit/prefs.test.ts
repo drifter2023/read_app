@@ -9,7 +9,7 @@ beforeEach(async () => { db = nodeDb(); await migrate(db); });
 
 describe('PrefsStore', () => {
   it('starts from the spec defaults', async () => {
-    expect((await PrefsStore.load(db)).get()).toEqual({ fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper', predict: 'few', focusBlur: true });
+    expect((await PrefsStore.load(db)).get()).toEqual({ fontSize: 'M', focusPct: 30, blurMax: 7, sentenceMode: false, tier: null, theme: 'paper', predict: 'few', focusBlur: true, guideSpeed: 1, blurMaxSet: false });
   });
 
   it('S-01: persists changes across reloads', async () => {
