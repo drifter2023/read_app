@@ -176,7 +176,7 @@ test('Undo: 撤回 forgets a mistaken word; its footnotes are gone, also after a
   await expect(page.getByRole('button', { name: '保存' })).toBeVisible();
 });
 
-test('Only the focus band opens drawers: a blurred word is blank space', async ({ page }) => {
+test('Only the focus band opens drawers: a blurred word opens nothing', async ({ page }) => {
   await open(page);
   await wordInBand(page, 'politician');
   // Below the band (the title area at the top would show the menu instead, N-01).
@@ -192,5 +192,5 @@ test('Only the focus band opens drawers: a blurred word is blank space', async (
   await page.mouse.click(blurred.x, blurred.y);
   await page.waitForTimeout(400);
   await expect(drawer(page)).toHaveCount(0);
-  await expect(page.locator('.rd-top')).not.toHaveClass(/rd-chrome-on/); // blank space: nothing shows (only the title area does)
+  await expect(page.locator('.rd-top')).not.toHaveClass(/rd-chrome-on/); // blurred text is still text: no menu (only blank space, the page edge and the title area show it)
 });

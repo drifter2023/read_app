@@ -1,6 +1,6 @@
 # Handoff: 聚焦阅读 (Focus Reader) — MVP
 
-> **Changes 2026-10-14:** `docs/handoff/2026-10-14/CHANGES_2026-10-14.md` (select-to-ask 问旁注, top-30 % tap opens settings, 聚焦模糊). It overrides anything below that conflicts, except where `docs/plans/2026-10-14-select-to-ask.md` records the owner's decisions (the top bar and capsule stay; since 2026-10-15 only a tap in the title area shows them, and the settings sheet keeps its MVP look).
+> **Changes 2026-10-14:** `docs/handoff/2026-10-14/CHANGES_2026-10-14.md` (select-to-ask 问旁注, top-30 % tap opens settings, 聚焦模糊). It overrides anything below that conflicts, except where `docs/plans/2026-10-14-select-to-ask.md` records the owner's decisions (the top bar and capsule stay; since 2026-10-15 a tap in the title area shows them, and since 2026-10-20 a tap on blank space or the page edge too, and the settings sheet keeps its MVP look).
 
 > **Night reading 2026-10-20:** `docs/handoff/2026-10-20/NIGHT_MODE_1c.md` (夜读 1c in the reader, 带读 auto guided reading). It lifts the night mode 1c / auto guided reading exclusion below; the owner's decisions are in `docs/plans/2026-10-20-night-guide.md` (the Home capsule stays the only switch, for the whole app; the layout does not change at night).
 
@@ -77,7 +77,7 @@ References: `design/screens/fig-4a-focus.png` and `fig-4a-drawer.png`.
   - Lines inside the band are perfectly sharp. Formula in *Interactions*.
 - **Top bar (new)**:
   - 44px tall: `‹ 书架` on the left, the book title in the middle.
-  - Appears only on a tap in the title area: the top of the page down to 22px below the eyebrow (章节名 · 进度), even on a word; a tap there again, or anywhere else, hides it (owner decision 2026-10-15). Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
+  - Appears only on a tap in the title area: the top of the page down to 22px below the eyebrow (章节名 · 进度), even on a word; also on a tap on blank space or at the page edge (side margins, gaps between paragraphs, after a short line, the faded bottom edge) that opens no drawer (owner request 2026-10-20). The same tap again hides it, and so does a tap on text, blurred or sharp (owner decisions 2026-10-15, 2026-10-20). Fades out after 3s idle or on scroll (220ms). Kept by the owner on 2026-10-14, although the handoff of that day removes it.
 - **Bottom toolbar (new)**:
   - Floating capsule with two buttons: `目录` (table of contents, P1) and `Aa` (settings).
   - Shown and hidden together with the top bar.
@@ -217,7 +217,8 @@ Meanwhile, load `Position`, mount the chapter and build the line table. Going ba
 2. A drawer or the settings sheet is open → close it.
 3. The tap is in the title area (top of the page to 22px below the eyebrow) → toggle the top bar and bottom toolbar (even on a word; owner decision 2026-10-15).
 4. The tap hits a word → open the word drawer.
-5. Otherwise → hide the top bar and bottom toolbar if they are shown; nothing else.
+5. Blank space or the page edge (no text under the tap, or the faded bottom edge) → toggle the top bar and bottom toolbar (owner request 2026-10-20).
+6. Otherwise (text, blurred or sharp) → hide the top bar and bottom toolbar if they are shown; nothing else.
 
 ---
 

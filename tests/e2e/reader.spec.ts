@@ -37,7 +37,7 @@ test('R-07: a reload restores the same paragraph into the band', async ({ page }
   expect([after.chapter, after.para]).toEqual([before.chapter, before.para]);
 });
 
-test('chrome: a blank tap shows the top bar and capsule; they hide after 3 s idle and on scroll', async ({ page }) => {
+test('chrome: a tap in the title area shows the top bar and capsule; they hide after 3 s idle and on scroll', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby');
   await ready(page);
@@ -133,7 +133,7 @@ test('S-03: 聚焦模糊 off makes the whole page sharp, any word below the titl
   expect(new Set((await shown(vp.height)).map(String))).toEqual(new Set(['none,1']));
 });
 
-test('N-01: only a tap in the title area shows and hides ‹ 书架 / 目录 / Aa; a tap elsewhere only hides them; Aa opens settings, outside closes it; an open drawer only closes; no scroll indicator', async ({ page }) => {
+test('N-01: a tap in the title area, on blank space or the page edge shows and hides ‹ 书架 / 目录 / Aa; a tap on text only hides them; Aa opens settings, outside closes it; an open drawer only closes; no scroll indicator', async ({ page }) => {
   await fullTier(page);
   await page.goto('/?book=gatsby');
   await ready(page);
@@ -150,16 +150,41 @@ test('N-01: only a tap in the title area shows and hides ‹ 书架 / 目录 / A
   await tapTitle(page);
   await expect(bar).not.toHaveClass(/rd-chrome-on/);
 
-  // Below the title area (the old 30 % zone, and blank space lower down) a tap shows nothing…
-  for (const y of [130, vp.height * 0.25, vp.height / 2]) {
-    await page.mouse.click(12, y);
-    await page.waitForTimeout(250);
+  // The side margin, anywhere down the page, and the bottom edge: a tap shows them, the next hides them (owner request 2026-10-20).
+  for (const [x, y] of [[12, 130], [12, vp.height / 2], [vp.width - 12, vp.height * 0.75], [vp.width / 2, vp.height - 12]] as const) {
+    await page.mouse.click(x, y);
+    await expect(bar).toHaveClass(/rd-chrome-on/);
+    await expect(page.locator('.rd-capsule')).toHaveClass(/rd-chrome-on/);
+    await page.mouse.click(x, y);
     await expect(bar).not.toHaveClass(/rd-chrome-on/);
   }
-  // …and hides them when they are shown.
-  await tapTitle(page);
-  await expect(bar).toHaveClass(/rd-chrome-on/);
+  // A blurred line is text: a tap there shows nothing, and only hides them when they are shown.
+  const blurred = await page.evaluate(() => {
+    const h = window.innerHeight;
+    const line = [...document.querySelectorAll<HTMLElement>('.rd-line[data-p]')].find((l) => {
+      const b = l.getBoundingClientRect();
+      return b.top > h * 0.6 && b.bottom < h - 160 && l.style.filter !== 'none' && (l.textContent ?? '').trim().length > 20;
+    })!;
+    const b = line.getBoundingClientRect();
+    return { x: b.left + 40, y: b.top + b.height / 2 };
+  });
+  await page.mouse.click(blurred.x, blurred.y);
+  await page.waitForTimeout(250);
+  await expect(bar).not.toHaveClass(/rd-chrome-on/);
+  await expect(page.getByTestId('drawer')).toHaveCount(0);
   await page.mouse.click(12, vp.height / 2);
+  await expect(bar).toHaveClass(/rd-chrome-on/);
+  await page.mouse.click(blurred.x, blurred.y);
+  await expect(bar).not.toHaveClass(/rd-chrome-on/);
+  // A word in the band opens its drawer and hides them.
+  await page.mouse.click(12, vp.height / 2);
+  await expect(bar).toHaveClass(/rd-chrome-on/);
+  const w = await wordInBand(page, 'advice');
+  await page.mouse.click(w.x, w.y);
+  await expect(page.getByTestId('drawer')).toHaveAttribute('data-state', 'ready');
+  await expect(bar).not.toHaveClass(/rd-chrome-on/);
+  await page.mouse.click(12, vp.height / 2); // an open drawer only closes
+  await expect(page.getByTestId('drawer')).toHaveCount(0);
   await expect(bar).not.toHaveClass(/rd-chrome-on/);
 
   // Aa opens the settings sheet.

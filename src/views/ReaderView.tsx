@@ -6,7 +6,7 @@ import { ReaderEngine, type EngineBook } from '../core/reader/engine.ts';
 import { PositionSaver, savePosition } from '../core/reader/position.ts';
 import { Guide } from '../core/reader/guide.ts';
 import { decideTier, runProbe } from '../core/reader/probe.ts';
-import { MENU_PAD, routeTap } from '../core/reader/tap.ts';
+import { MENU_PAD, onText, routeTap } from '../core/reader/tap.ts';
 import type { Anchor } from '../core/types.ts';
 import { AgentDrawer } from './agent/AgentDrawer.tsx';
 import { useAgentSwipe } from './agent/useAgentSwipe.ts';
@@ -33,6 +33,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chapterRef = useRef<HTMLSpanElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
+  const maskBottomRef = useRef<HTMLDivElement>(null);
   const pctRef = useRef<HTMLSpanElement>(null);
   const engineRef = useRef<ReaderEngine | null>(null);
   const saverRef = useRef<PositionSaver | null>(null);
@@ -173,7 +174,8 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
     if (el) el.style.width = `${pctNow.current}%`;
   };
 
-  // Chrome: shown by a tap in the title area, hidden after 3 s idle, on any other tap or when scrolling starts.
+  // Chrome: shown by a tap in the title area, on blank space or the page edge; hidden by the same tap again,
+  // a tap on text, after 3 s idle or when scrolling starts.
   const showChrome = (on: boolean) => {
     clearTimeout(chromeTimer.current);
     setChrome(on);
@@ -191,8 +193,9 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
   /**
    * Tap arbitration (README, routeTap): a tap inside a drawer is the drawer's own; otherwise an open
    * sheet or drawer closes first, a tap in the title area (down to just below the eyebrow) shows or
-   * hides the top bar and capsule (even on a word), then a word or droplet opens its drawer. Anywhere
-   * else a tap only hides the top bar and capsule (owner decision 2026-10-15).
+   * hides the top bar and capsule (even on a word), then a word or droplet opens its drawer. A tap
+   * that opens nothing shows or hides them on blank space or the page edge, and only hides them on
+   * text, blurred or sharp (owner request 2026-10-20).
    */
   const onTap = (e: MouseEvent) => {
     if (drawerInner(e.target)) return;
@@ -207,7 +210,11 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
       lookup.onTap(e.clientX, e.clientY, e.timeStamp, e.clientY - box.top < menuH);
       return;
     }
-    lookup.onTap(e.clientX, e.clientY, e.timeStamp);
+    if (lookup.onTap(e.clientX, e.clientY, e.timeStamp)) { if (chrome) showChrome(false); return; }
+    // The bottom edge: the text there fades under the mask (in 夜读 the mask is off and only the margins count).
+    const mask = maskBottomRef.current!.getBoundingClientRect();
+    const edge = mask.height > 0 && e.clientY >= mask.top + mask.height / 2;
+    if (edge || !onText(e.target, e.clientX, e.clientY)) { showChrome(!chrome); return; }
     if (chrome) showChrome(false);
   };
 
@@ -230,7 +237,7 @@ export function ReaderView({ session, book, initialAnchor, onBack }: Props) {
         </>
       )}
       <div className="rd-mask rd-mask-top" />
-      <div className="rd-mask rd-mask-bottom" />
+      <div ref={maskBottomRef} className="rd-mask rd-mask-bottom" />
       <div className="rd-vignette" />
       <div ref={eyebrowRef} className="rd-eyebrow">
         <span ref={chapterRef} className="rd-eyebrow-chapter" />
