@@ -1,9 +1,11 @@
 import type { Prefs } from '../prefs/prefs.ts';
-import { TYPE_SCALE } from '../prefs/prefs.ts';
-import { paragraphText, sentenceStarts } from '../ingest/text.ts';
+import { blurMaxFor, TYPE_SCALE } from '../prefs/prefs.ts';
+import { countWords, paragraphText, sentenceStarts } from '../ingest/text.ts';
+import { ease } from '../motion.ts';
 import type { Anchor, ChapterData, Paragraph } from '../types.ts';
 import { lineOffset, lineRange, renderLine, type Footnote } from './decorate.ts';
 import { bandFor, blurPx, opacityFor, tFor, withSentencePenalty } from './focus.ts';
+import type { GuideHost, SentenceId } from './guide.ts';
 import { ChapterLayout, type LineMeta } from './layout.ts';
 import { nearestWord, wordBounds, wordContext } from './words.ts';
 
@@ -62,11 +64,16 @@ function lowerBound(arr: Float64Array, x: number): number {
   return lo;
 }
 
+/** True if `line` shows part of sentence `id`. */
+function inSentence(line: LineMeta, id: SentenceId): boolean {
+  return line.chapter === id.chapter && line.para === id.para && line.sFirst <= id.sentence && id.sentence <= line.sLast;
+}
+
 /**
  * Owns the reader's scroll container. Lays chapters out once into fixed-height lines,
  * then on scroll writes filter/opacity directly to lines within ±1 viewport.
  */
-export class ReaderEngine {
+export class ReaderEngine implements GuideHost {
   readonly stats = { paints: 0, styleWrites: 0, lastPaintMs: 0 };
   #scroller: HTMLElement;
   #content: HTMLElement;
@@ -79,6 +86,12 @@ export class ReaderEngine {
   #top = new Float64Array(0);
   #blur = new Float64Array(0);
   #opa = new Float64Array(0);
+  /** Per line: 1 while it carries the 夜读 accent colour, 0 when not, -1 unknown (write on next paint). */
+  #acc = new Int8Array(0);
+  /** 带读: the lit sentence (N4), or null. */
+  #guide: SentenceId | null = null;
+  /** The running 带读 scroll; a new one cancels it, so scrolls never stack (N-07). */
+  #anim = 0;
   /**
    * Grammar droplets for the sentences that end inside the focus band, in one overlay layer above
    * the lines (never inside them), placed by transform from the line table. Keyed chapter:para:end.
@@ -181,22 +194,34 @@ export class ReaderEngine {
     this.#moveWindow(lo, hi);
     const full = this.#prefs.tier !== 'fallback';
     const focus = this.#prefs.focusBlur;
-    const bmax = this.#prefs.blurMax;
-    const cur = this.#prefs.sentenceMode ? this.#lines[this.#lineAtY(mid)] : undefined;
+    const night = this.#prefs.theme === 'night';
+    const bmax = blurMaxFor(this.#prefs);
+    const g = this.#guide;
+    const cur = !g && this.#prefs.sentenceMode ? this.#lines[this.#lineAtY(mid)] : undefined;
     const sharp: number[] = [];
 
     for (let i = lo; i < hi; i++) {
       const line = this.#lines[i]!;
       const top = gap && gl >= 0 && i > gl ? this.#top[i]! + gap : this.#top[i]!;
       let t = tFor(Math.abs(top + lh / 2 - mid), band);
-      if (cur && !(line.chapter === cur.chapter && line.para === cur.para && line.sFirst <= cur.sFirst && cur.sFirst <= line.sLast)) {
+      // 带读: the lit sentence is sharp wherever it is, everything else one step deeper (N4 → Depth).
+      const lit = g !== null && inSentence(line, g);
+      if (g) t = lit ? 0 : withSentencePenalty(t);
+      else if (cur && !(line.chapter === cur.chapter && line.para === cur.para && line.sFirst <= cur.sFirst && cur.sFirst <= line.sLast)) {
         t = withSentencePenalty(t);
       }
       const shown = t; // droplets follow the band, not the selection
       if (this.#sel && this.#inSelection(i)) t = 0; // selected lines are sharp (C1)
       // With 聚焦模糊 off every line is sharp; droplets still mark the sentences in the band.
       const b = full && focus ? blurPx(t, bmax) : 0;
-      const o = focus ? opacityFor(t) : 1;
+      const o = focus ? opacityFor(t, night) : 1;
+      // 夜读 accent (N3): the sharp lines of the band, or only the lit sentence while guiding.
+      const a = night && line.para >= 0 && (g ? lit : focus && shown === 0) ? 1 : 0;
+      if (a !== this.#acc[i]) {
+        line.el.style.color = a ? 'var(--reader-accent)' : '';
+        this.#acc[i] = a;
+        this.stats.styleWrites++;
+      }
       if (shown === 0 && line.ends.length) sharp.push(i);
       if (b !== this.#blur[i]) {
         line.el.style.filter = b > 0 ? `blur(${b}px)` : 'none';
@@ -228,6 +253,11 @@ export class ReaderEngine {
       for (const l of this.#lines) { l.el.style.filter = ''; l.el.style.willChange = ''; }
       this.#blur.fill(Number.NaN);
       this.#win = [0, 0];
+    }
+    // 夜读 ↔ 纸白: the colours come from CSS; the opacity curve and the accent are repainted here (N6).
+    if (p.theme !== prev.theme) {
+      for (const l of this.#lines) l.el.style.color = '';
+      this.#acc.fill(0);
     }
     this.paintNow();
   }
@@ -560,7 +590,64 @@ export class ReaderEngine {
     this.paintNow();
   }
 
+  // ---- 带读 (NIGHT_MODE_1c.md → N4) ----
+
+  sentenceAtCentre(): SentenceId | null {
+    if (!this.#lines.length) return null;
+    let i = this.#lineAtY(this.#scroller.scrollTop + this.#H / 2);
+    while (i < this.#lines.length - 1 && this.#lines[i]!.para < 0) i++; // past a chapter heading
+    const l = this.#lines[i];
+    return l && l.para >= 0 ? { chapter: l.chapter, para: l.para, sentence: l.sFirst } : null;
+  }
+
+  nextSentence(id: SentenceId): SentenceId | null {
+    const paras = this.#book.chapters[id.chapter]?.paras;
+    if (!paras) return null;
+    if (id.sentence + 1 < (paras[id.para]?.length ?? 0)) return { ...id, sentence: id.sentence + 1 };
+    for (let p = id.para + 1; p < paras.length; p++) if (paras[p]!.length) return { chapter: id.chapter, para: p, sentence: 0 };
+    return null;
+  }
+
+  sentenceWords(id: SentenceId): number {
+    return countWords(this.#book.chapters[id.chapter]?.paras[id.para]?.[id.sentence] ?? '');
+  }
+
+  setGuideSentence(id: SentenceId | null): void {
+    const g = this.#guide;
+    if (g === id || (g && id && g.chapter === id.chapter && g.para === id.para && g.sentence === id.sentence)) return;
+    this.#guide = id;
+    this.paintNow();
+  }
+
+  /** The lit sentence, if guiding. */
+  get guideSentence(): SentenceId | null {
+    return this.#guide;
+  }
+
+  scrollSentenceToCentre(id: SentenceId, ms: number, done: () => void): () => void {
+    cancelAnimationFrame(this.#anim);
+    this.#anim = 0;
+    const first = this.#lines.findIndex((l) => inSentence(l, id));
+    if (first < 0) { done(); return () => {}; }
+    let last = first;
+    while (last + 1 < this.#lines.length && inSentence(this.#lines[last + 1]!, id)) last++;
+    const centre = (this.#top[first]! + this.#top[last]! + this.#lh) / 2;
+    const from = this.#scroller.scrollTop;
+    const to = Math.max(0, centre - this.#H / 2);
+    const t0 = performance.now();
+    const frame = (now: number): void => {
+      const k = ms > 0 ? Math.min(1, (now - t0) / ms) : 1;
+      this.#scroller.scrollTop = from + (to - from) * ease(k);
+      if (k < 1) { this.#anim = requestAnimationFrame(frame); return; }
+      this.#anim = 0;
+      done();
+    };
+    this.#anim = requestAnimationFrame(frame);
+    return () => { cancelAnimationFrame(this.#anim); this.#anim = 0; };
+  }
+
   destroy(): void {
+    cancelAnimationFrame(this.#anim);
     this.#destroyed = true;
     this.#mounted = false;
     this.#scroller.removeEventListener('scroll', this.#onScroll);
@@ -845,6 +932,7 @@ export class ReaderEngine {
     }
     this.#blur = new Float64Array(n).fill(Number.NaN);
     this.#opa = new Float64Array(n).fill(Number.NaN);
+    this.#acc = new Int8Array(n).fill(-1);
     this.#win = [0, 0];
     if (this.#selRects.length) this.#placeSelection();
   }

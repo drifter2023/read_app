@@ -14,6 +14,7 @@
   --shadow-rgb: 22, 21, 15;
   --drawer-edge: rgba(255, 255, 255, .55);
   --ease: cubic-bezier(.42, 0, .58, 1);
+  --reader-accent: var(--reader-ink); /* 纸白 has no accent; 夜读 sets its own */
   color-scheme: light;
 }
 :root[data-theme='night'] {
@@ -30,6 +31,8 @@
   --danger: #ff8a7a;
   --shadow-rgb: 0, 0, 0;
   --drawer-edge: rgba(255, 255, 255, .07);
+  /* 夜读 1c reader accent: the lit line(s), the tapped word, the drawer headword (NIGHT_MODE_1c.md → N2) */
+  --reader-accent: #ffb4b4;
   color-scheme: dark;
 }
 html, body { margin: 0; height: 100%; background: var(--paper); -webkit-text-size-adjust: 100%; }

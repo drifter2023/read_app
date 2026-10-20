@@ -30,6 +30,17 @@
 .rd-mask { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 2; }
 .rd-mask-top { top: 0; height: 150px; background: linear-gradient(var(--paper) 22%, transparent); }
 .rd-mask-bottom { bottom: 0; height: 130px; background: linear-gradient(transparent, var(--paper) 72%); }
+/*
+ * 夜读 1c (NIGHT_MODE_1c.md → N2): a full-screen vignette replaces the top/bottom fade masks while
+ * 聚焦模糊 is on; with it off, the thin strips below stay (as in 4a). Lines change colour in 240 ms (N3).
+ */
+.rd-vignette {
+  display: none; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(120% 34% at 50% 50%, rgba(14, 14, 16, 0) 38%, rgba(14, 14, 16, .78) 100%);
+}
+:root[data-theme='night'] .rd-page:not(.rd-clear) .rd-vignette { display: block; }
+:root[data-theme='night'] .rd-page:not(.rd-clear) .rd-mask { display: none; }
+:root[data-theme='night'] .rd-line { transition: color 240ms var(--ease); }
 /* 聚焦模糊 off (S-03): the masks shrink, in 300 ms, to thin strips behind the eyebrow and at the bottom edge. */
 .rd-mask-top, .rd-mask-bottom { transition: height 300ms var(--ease); }
 .rd-clear .rd-mask-top { height: 118px; background: linear-gradient(var(--paper) 64%, transparent); }
@@ -65,6 +76,7 @@
 /* ---- Word lookup (R-05, R-06) ---- */
 .rd-w { position: relative; }
 .rd-hl { background: rgba(var(--reader-ink-rgb), .09); border-radius: 3px; }
+:root[data-theme='night'] .rd-hl { background: rgba(255, 180, 180, .2); color: var(--reader-accent); }
 .rd-fn {
   position: absolute; left: 0; top: calc(var(--fs, 19.5px) * 1.18); /* 23px at M (19.5/34), scaled for S and L */
   font: 500 9px/1 'PingFang SC', 'Noto Sans SC', 'Hiragino Sans GB', sans-serif;
@@ -206,6 +218,58 @@
 .wd-notch { position: absolute; left: 0; right: 0; height: 16px; background: var(--paper); pointer-events: none; }
 .wd-notch-top { top: -4px; z-index: 3; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .5)); }
 .wd-notch-bottom { bottom: -4px; z-index: 4; filter: drop-shadow(0 -1px 1.4px rgba(0, 0, 0, .45)); }
+
+/*
+ * The drawer in 夜读 (NIGHT_MODE_1c.md → N2, fig-1c-drawer): same mechanism, timings and notches,
+ * a cooler violet-grey material, the headword in the accent. (The settings sheet keeps its leather.)
+ */
+:root[data-theme='night'] .wd-body.leather {
+  background: #2a2630;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .03) 0 2px, rgba(0, 0, 0, .035) 2px 4px),
+    linear-gradient(#332e3b, #221f2a);
+  box-shadow:
+    inset 0 10px 14px -9px rgba(0, 0, 0, .85),
+    inset 0 -10px 14px -9px rgba(0, 0, 0, .85),
+    inset 0 1px 0 rgba(255, 255, 255, .07),
+    0 1px 0 rgba(255, 255, 255, .14);
+}
+:root[data-theme='night'] .wd-notch { filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .18)) drop-shadow(0 2px 2px rgba(0, 0, 0, .9)); }
+:root[data-theme='night'] .wd-word { color: var(--reader-accent); text-shadow: none; }
+:root[data-theme='night'] .wd-ph { color: rgba(242, 237, 228, .45); }
+:root[data-theme='night'] .wd-pos { color: #f2ede4; }
+:root[data-theme='night'] .wd-def { color: rgba(242, 237, 228, .82); }
+:root[data-theme='night'] .wd-save { background: linear-gradient(#3b3640, #26222b); color: #f2ede4; }
+:root[data-theme='night'] .wd-save[aria-pressed='true'] { background: linear-gradient(#2c2830, #201d24); color: rgba(242, 237, 228, .7); }
+
+/* ---- 带读 control bar (NIGHT_MODE_1c.md → N5), 夜读 only ---- */
+.gd-bar {
+  position: absolute; left: 24px; right: 24px; bottom: calc(env(safe-area-inset-bottom) + 52px); z-index: 5;
+  display: flex; align-items: center; height: 46px; padding: 0 8px 0 6px; box-sizing: border-box; border-radius: 23px;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .09);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  transition: opacity 400ms var(--ease);
+}
+.gd-bar[data-faded='true'] { opacity: 0; pointer-events: none; }
+.gd-bar button { border: 0; background: none; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* 34 px disc in a 44 px target */
+.gd-play { flex: none; display: grid; place-items: center; width: 44px; height: 44px; margin: -1px -5px; }
+.gd-play-disc {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255, 255, 255, .12); color: #f2ede4; transition: background 200ms var(--ease), color 200ms var(--ease);
+}
+.gd-play[aria-pressed='true'] .gd-play-disc { background: #f2ede4; color: #0e0e10; }
+.gd-track { flex: 1; min-width: 0; height: 2px; margin: 0 12px; border-radius: 1px; background: rgba(255, 255, 255, .14); overflow: hidden; }
+.gd-track i { display: block; width: 0; height: 100%; background: rgba(242, 237, 228, .8); }
+.gd-speeds { flex: none; display: flex; gap: 4px; }
+/* 44 × 44 targets around the small pills (the pills keep the design's size; only the space between them grows) */
+.gd-speeds { gap: 0; }
+.gd-speeds button { display: grid; place-items: center; min-width: 44px; height: 44px; margin: -1px 0; }
+.gd-speeds span {
+  padding: 5px 9px; border-radius: 13px; font: 400 11px/1 'IBM Plex Sans', system-ui, sans-serif;
+  color: rgba(242, 237, 228, .55); transition: background 200ms var(--ease), color 200ms var(--ease);
+}
+.gd-speeds button[aria-checked='true'] span { background: rgba(242, 237, 228, .92); color: #0e0e10; }
 
 /* ---- Reader chrome (README → Top bar, Bottom toolbar) ---- */
 .rd-top, .rd-capsule {
