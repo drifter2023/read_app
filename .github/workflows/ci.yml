@@ -16,6 +16,11 @@ jobs:
   test:
     name: CI
     runs-on: ubuntu-latest
+    # Browsers and system libraries are in the image, so CI does not apt-install them.
+    # The tag must match the playwright version in package-lock.json. 1001 is the runner uid.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --user 1001
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -33,9 +38,6 @@ jobs:
           path: .cache/dict
           key: dict-${{ hashFiles('scripts/build-dict.ts') }}
           restore-keys: dict-
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps webkit chromium
 
       - run: npm run build
 
