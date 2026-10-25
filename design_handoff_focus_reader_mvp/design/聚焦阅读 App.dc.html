@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=IBM+Plex+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#eeece7;font-family:"Noto Sans SC",system-ui,sans-serif}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}a{color:#2a78d6}a:hover{color:#1b5aa8}@keyframes shim{0%{background-position:-180px 0}100%{background-position:220px 0}}@keyframes sheetUp{from{transform:translateY(105%)}to{transform:translateY(0)}}@keyframes popIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}@keyframes unfold{from{opacity:0;transform:translateY(-6px);max-height:0}to{opacity:1;transform:none;max-height:200px}}@keyframes splitG{from{grid-template-rows:0fr;opacity:.4}to{grid-template-rows:1fr;opacity:1}}@keyframes collapseG{from{grid-template-rows:1fr;opacity:1}to{grid-template-rows:0fr;opacity:.25}}@keyframes split{from{max-height:0;opacity:.3}to{max-height:200px;opacity:1}}@keyframes notchOpen{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes notchShut{from{transform:scaleY(1)}to{transform:scaleY(0)}}@keyframes riseIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}@keyframes collapse{from{max-height:200px;opacity:1}to{max-height:0;opacity:.25}}@keyframes splitTall{from{max-height:0;opacity:.3}to{max-height:420px;opacity:1}}@keyframes collapseTall{from{max-height:420px;opacity:1}to{max-height:0;opacity:.25}}@keyframes splitG{from{grid-template-rows:0fr;opacity:.4}to{grid-template-rows:1fr;opacity:1}}@keyframes collapseG{from{grid-template-rows:1fr;opacity:1}to{grid-template-rows:0fr;opacity:.3}}@keyframes fadeOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(4px)}}@keyframes sheetDown{from{transform:translateY(0)}to{transform:translateY(105%)}}@keyframes popOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(5px) scale(.97)}}.shimd{background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.16),rgba(255,255,255,.05));background-size:220px 100%;animation:shim 1.1s linear infinite;border-radius:3px}@keyframes dots{0%,80%{opacity:.25}40%{opacity:1}}.shim{background:linear-gradient(90deg,rgba(34,31,27,.07),rgba(34,31,27,.14),rgba(34,31,27,.07));background-size:220px 100%;animation:shim 1.1s linear infinite;border-radius:3px}[data-reader]{scrollbar-width:none}[data-reader]::-webkit-scrollbar{display:none}</style><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet"></helmet>
+
+<section class="dv-turn" id="t10">
+<div class="dv-thd"><a class="dv-tid" href="#t10">10</a><span class="dv-tname">Agent 抽屉 · 定稿（在 <a class="dv-oid" href="#4a">4a</a> 上按住左滑，书页缩小退后，露出「旁注」对话；长按选词浮出「问旁注」；轻点书页上方 30% 落下阅读设置，含「聚焦模糊」开关）</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="10a">
+<div class="dv-olabel"><a class="dv-oid" href="#10a">10a</a>页边批注 × 卡片退后 · 选中文字提问 · 底部设置面板</div>
+<div style="display:flex;flex-direction:column;gap:10px;width:402px">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" width="{{ 402 }}" height="{{ 812 }}" hint-size="402px,812px">
+<div data-ag-phone="9a" style="height:100%;position:relative;overflow:hidden;background:#f5f5f3;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none">
+
+<div data-ag-panel="1" style="position:absolute;inset:0;display:flex;flex-direction:column;padding:0 20px 0 82px;box-sizing:border-box;transform:translateX(12%);opacity:.3">
+<div style="position:relative;z-index:3">
+<div style="padding:56px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(0,0,0,.07)">
+<div onClick="{{ ag_toggleHist }}" style="min-width:0;flex:1;cursor:pointer;margin:0 -10px;padding:6px 10px 8px;border-radius:12px;background:{{ ag_hBtnBg }};transition:background .2s">
+<div style="display:flex;align-items:center;gap:6px;font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(0,0,0,.5)"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" style="flex:none"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M2.2 2.6v2.6h2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 5.2V8l2 1.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>{{ ag_hBtnLabel }}</span><span style="opacity:.6">·</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ag_headCh }}</span></div>
+<div style="margin-top:6px;display:flex;align-items:center;gap:8px;min-width:0"><span style="font-family:'Newsreader',Georgia,serif;font-size:24px;letter-spacing:-.01em;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ag_headTitle }}</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex:none;transition:transform .25s;transform:rotate({{ ag_chevRot }})"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+</div>
+</div>
+<div onClick="{{ ag_closeHist }}" style="position:absolute;top:100%;left:-82px;right:-20px;height:800px;background:rgba(245,245,243,.72);opacity:{{ ag_histOp }};pointer-events:{{ ag_histPE }};transition:opacity .25s"></div>
+<div style="position:absolute;top:calc(100% + 8px);left:0;right:0;max-height:470px;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 18px 40px -16px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.05);opacity:{{ ag_histOp }};transform:translateY({{ ag_histY }});pointer-events:{{ ag_histPE }};transition:opacity .22s,transform .28s cubic-bezier(.22,.8,.24,1)">
+<div style="padding:14px 16px 6px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">本书的对话</span><span style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(0,0,0,.4)">点选继续</span></div>
+<sc-for list="{{ ag_sessions }}" as="s" hint-placeholder-count="3">
+<div onClick="{{ ag_pickSess }}" data-sid="{{ s.id }}" style="cursor:pointer;display:flex;gap:10px;padding:12px 16px;background:{{ s.bg }}">
+<span style="flex:none;width:5px;height:5px;border-radius:3px;margin-top:8px;background:#111;opacity:{{ s.dot }}"></span>
+<div style="flex:1;min-width:0">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><span style="font:500 13.5px 'Noto Sans SC',sans-serif;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.title }}</span><span style="flex:none;font:400 10.5px 'IBM Plex Sans',sans-serif;color:rgba(0,0,0,.45)">{{ s.when }}</span></div>
+<div style="margin-top:4px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:13px;color:rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.quote }}</div>
+<div style="margin-top:4px;font:400 10px 'IBM Plex Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,0,0,.45)">{{ s.meta }}</div>
+</div>
+</div>
+</sc-for>
+<div onClick="{{ ag_newSess }}" style="cursor:pointer;min-height:48px;margin:4px 0 0;display:flex;align-items:center;gap:10px;padding:0 16px;border-top:1px solid rgba(0,0,0,.07);font:500 13px 'Noto Sans SC',sans-serif;color:#111"><span style="width:22px;height:22px;border-radius:11px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font:400 15px/1 'IBM Plex Sans',sans-serif">+</span>新对话 · 从当前句开始</div>
+</div>
+</div>
+<div data-ag-list="1" style="flex:1;min-height:0;overflow-y:auto;padding:16px 0 8px;user-select:text;-webkit-user-select:text">
+<sc-for list="{{ ag_msgs }}" as="m" hint-placeholder-count="2">
+<div style="margin-top:18px">
+<sc-if value="{{ m.u }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:flex-end;margin-bottom:6px"><div style="max-width:86%;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(0,0,0,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">“{{ m.quote }}”</div></div></sc-if>
+<div style="display:flex;justify-content:flex-end"><div style="max-width:86%;padding:10px 14px;border-radius:18px 18px 4px 18px;background:#111;font:400 13.5px/1.55 'Noto Sans SC',sans-serif;color:#fff;text-wrap:pretty">{{ m.text }}</div></div>
+</sc-if>
+<sc-if value="{{ m.a }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#111"><span style="width:5px;height:5px;border-radius:3px;background:#111"></span>旁注</div>
+<div style="margin-top:6px;font:400 14.5px/1.8 'Noto Serif SC',serif;color:#1d1d1b;text-wrap:pretty">{{ m.text }}</div>
+<sc-if value="{{ m.hasCite }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;display:inline-flex;align-items:center;min-height:28px;padding:0 11px;border-radius:14px;border:1px solid rgba(0,0,0,.12);font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(0,0,0,.6)">{{ m.cite }}</div></sc-if>
+</sc-if>
+<sc-if value="{{ m.t }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:5px;padding:6px 0"><span style="width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.75)"></span><span style="width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.4)"></span><span style="width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.18)"></span></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:7px;overflow-x:auto;padding:10px 0">
+<sc-for list="{{ ag_chips }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ ag_ask }}" data-q="{{ c.q }}" style="flex:none;cursor:pointer;min-height:34px;display:flex;align-items:center;padding:0 13px;border-radius:17px;background:#e9e9e6;font:400 12px 'Noto Sans SC',sans-serif;color:#1d1d1b;white-space:nowrap">{{ c.q }}</div>
+</sc-for>
+</div>
+<sc-if value="{{ ag_noAtt }}" hint-placeholder-val="{{ true }}">
+<div style="margin:0 0 8px;padding:12px 0 4px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06)">
+<div style="padding:0 14px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">当前句</span><span style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(0,0,0,.4)">滑动或点选一句</span></div>
+<div style="position:relative;margin-top:4px">
+<div ref="{{ ag_pickRef }}" onScroll="{{ ag_onPick }}" style="height:132px;overflow-y:auto;padding:66px 14px;box-sizing:border-box;scrollbar-width:none;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent)">
+<sc-for list="{{ ag_paras }}" as="p" hint-placeholder-count="3">
+<div style="margin:0 0 8px;text-indent:{{ p.ind }};font-family:'Newsreader',Georgia,serif;font-size:13.5px;line-height:1.7;color:#111;text-wrap:pretty"><sc-for list="{{ p.ss }}" as="s" hint-placeholder-count="2"><span onClick="{{ ag_tapSent }}" data-si="{{ s.i }}" style="cursor:pointer;opacity:{{ s.op }};background:{{ s.bg }};box-shadow:{{ s.ul }};border-radius:2px;transition:opacity .2s,background .2s">{{ s.t }} </span></sc-for></div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ ag_hasAtt }}" hint-placeholder-val="{{ false }}">
+<div style="margin:0 0 8px;padding:10px 4px 11px 14px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);display:flex;gap:6px;align-items:flex-start">
+<div style="flex:1;min-width:0">
+<div style="font:500 9.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,0,0,.45)">选中的文字 · 第 3 章</div>
+<div style="margin-top:5px;font-family:'Newsreader',Georgia,serif;font-size:13.5px;line-height:1.55;color:#111;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty">“{{ ag_att }}”</div>
+</div>
+<div onClick="{{ ag_clearAtt }}" style="flex:none;width:36px;height:36px;margin-top:-6px;border-radius:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(0,0,0,.45)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></div>
+</div>
+</sc-if>
+<div style="display:flex;align-items:center;gap:8px;min-height:50px;padding:0 5px 0 16px;border-radius:25px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);margin-bottom:34px">
+<input onKeyDown="{{ ag_onKey }}" placeholder="{{ ag_inPh }}" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:400 13.5px 'Noto Sans SC',sans-serif;color:#111;padding:0">
+<div onClick="{{ ag_sendBtn }}" style="cursor:pointer;flex:none;width:40px;height:40px;border-radius:20px;background:#111;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12V2M7 2L2.5 6.5M7 2l4.5 4.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+</div>
+</div>
+
+<div data-ag-reader="1" style="position:absolute;inset:0;background:#faf8f3;overflow:hidden;transform-origin:50% 50%;touch-action:none">
+<div style="position:absolute;top:93px;left:34px;right:34px">
+<sc-for list="{{ ag_rlines }}" as="ln" hint-placeholder-count="13">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:19.5px;line-height:34px;height:34px;color:#221f1b;white-space:nowrap;filter:blur({{ ln.blur }});opacity:{{ ln.op }}"><sc-for list="{{ ln.segs }}" as="sg" hint-placeholder-count="2"><span style="position:relative"><sc-for list="{{ sg.tk }}" as="t" hint-placeholder-count="3"><span data-tk="{{ t.i }}" data-word="{{ t.w }}" style="background:{{ t.bg }};transition:background .12s">{{ t.s }}</span></sc-for><sc-if value="{{ sg.g }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;top:23px;font:500 9px/1 'Noto Sans SC',sans-serif;letter-spacing:.04em;color:rgba(34,31,27,.6);white-space:nowrap">{{ sg.g }}</span></sc-if></span></sc-for></div>
+</sc-for>
+</div>
+<div style="position:absolute;top:0;left:0;right:0;height:150px;background:linear-gradient(#faf8f3 22%,rgba(250,248,243,0));pointer-events:none;opacity:{{ ag_fadeOp }};transition:opacity .3s"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:130px;background:linear-gradient(rgba(250,248,243,0),#faf8f3 72%);pointer-events:none;opacity:{{ ag_fadeOp }};transition:opacity .3s"></div>
+<div style="position:absolute;top:58px;left:0;right:0;display:flex;justify-content:space-between;padding:0 34px;font:11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.14em;color:rgba(34,31,27,.38)"><span>CHAPTER 3 · THE TREELINE</span><span>12%</span></div>
+<div data-ag-set="1" onClick="{{ ag_closeSet }}" style="position:absolute;inset:0;z-index:6;pointer-events:{{ ag_setPE }}"></div>
+<div data-ag-set="1" style="position:absolute;left:0;right:0;bottom:0;z-index:7;max-height:44%;overflow-y:auto;border-radius:18px 18px 0 0;padding:4px 22px 30px;box-sizing:border-box;background:#2c2620;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.022) 0 2px,rgba(0,0,0,.028) 2px 4px),linear-gradient(#332c25,#241f1a);box-shadow:0 -14px 30px -14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);color:#f2ead9;transform:translateY({{ ag_setY }});transition:transform {{ ag_setMs }} cubic-bezier(.22,.9,.3,1)">
+<div onClick="{{ ag_closeSet }}" style="cursor:pointer;padding:6px 0 4px"><div style="width:36px;height:4px;border-radius:2px;background:rgba(242,234,217,.25);margin:0 auto"></div></div>
+<div onClick="{{ ag_toggleBlur }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px;border-bottom:1px solid rgba(242,234,217,.1)">
+<div style="min-width:0"><div style="font:500 14px 'Noto Sans SC',sans-serif;color:#f2ead9">聚焦模糊</div><div style="margin-top:3px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.5)">{{ ag_blurSub }}</div></div>
+<div style="flex:none;position:relative;width:46px;height:28px;border-radius:14px;background:{{ ag_swBg }};transition:background .2s"><div style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:{{ ag_knBg }};transform:translateX({{ ag_knX }});transition:transform .22s cubic-bezier(.22,.9,.3,1),background .2s;box-shadow:0 1px 2px rgba(0,0,0,.5)"></div></div>
+</div>
+<div style="opacity:{{ ag_depOp }};pointer-events:{{ ag_depPE }};transition:opacity .25s">
+<div style="display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid rgba(242,234,217,.07)"><span style="flex:none;width:58px;font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">清晰带</span><input type="range" min="20" max="80" step="5" value="{{ ag_band }}" onChange="{{ ag_setBand }}" style="flex:1;min-width:0;margin:0;accent-color:#f2ead9"><span style="flex:none;width:34px;text-align:right;font:400 11.5px 'IBM Plex Sans',sans-serif;color:rgba(242,234,217,.55)">{{ ag_bandLbl }}</span></div>
+<div style="display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid rgba(242,234,217,.07)"><span style="flex:none;width:58px;font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">模糊强度</span><input type="range" min="2" max="14" step="1" value="{{ ag_bmax }}" onChange="{{ ag_setBmax }}" style="flex:1;min-width:0;margin:0;accent-color:#f2ead9"><span style="flex:none;width:34px;text-align:right;font:400 11.5px 'IBM Plex Sans',sans-serif;color:rgba(242,234,217,.55)">{{ ag_bmax }}</span></div>
+<div onClick="{{ ag_toggleSent }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;border-bottom:1px solid rgba(242,234,217,.07)"><span style="font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">整句模式</span><div style="flex:none;position:relative;width:38px;height:22px;border-radius:11px;background:{{ ag_sBg }};transition:background .2s"><div style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:8px;background:{{ ag_sKn }};transform:translateX({{ ag_sX }});transition:transform .22s cubic-bezier(.22,.9,.3,1)"></div></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px"><span style="font:400 13px 'Noto Sans SC',sans-serif;color:rgba(242,234,217,.8)">字号</span><div style="display:flex;gap:6px"><sc-for list="{{ ag_fsOpts }}" as="f" hint-placeholder-count="3"><div onClick="{{ ag_setFs }}" data-fs="{{ f.i }}" style="cursor:pointer;width:44px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Newsreader',Georgia,serif;font-size:{{ f.sz }};color:{{ f.fg }};background:{{ f.bg }}">Aa</div></sc-for></div></div>
+</div>
+<div data-ag-hs="1" style="position:absolute;left:0;top:0;width:28px;margin-left:-14px;display:none;cursor:grab;z-index:4"><div style="position:absolute;left:13px;top:6px;bottom:0;width:2px;background:#111"></div><div style="position:absolute;left:8px;top:0;width:12px;height:12px;border-radius:6px;background:#111"></div></div>
+<div data-ag-he="1" style="position:absolute;left:0;top:0;width:28px;margin-left:-14px;display:none;cursor:grab;z-index:4"><div style="position:absolute;left:13px;top:0;bottom:6px;width:2px;background:#111"></div><div style="position:absolute;left:8px;bottom:0;width:12px;height:12px;border-radius:6px;background:#111"></div></div>
+<div data-ag-ask="1" onClick="{{ ag_askSel }}" style="position:absolute;left:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 14px;border-radius:20px;background:#111;color:#fff;font:500 13.5px 'Noto Sans SC',sans-serif;white-space:nowrap;box-shadow:0 12px 26px -12px rgba(0,0,0,.5);cursor:pointer;opacity:0;pointer-events:none;transform:translate(-50%,6px) scale(.96);transition:opacity .18s,transform .24s cubic-bezier(.22,.8,.24,1)"><span style="width:5px;height:5px;border-radius:3px;background:#fff"></span>问旁注</div>
+<div data-ag-dim="1" style="position:absolute;inset:0;background:#111;opacity:0;pointer-events:none"></div>
+<div data-ag-shield="1" style="position:absolute;inset:0;pointer-events:none;cursor:pointer"></div>
+</div>
+</div>
+</x-import>
+<div style="display:flex;gap:8px">
+<div onClick="{{ ag_demoSel }}" style="cursor:pointer;padding:6px 12px;border-radius:5px;background:#1a1a1a;color:#fff;font:500 11px system-ui,sans-serif">演示 选中文字</div>
+<div onClick="{{ ag_demo }}" style="cursor:pointer;padding:6px 12px;border-radius:5px;background:rgba(0,0,0,.08);color:#1a1a1a;font:500 11px system-ui,sans-serif">演示 左滑 / 返回</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="dv-turn" id="t7">
+<div class="dv-thd"><a class="dv-tid" href="#t7">7</a><span class="dv-tname">主页 · 现代化方向（放掉布纹烫金：平面色块 + 排版驱动。点生词卡片翻面看释义，点「继续阅读」整卡展开成阅读页）</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="7a">
+<div class="dv-olabel"><a class="dv-oid" href="#7a">7a</a>编辑式 · 纸白底、大字标题、细线分栏，朱红一点强调</div>
+<x-import component-from-global-scope="IOSDevice" width="{{ 402 }}" height="{{ 812 }}" hint-size="402px,812px">
+<div data-phone="7a" style="height:100%;position:relative;overflow:hidden;background:#fbfaf8">
+
+<sc-if value="{{ tab7aToday }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:74px;overflow-y:auto;padding:54px 24px 20px;box-sizing:border-box">
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:34px">
+<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(22,21,15,.62)">Tue · 9月22日</div>
+<div style="display:flex;align-items:baseline;gap:5px"><span style="font:500 13px 'IBM Plex Sans',system-ui,sans-serif;color:#c1452f">12</span><span style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">天连读</span></div>
+</div>
+
+<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(22,21,15,.62);margin-bottom:12px">Continue</div>
+<div onClick="{{ openBook }}" data-bt="{{ cur.t }}" data-ba="{{ cur.a }}" data-bc="{{ cur.c }}" style="cursor:pointer">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:36px;line-height:1.1;letter-spacing:-.01em;color:#16150f">{{ cur.t }}</div>
+<div style="margin-top:9px;font:400 12.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.04em;color:rgba(22,21,15,.62)">{{ cur.a }} · 第 7 章</div>
+<div style="margin-top:20px;display:flex;align-items:center;gap:12px">
+<div style="flex:1;height:2px;background:rgba(22,21,15,.1);position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:38%;background:#c1452f"></div></div>
+<div style="font:500 11px 'IBM Plex Sans',system-ui,sans-serif;color:#16150f">38%</div>
+</div>
+<div style="margin-top:9px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">还剩约 42 分钟</div>
+</div>
+
+<div style="height:1px;background:rgba(22,21,15,.1);margin:30px 0 22px"></div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+<div><div style="font-family:'Newsreader',Georgia,serif;font-size:27px;color:#16150f">24<span style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62);margin-left:3px">分</span></div><div style="margin-top:3px;font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">今日阅读</div></div>
+<div><div style="font-family:'Newsreader',Georgia,serif;font-size:27px;color:#16150f">7</div><div style="margin-top:3px;font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">新查生词</div></div>
+<div><div style="font-family:'Newsreader',Georgia,serif;font-size:27px;color:#16150f">31<span style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62);margin-left:3px">分</span></div><div style="margin-top:3px;font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">日均</div></div>
+</div>
+
+<div style="height:1px;background:rgba(22,21,15,.1);margin:22px 0 20px"></div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:13px">
+<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(22,21,15,.62)">Review · 6</div>
+<div style="font:400 11px 'Noto Sans SC',sans-serif;color:#c1452f;cursor:pointer">全部</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:7px">
+<sc-for list="{{ words7a }}" as="w" hint-placeholder-count="6">
+<div onClick="{{ flipWord }}" data-opt="7a" data-w="{{ w.en }}" style="cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 14px;border:1px solid {{ w.bd }};border-radius:3px;background:{{ w.bg }};font-family:{{ w.font }};font-size:13.5px;color:{{ w.fg }}">{{ w.face }}</div>
+</sc-for>
+</div>
+
+<div style="height:1px;background:rgba(22,21,15,.1);margin:24px 0 18px"></div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between">
+<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(22,21,15,.62)">Shelf</div>
+<div style="font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">共 8 本</div>
+</div>
+<div style="display:flex;gap:20px;margin:12px 0 2px;border-bottom:1px solid rgba(22,21,15,.1)">
+<sc-for list="{{ filters7a }}" as="ft" hint-placeholder-count="3">
+<div onClick="{{ setFilter }}" data-opt="7a" data-f="{{ ft.id }}" style="cursor:pointer;min-height:44px;display:flex;align-items:center;padding-bottom:2px;border-bottom:2px solid {{ ft.bd }};font:400 12.5px 'Noto Sans SC',sans-serif;color:{{ ft.fg }}">{{ ft.label }}</div>
+</sc-for>
+</div>
+<sc-for list="{{ shelfList7a }}" as="bk" hint-placeholder-count="4">
+<div onClick="{{ openBook }}" data-bt="{{ bk.t }}" data-ba="{{ bk.a }}" data-bc="{{ bk.c }}" style="cursor:pointer;display:flex;align-items:flex-start;gap:15px;padding:16px 0;border-bottom:1px solid rgba(22,21,15,.07)">
+<div style="flex:none;width:46px;height:64px;border-radius:2px;background:{{ bk.c }}"></div>
+<div style="flex:1;min-width:0">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:18px;line-height:1.2;color:#16150f">{{ bk.t }}</div>
+<div style="margin-top:4px;font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.04em;color:rgba(22,21,15,.62)">{{ bk.a }}</div>
+<div style="margin-top:11px;display:flex;align-items:center;gap:10px">
+<div style="flex:1;height:2px;background:rgba(22,21,15,.1);position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ bk.bar }};background:{{ bk.tint }}"></div></div>
+<div style="font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ bk.note }}</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ tab7aStudy }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:74px;overflow-y:auto;padding:54px 24px 20px;box-sizing:border-box">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:32px;letter-spacing:-.01em;color:#16150f">书房</div>
+<div style="margin-top:7px;display:flex;align-items:center;gap:7px">
+<div style="width:5px;height:5px;border-radius:3px;background:#c1452f"></div>
+<div style="font:400 11.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">档案员在记录 · 不会主动打扰你</div>
+</div>
+
+<div style="display:flex;gap:18px;margin:22px 0 2px;border-bottom:1px solid rgba(22,21,15,.1)">
+<sc-for list="{{ studySeg }}" as="sg" hint-placeholder-count="3">
+<div onClick="{{ setStudySeg }}" data-s="{{ sg.id }}" style="cursor:pointer;min-height:44px;display:flex;align-items:center;padding-bottom:2px;border-bottom:2px solid {{ sg.bd }};font:400 12.5px 'Noto Sans SC',sans-serif;color:{{ sg.fg }}">{{ sg.label }}</div>
+</sc-for>
+</div>
+
+<sc-if value="{{ segMemory }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:20px;display:flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid rgba(22,21,15,.14);background:#fff;cursor:pointer;font:400 12px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">检索记忆 · 「我读到哪本书提过海拔」</div>
+<div style="margin-top:22px;padding-left:19px;border-left:1px solid rgba(22,21,15,.13)">
+<sc-for list="{{ memories }}" as="m" hint-placeholder-count="6">
+<div style="position:relative;padding-bottom:24px">
+<div style="position:absolute;left:-24px;top:4px;width:9px;height:9px;border-radius:5px;background:{{ m.dot }};box-shadow:0 0 0 3px #fbfaf8"></div>
+<div style="font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:rgba(22,21,15,.62)">{{ m.when }} · {{ m.kind }}</div>
+<div style="margin-top:6px;font:400 13.5px/1.62 'Noto Sans SC',sans-serif;color:#16150f;text-wrap:pretty">{{ m.text }}</div>
+<div style="margin-top:7px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(22,21,15,.62)">{{ m.src }}</div>
+</div>
+</sc-for>
+<div style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">更早的 137 条记录</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ segThreads }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:6px">
+<sc-for list="{{ threads }}" as="th" hint-placeholder-count="4">
+<div style="cursor:pointer;padding:17px 0;border-bottom:1px solid rgba(22,21,15,.07)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:17.5px;line-height:1.25;color:#16150f">{{ th.title }}</div>
+<div style="flex:none;font:400 10px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(22,21,15,.62)">{{ th.when }}</div>
+</div>
+<div style="margin-top:6px;font:400 12.5px/1.6 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ th.last }}</div>
+<div style="margin-top:9px;display:flex;align-items:center;gap:10px">
+<div style="font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,21,15,.62)">{{ th.book }}</div>
+<div style="width:1px;height:9px;background:rgba(22,21,15,.18)"></div>
+<div style="font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ th.n }} 条</div>
+</div>
+</div>
+</sc-for>
+<div style="height:1px;background:rgba(22,21,15,.1);margin:24px 0 18px"></div>
+<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(22,21,15,.62);margin-bottom:8px">它替你做的</div>
+<sc-for list="{{ artifacts }}" as="ar" hint-placeholder-count="3">
+<div style="cursor:pointer;display:flex;align-items:flex-start;gap:13px;padding:14px 0;border-bottom:1px solid rgba(22,21,15,.07)">
+<div style="flex:none;width:2px;align-self:stretch;background:{{ ar.tint }}"></div>
+<div style="flex:1;min-width:0">
+<div style="font:500 13px 'Noto Sans SC',sans-serif;color:#16150f">{{ ar.title }}</div>
+<div style="margin-top:4px;font:400 11.5px/1.55 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ ar.sub }}</div>
+</div>
+<div style="flex:none;font:400 10.5px 'Noto Sans SC',sans-serif;color:{{ ar.stFg }}">{{ ar.st }}</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ segAgent }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:22px">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:19px;color:#16150f">档案员</div>
+<div style="margin-top:7px;font:400 12.5px/1.65 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62);text-wrap:pretty">只在你开口时回答。它会记下你读过什么、停在哪里、查过哪些词，但不会替你写笔记，也不会主动推送建议。</div>
+<div style="height:1px;background:rgba(22,21,15,.1);margin:22px 0 2px"></div>
+<sc-for list="{{ agentRows }}" as="ag" hint-placeholder-count="5">
+<div onClick="{{ toggleAgent }}" data-p="{{ ag.id }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:44px;padding:14px 0;border-bottom:1px solid rgba(22,21,15,.07)">
+<div style="flex:1;min-width:0">
+<div style="font:400 13px 'Noto Sans SC',sans-serif;color:#16150f">{{ ag.label }}</div>
+<div style="margin-top:3px;font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ ag.sub }}</div>
+</div>
+<div style="flex:none;width:38px;height:22px;border-radius:11px;background:{{ ag.trackBg }};border:1px solid {{ ag.trackBd }};position:relative">
+<div style="position:absolute;top:2px;left:{{ ag.knobX }};width:16px;height:16px;border-radius:8px;background:{{ ag.knob }};transition:left 220ms cubic-bezier(.42,0,.58,1)"></div>
+</div>
+</div>
+</sc-for>
+<div style="margin-top:22px;display:flex;gap:10px">
+<div style="flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(22,21,15,.14);cursor:pointer;font:400 12px 'Noto Sans SC',sans-serif;color:#16150f">导出全部记忆</div>
+<div style="flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(193,69,47,.35);cursor:pointer;font:400 12px 'Noto Sans SC',sans-serif;color:#c1452f">清空记忆</div>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ tab7aWords }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:74px;overflow-y:auto;padding:54px 24px 20px;box-sizing:border-box">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:32px;letter-spacing:-.01em;color:#16150f">生词本</div>
+<div style="margin-top:6px;font:400 11.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ vocabLine }}</div>
+<div style="display:flex;align-items:center;min-height:44px;margin:20px 0 6px;padding:0 16px;border:1px solid #c1452f;background:rgba(193,69,47,.06);cursor:pointer;font:400 12.5px 'Noto Sans SC',sans-serif;color:#c1452f">开始今日复习 · 6 个</div>
+<div style="height:1px;background:rgba(22,21,15,.1);margin:18px 0 2px"></div>
+<sc-for list="{{ vocab7a }}" as="v" hint-placeholder-count="6">
+<div onClick="{{ toggleMastered }}" data-opt="7a" data-w="{{ v.en }}" style="cursor:pointer;display:flex;align-items:flex-start;gap:14px;padding:15px 0;border-bottom:1px solid rgba(22,21,15,.07)">
+<div style="flex:none;width:18px;height:18px;margin-top:4px;border-radius:9px;border:1px solid {{ v.mkBd }};background:{{ v.mkBg }}"></div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;gap:9px">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:19px;color:{{ v.enFg }}">{{ v.en }}</div>
+<div style="font:400 10.5px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(22,21,15,.62)">{{ v.ph }}</div>
+</div>
+<div style="margin-top:4px;font:500 13px 'Noto Sans SC',sans-serif;color:#16150f">{{ v.zh }}</div>
+<div style="margin-top:7px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12.5px;line-height:1.5;color:rgba(22,21,15,.62)">{{ v.src }}</div>
+<div style="margin-top:6px;font:400 10px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,21,15,.62)">{{ v.book }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ tab7aMe }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:74px;overflow-y:auto;padding:54px 24px 20px;box-sizing:border-box">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:32px;letter-spacing:-.01em;color:#16150f">林晚</div>
+<div style="margin-top:6px;font:400 11.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">2023 年 4 月加入 · 已读完 6 本</div>
+<div style="height:1px;background:rgba(22,21,15,.1);margin:26px 0 20px"></div>
+<div style="font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(22,21,15,.62);margin-bottom:14px">This week</div>
+<div style="display:flex;align-items:flex-end;gap:9px;height:96px">
+<sc-for list="{{ week7a }}" as="d" hint-placeholder-count="7">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px">
+<div style="font:400 9.5px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(22,21,15,.62)">{{ d.n }}</div>
+<div style="width:100%;height:{{ d.h }}px;background:{{ d.tint }}"></div>
+<div style="font:400 10px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ d.label }}</div>
+</div>
+</sc-for>
+</div>
+<div style="height:1px;background:rgba(22,21,15,.1);margin:24px 0 20px"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px 4px">
+<sc-for list="{{ lifetime }}" as="lt" hint-placeholder-count="4">
+<div>
+<div style="font-family:'Newsreader',Georgia,serif;font-size:26px;color:#16150f">{{ lt.n }}<span style="font:400 11px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62);margin-left:3px">{{ lt.unit }}</span></div>
+<div style="margin-top:3px;font:400 10.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ lt.cap }}</div>
+</div>
+</sc-for>
+</div>
+<div style="height:1px;background:rgba(22,21,15,.1);margin:26px 0 2px"></div>
+<sc-for list="{{ settings }}" as="st" hint-placeholder-count="5">
+<div style="cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid rgba(22,21,15,.07)">
+<div style="font:400 13px 'Noto Sans SC',sans-serif;color:#16150f">{{ st.label }}</div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font:400 11.5px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">{{ st.val }}</span><span style="font:400 13px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(22,21,15,.4)">›</span></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:74px;border-top:1px solid rgba(22,21,15,.09);background:rgba(251,250,248,.94);backdrop-filter:blur(12px);display:grid;grid-template-columns:repeat(4,1fr);align-items:start;padding-top:9px;box-sizing:border-box">
+<sc-for list="{{ nav7a }}" as="n" hint-placeholder-count="4">
+<div onClick="{{ setNav }}" data-opt="7a" data-n="{{ n.id }}" style="cursor:pointer;min-height:44px;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:4px">
+<div style="width:15px;height:2px;background:{{ n.dot }}"></div>
+<div style="font:400 10.5px 'Noto Sans SC',sans-serif;color:{{ n.fg }}">{{ n.label }}</div>
+</div>
+</sc-for>
+</div>
+
+<sc-if value="{{ flyOn7a }}" hint-placeholder-val="{{ false }}">
+<div style="{{ flyStyle }}">
+<div style="{{ flyPageLight }}">
+<div style="position:absolute;top:56px;left:24px;font:400 11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.12em;color:rgba(22,21,15,.62);cursor:pointer" onClick="{{ closeBook }}">‹ 主页</div>
+<div style="position:absolute;top:104px;left:24px;right:24px">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:24px;color:#16150f">{{ flyTitle }}</div>
+<div style="margin:4px 0 26px;font:400 11.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.06em;color:rgba(22,21,15,.62)">{{ flyAuthor }}</div>
+<sc-for list="{{ pageLines }}" as="pl" hint-placeholder-count="12">
+<div style="font-family:'Newsreader',Georgia,serif;font-size:18.5px;line-height:34px;color:#16150f">{{ pl }}</div>
+</sc-for>
+</div>
+</div>
+<div style="{{ flyCoverStyle }}">
+<div style="position:absolute;inset:0;background:{{ flyCloth }}"></div>
+<div style="position:absolute;left:34px;right:34px;top:44%;transform:translateY(-50%)">
+<div style="width:26px;height:2px;background:rgba(255,255,255,.75);margin-bottom:22px"></div>
+<div style="font-family:'Newsreader',Georgia,serif;font-size:34px;line-height:1.14;letter-spacing:-.01em;color:#fff">{{ flyTitle }}</div>
+<div style="margin-top:14px;font:400 11.5px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.66)">{{ flyAuthor }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-import>
+</div>
+
+
+
+</div>
+</section>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">定稿 · 点词查义 + 汉字小脚注（点正文任意单词：裂纸抽屉展开占位词条；关掉后 9px 汉字脚注留在词的左下，行距与字号零变化）</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a">
+<div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>词下小脚注 · 9px 汉字贴在单词左下，行距零变化</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" width="{{ 402 }}" height="{{ 812 }}" hint-size="402px,812px">
+<div data-phone="4a" style="height:100%;position:relative;background:#faf8f3;overflow:hidden">
+<div data-reader="4a" data-mode="a" data-half="54" style="position:absolute;inset:0;overflow-y:auto;padding:45% 34px;box-sizing:border-box">
+<sc-for list="{{ wlines4a }}" as="wl" hint-placeholder-count="12">
+<div>
+<div data-line="1" data-li="{{ wl.k }}" style="font-family:'Newsreader',Georgia,serif;font-size:19.5px;line-height:34px;height:34px;color:#221f1b;position:relative;z-index:5;will-change:filter,opacity">
+<sc-for list="{{ wl.w }}" as="w" hint-placeholder-count="7">
+<span onClick="{{ tap }}" data-w="{{ w.t }}" style="cursor:pointer;position:relative;z-index:6">{{ w.s }}<sc-if value="{{ w.g }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;top:23px;font-family:'PingFang SC','Noto Sans SC','Hiragino Sans GB',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased;font-size:9px;line-height:1;letter-spacing:.04em;color:rgba(34,31,27,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;pointer-events:none">{{ w.g }}</span></sc-if></span>
+</sc-for>
+</div>
+<sc-if value="{{ wl.open }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;margin:5px -34px 7px">
+<div onClick="{{ closePop }}" data-drawer="1" style="position:relative;overflow:hidden;display:grid;grid-template-rows:0fr;padding:0 34px;cursor:pointer;animation:{{ drawerAnimF }};background:#2c2620;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.022) 0 2px,rgba(0,0,0,.028) 2px 4px),linear-gradient(#332c25,#241f1a);box-shadow:inset 0 10px 13px -8px rgba(0,0,0,.95),inset 0 -10px 13px -8px rgba(0,0,0,.95),inset 0 1px 0 rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.55)">
+<div style="overflow:hidden;min-height:0">
+<div style="padding:26px 0 27px;animation:{{ contentAnimF }}">
+<sc-if value="{{ ready4a }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:13px;align-items:flex-start">
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px">
+<span style="font-family:'Newsreader',Georgia,serif;font-size:18px;font-weight:500;color:#f2ead9;text-shadow:0 1px 0 rgba(0,0,0,.75)">{{ popWord }}</span>
+<span style="font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:11px;color:rgba(242,234,217,.5);text-shadow:0 1px 0 rgba(0,0,0,.6)">{{ phA }}</span>
+<span style="font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(242,234,217,.45)">{{ posA }}</span>
+</div>
+<div style="font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:20px;color:rgba(242,234,217,.8);text-shadow:0 1px 0 rgba(0,0,0,.55)">{{ defA }}</div>
+<div style="margin-top:7px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:13px;line-height:19px;color:rgba(242,234,217,.5)">{{ exA }}</div>
+<div style="margin-top:11px;display:flex;gap:7px">
+<div style="padding:6px 12px;border-radius:5px;font:11px 'IBM Plex Sans',system-ui,sans-serif;color:#f2ead9;background:linear-gradient(#574d42,#3b342c);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 1px 2px rgba(0,0,0,.55);text-shadow:0 -1px 0 rgba(0,0,0,.5)">Save</div>
+<div style="padding:6px 12px;border-radius:5px;font:11px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(242,234,217,.7);background:linear-gradient(#3e372f,#2b2520);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 1px 2px rgba(0,0,0,.5)">Examples</div>
+</div>
+</div>
+<div style="width:34px;height:34px;border-radius:17px;flex:none;display:flex;align-items:center;justify-content:center;background:linear-gradient(#5d5348,#39322b);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5)">
+<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 6h2.4L8.6 3.2v9.6L5.4 10H3z" fill="#f2ead9"></path><path d="M10.6 5.6a3.4 3.4 0 0 1 0 4.8M12.6 3.6a6 6 0 0 1 0 8.8" stroke="rgba(242,234,217,.65)" stroke-width="1.1" stroke-linecap="round"></path></svg>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;top:-4px;height:16px;background:#faf8f3;z-index:3;clip-path:polygon(0 0,100% 0,100% 16px,calc({{ caretLeft }} + 12px) 16px,{{ caretLeft }} 4px,calc({{ caretLeft }} - 12px) 16px,0 16px);filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.5))"></div>
+<div style="position:absolute;left:0;right:0;bottom:-4px;height:16px;background:#faf8f3;z-index:4;clip-path:polygon(calc({{ caretLeft }} - 12px) 16px,{{ caretLeft }} 0,calc({{ caretLeft }} + 12px) 16px);filter:drop-shadow(0 -1px 1.4px rgba(0,0,0,.45))"></div>
+
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="position:absolute;top:0;left:0;right:0;height:150px;background:linear-gradient(#faf8f3 22%,rgba(250,248,243,0));pointer-events:none"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:130px;background:linear-gradient(rgba(250,248,243,0),#faf8f3 72%);pointer-events:none"></div>
+<div style="position:absolute;top:58px;left:0;right:0;display:flex;justify-content:space-between;padding:0 34px;font:11px 'IBM Plex Sans',system-ui,sans-serif;letter-spacing:.14em;color:rgba(34,31,27,.38)">
+<span>CHAPTER 3 · THE TREELINE</span><span data-pct="2a">12%</span>
+</div>
+</div>
+</x-import>
+</div>
+</div>
+<p class="dv-next">可以接着说：「接真实词典接口」 · 「脚注只保留最近 N 个词」 · 「长按整句也给一条脚注」 · 「加生词本边标」</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">预留 feature · 聚光夜读（强景深 + 自动带读，可调速）</span></div>
+<div class="dv-opts">
+
+<div style="flex:none;width:320px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:20px 22px;font:13px/1.75 'Noto Sans SC',system-ui,sans-serif;color:#2a2724">
+<div style="font-size:11px;letter-spacing:.12em;color:rgba(0,0,0,.4);margin-bottom:12px">交互逻辑要点</div>
+<div style="font-weight:600;margin-bottom:4px">1. 焦点带是屏幕坐标，不是文档坐标</div>
+<div style="color:rgba(0,0,0,.6);margin-bottom:14px">焦点带永远在视口垂直中央（约 3 行高）。滚动时不移动它，只重新计算每一行相对它的距离。</div>
+<div style="font-weight:600;margin-bottom:4px">2. 按「行」而不是按「段」计算</div>
+<div style="color:rgba(0,0,0,.6);margin-bottom:14px">正文需要拆成可测量的行元素（或用 Range 逐行测量），每行拿到 <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px">d = |行中心 − 视口中心|</span>。</div>
+<div style="font-weight:600;margin-bottom:4px">3. 一条衰减曲线驱动全部视觉</div>
+<div style="color:rgba(0,0,0,.6);margin-bottom:14px">先减去焦点带半高得到 <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px">x = max(0, d − half)</span>，再由 x 映射出模糊、透明度、缩放。x=0 的行绝对清晰。</div>
+<div style="font-weight:600;margin-bottom:4px">4. 滚动帧内只写样式，不触发布局</div>
+<div style="color:rgba(0,0,0,.6);margin-bottom:14px">滚动监听用 passive + rAF 节流；行位置缓存一次（仅在字号/窗口变化时重算），帧内只写 filter / opacity / transform。</div>
+<div style="font-weight:600;margin-bottom:4px">5. 上下留白 ≥ 半屏</div>
+<div style="color:rgba(0,0,0,.6);margin-bottom:14px">首行和末行也要能走到中央，容器上下各留 45vh 内边距。</div>
+<div style="font-weight:600;margin-bottom:4px">6. 可访问性兜底</div>
+<div style="color:rgba(0,0,0,.6)">长按 / 双击暂停模糊；prefers-reduced-motion 时用透明度代替模糊；选中文字时全文恢复清晰。</div>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>聚光 · 夜读，强景深 + 自动带读（可调速）；点词同样展开裂纸抽屉，查过的词留 9px 汉字脚注</div>
+<x-import component-from-global-scope="IOSDevice" dark="{{ true }}" width="{{ 402 }}" height="{{ 812 }}" hint-size="402px,812px">
+<div data-phone="1c" style="height:100%;position:relative;background:#0e0e10;overflow:hidden">
+<div data-reader="c" data-half="50" style="position:absolute;inset:0;overflow-y:auto;padding:45% 32px;box-sizing:border-box">
+<sc-for list="{{ wlines1c }}" as="wl" hint-placeholder-count="12">
+<div>
+<div data-line="1" data-li="{{ wl.k }}" style="font-family:'Newsreader',Georgia,serif;font-size:18.5px;line-height:34px;height:34px;letter-spacing:.005em;color:#f2ede4;position:relative;z-index:5;will-change:filter,opacity">
+<sc-for list="{{ wl.w }}" as="w" hint-placeholder-count="7">
+<span onClick="{{ tap }}" data-w="{{ w.t }}" style="cursor:pointer;position:relative;z-index:6">{{ w.s }}<sc-if value="{{ w.g }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;top:23px;font-family:'PingFang SC','Noto Sans SC','Hiragino Sans GB',sans-serif;font-weight:500;-webkit-font-smoothing:antialiased;font-size:9px;line-height:1;letter-spacing:.04em;color:rgba(242,237,228,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;pointer-events:none">{{ w.g }}</span></sc-if></span>
+</sc-for>
+</div>
+<sc-if value="{{ wl.open }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;margin:5px -32px 7px">
+<div onClick="{{ closePop }}" data-drawer="1" style="position:relative;overflow:hidden;display:grid;grid-template-rows:0fr;padding:0 32px;cursor:pointer;animation:{{ drawerAnimF }};background:#2a2630;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,rgba(0,0,0,.035) 2px 4px),linear-gradient(#332e3b,#221f2a);box-shadow:inset 0 10px 14px -9px rgba(0,0,0,.85),inset 0 -10px 14px -9px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.07),0 1px 0 rgba(255,255,255,.14)">
+<div style="overflow:hidden;min-height:0">
+<div style="padding:26px 0 27px;animation:{{ contentAnimF }}">
+<sc-if value="{{ ready1c }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:13px;align-items:flex-start">
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px">
+<span style="font-family:'Newsreader',Georgia,serif;font-size:18px;font-weight:500;color:#ffb4b4">{{ popWord }}</span>
+<span style="font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:11px;color:rgba(242,237,228,.45)">{{ phA }}</span>
+<span style="font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:12px;color:rgba(242,237,228,.4)">{{ posA }}</span>
+</div>
+<div style="font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:20px;color:rgba(242,237,228,.82)">{{ defA }}</div>
+<div style="margin-top:7px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:13px;line-height:19px;color:rgba(242,237,228,.45)">{{ exA }}</div>
+<div style="margin-top:11px;display:flex;gap:7px">
+<div style="padding:6px 12px;border-radius:5px;font:11px 'IBM Plex Sans',system-ui,sans-serif;color:#f2ede4;background:linear-gradient(#3b3640,#26222b);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 1px 2px rgba(0,0,0,.6)">Save</div>
+<div style="padding:6px 12px;border-radius:5px;font:11px 'IBM Plex Sans',system-ui,sans-serif;color:rgba(242,237,228,.65);background:linear-gradient(#2c2832,#1c1a20);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 2px rgba(0,0,0,.55)">Examples</div>
+</div>
+</div>
+<div style="width:34px;height:34px;border-radius:17px;flex:none;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3f3946,#221f27);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.55)">
+<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 6h2.4L8.6 3.2v9.6L5.4 10H3z" fill="#f2ede4"></path><path d="M10.6 5.6a3.4 3.4 0 0 1 0 4.8M12.6 3.6a6 6 0 0 1 0 8.8" stroke="rgba(242,237,228,.6)" stroke-width="1.1" stroke-linecap="round"></path></svg>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;top:-4px;height:16px;background:#0e0e10;z-index:3;clip-path:polygon(0 0,100% 0,100% 16px,calc({{ caretLeft }} + 12px) 16px,{{ caretLeft }} 4px,calc({{ caretLeft }} - 12px) 16px,0 16px);filter:drop-shadow(0 1px 0 rgba(255,255,255,.18)) drop-shadow(0 2px 2px rgba(0,0,0,.9))"></div>
+<div style="position:absolute;left:0;right:0;bottom:-4px;height:16px;background:#0e0e10;z-index:4;clip-path:polygon(calc({{ caretLeft }} - 12px) 16px,{{ caretLeft }} 0,calc({{ caretLeft }} + 12px) 16px);filter:drop-shadow(0 -1px 0 rgba(255,255,255,.2)) drop-shadow(0 -2px 2px rgba(0,0,0,.85))"></div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 34% at 50% 50%,rgba(14,14,16,0) 38%,rgba(14,14,16,.78) 100%)"></div>
+<div style="position:absolute;top:56px;left:0;right:0;display:flex;justify-content:space-between;padding:0 32px;font-size:11px;letter-spacing:.14em;color:rgba(242,237,228,.32)">
+<span>FIXATION &amp; PERIPHERY · 02</span><span data-pct="c">12%</span>
+</div>
+<div style="position:absolute;bottom:52px;left:24px;right:24px;height:46px;border-radius:23px;background:rgba(255,255,255,.07);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 6px;box-sizing:border-box">
+<div onClick="{{ toggle }}" style="width:34px;height:34px;border-radius:17px;background:{{ playBg }};color:{{ playFg }};display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer">{{ playIcon }}</div>
+<div style="flex:1;height:2px;margin:0 12px;background:rgba(255,255,255,.14);border-radius:2px">
+<div data-bar="c" style="height:100%;width:12%;background:rgba(242,237,228,.8);border-radius:2px"></div>
+</div>
+<div style="display:flex;gap:4px">
+<sc-for list="{{ speeds }}" as="sp" hint-placeholder-count="3">
+<div onClick="{{ setSpeed }}" data-sp="{{ sp.v }}" style="padding:5px 9px;border-radius:13px;font-size:11px;cursor:pointer;background:{{ sp.bg }};color:{{ sp.fg }}">{{ sp.label }}</div>
+</sc-for>
+</div>
+</div>
+</div>
+</x-import>
+</div>
+</div>
+<p class="dv-next">可以接着说：「把 <a class="dv-oid" href="#4a">4a</a> 的点词查义接到 <a class="dv-oid" href="#1c">1c</a> 的夜读上」 · 「<a class="dv-oid" href="#1c">1c</a> 的模糊再轻一点」 · 「带读速度加一档」</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;focusPct&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:30,&quot;min&quot;:20,&quot;max&quot;:80,&quot;step&quot;:5,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;焦点带&quot;},&quot;blurMax&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:5,&quot;min&quot;:2,&quot;max&quot;:14,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;焦点带&quot;},&quot;openMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:330,&quot;min&quot;:120,&quot;max&quot;:900,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;closeMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:250,&quot;min&quot;:80,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;openEasing&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;拟物 iOS Skeuomorphic&quot;,&quot;options&quot;:[&quot;拟物 iOS Skeuomorphic&quot;,&quot;柔和 Smooth&quot;,&quot;弹性回弹 Springy&quot;,&quot;重阻尼 Damped&quot;,&quot;急停 Snap&quot;,&quot;匀速 Linear&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;contentDelayMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:400,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;contentMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:250,&quot;min&quot;:80,&quot;max&quot;:800,&quot;step&quot;:10,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;抽屉动画&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ffb4b4&quot;,&quot;options&quot;:[&quot;#f7f2e7&quot;,&quot;#ffd7a3&quot;,&quot;#a8d8ff&quot;,&quot;#ffb4b4&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;夜读方案&quot;}}">
+class Component extends DCLogic {
+  state = { playing: false, speed: 1 };
+  agc = new (class {
+  constructor(h) { this.h = h; }
+  get state() { return this.h.state.ag || this.def; }
+  setState(u) { this.h.setState(s => { const c = s.ag || this.def; return { ag: { ...c, ...(typeof u === "function" ? u(c) : u) } }; }); }
+  def = { sid: "s1", sm: {}, extra: [], used: [], hist: false, sel: 6, selA: null, selB: null, att: null, set: false, blurOn: true, band: 30, bmax: 7, sentMode: false, fs: 1 };
+  selReplies = {
+    "解释这段": ["这几句在做同一件事：把「看不见的东西」写成能摸到的东西——冷玻璃、斜雪、风，全是触觉，没有一个情绪词。情绪留给读者自己补。", "本页 · 选中段落"],
+    "这里有什么隐喻": ["「林线」是一条界限：越过它，生命停止生长。父亲把界限那边写成「very clean wind」——不是可怕，而是空、干净。", "第 3 章 · 第 2 段"],
+    "和前文有关联吗": ["有。第 1 章车窗外「only a few dry grains」的雪，和这里干净的风是同一种质地；作者一直在用「干、冷、空」铺这条线。", "第 1 章 · 第 1 段"]
+  };
+  sents = ["A thin sigh went through the carriage, and then it was quiet again.", "I stood by the door with my forehead against the cold glass.", "There was nothing to see out there — only snow, slanting all one way.", "I thought of the treeline my father walked me up to as a boy.", "Past this, he said, nothing grows.", "I asked what was past it.", "He thought for a long while, then said: very clean wind."];
+  sessMeta = [
+    { id: "s1", title: "very clean wind 的意思", ch: "Ch.3 · The Treeline", when: "刚刚", sel: 6, msgs: this.base() },
+    { id: "s2", title: "父亲是个怎样的人", ch: "Ch.2 · The Cabin", when: "昨天", sel: 3, quote: "He kept the stove going all night, and said nothing.", msgs: [{ role: "user", text: "父亲是个怎样的人？", quote: "He kept the stove going all night, and said nothing." }, { role: "agent", text: "到第 2 章为止，他几乎不说话，但一直在做事：守着炉子、修门闩、带孩子上山。作者用动作代替了性格描写。", cite: "第 2 章 · 第 3 段" }] },
+    { id: "s3", title: "slanting 的用法", ch: "Ch.1 · Night Train", when: "3 天前", sel: 2, quote: "only snow, slanting all one way.", msgs: [{ role: "user", text: "slanting 在这里怎么理解？", quote: "only snow, slanting all one way." }, { role: "agent", text: "「斜着飘」。雪被同一个方向的风吹着，全部朝一边倾斜——这也提前埋下了后面「风」的意象。", cite: "第 1 章 · 末段" }] }
+  ];
+  cfg = { k: .8, s: .9, par: .12, dim: .06, r: 22, sh: .18 };
+  replies = {
+    "这段的语气": ["很克制。整段只有动作和一句对话，没有一个形容情绪的词。「He thought for a long while」把停顿写了出来——答案本身不重要，想了很久才重要。", "本页第 4 行"],
+    "treeline 在全书里的意思": ["到目前为止它出现了 3 次：第 1 章是地理名词，第 2 章是父亲常去的地方，到这里变成了「界限」本身——过了它，什么都不长。", "第 1、2、3 章"],
+    "帮我换个说法": ["可以理解成：「那边？只有风，干干净净的风。」父亲用一个具体的感受，代替了「什么都没有」这个抽象的回答。", "then said: very clean wind."]
+  };
+  base() {
+    return [
+      { role: "user", text: "“very clean wind” 是什么意思？父亲为什么这样回答？" },
+      { role: "agent", text: "字面是「很干净的风」。林线以上没有树、土和人烟，风里什么都不带。父亲没有描述那边「有什么」，而是描述那边「什么都没有」——这和开头车窗上干冷的雪是同一种质地。", cite: "第 1 段 · only a few dry grains" }
+    ];
+  }
+  rlines() {
+    const L = [
+      [["minutes. A thin sigh went through the"]], [["carriage, and then it was quiet again."]], [["\u00a0"]],
+      [["\u2003I stood by the door with my forehead"]], [["against the cold glass. There was"]],
+      [["nothing to see out there — only snow,"]], [["slanting", "斜飞"], [" all one way."]], [["\u00a0"]],
+      [["\u2003I thought of the "], ["treeline", "林线"], [" my father"]],
+      [["walked me up to as a boy. Past this, he"]], [["said, nothing grows. I asked what was"]],
+      [["past it. He thought for a long while,"]], [["then said: very clean wind."]]
+    ];
+    const f0 = 8, f1 = 10; let n = 0; this._tok = [];
+    return L.map((segs, k) => {
+      const d = k < f0 ? f0 - k : k > f1 ? k - f1 : 0;
+      return { k, segs: segs.map(([s, g]) => ({ s, g: g || "", tk: (s.match(/\S+|\s+/g) || []).map(x => { const t = { i: n++, s: x, w: /\S/.test(x) ? "1" : "0" }; this._tok.push(t); return t; }) })), blur: (d ? Math.min(3, .7 + d * .45) : 0) + "px", op: d ? Math.max(.28, 1 - d * .16) : 1 };
+    });
+  }
+  send(q) {
+    if (!q) return;
+    const r = this.replies[q] || this.selReplies[q] || ["我只能看到你已经读过的部分（第 1–3 章）。就这一页而言，线索在最后一段父亲那句回答里——要不要我把那一段逐句拆开？", "本页最后一段"];
+    const sid = this.state.sid, quote = this.state.att || this.sents[this.state.sel];
+    this.setState(s => ({ att: null, sm: { ...s.sm, [sid]: [...this.cur(s), { role: "user", text: q, quote }, { role: "typing" }] }, used: [...s.used, q] }));
+    setTimeout(() => this.setState(s => {
+      const arr = (s.sm[sid] || []).slice(); const i = arr.findIndex(x => x.role === "typing");
+      if (i >= 0) arr[i] = { role: "agent", text: r[0], cite: r[1] };
+      return { sm: { ...s.sm, [sid]: arr } };
+    }), 900);
+  }
+  allSess(s) { return [...(s || this.state).extra, ...this.sessMeta]; }
+  cur(s) { s = s || this.state; const m = this.allSess(s).find(x => x.id === s.sid); return s.sm[s.sid] || (m ? m.msgs : []); }
+  scrollPick(i, smooth) {
+    const el = this._pick; if (!el) return;
+    const sp = el.querySelector('[data-si="' + i + '"]'); if (!sp) return;
+    const er = el.getBoundingClientRect(), r = sp.getBoundingClientRect();
+    el.scrollTo({ top: el.scrollTop + (r.top + r.height / 2) - (er.top + er.height / 2), behavior: smooth ? "smooth" : "auto" });
+  }
+  centerIdx(el) {
+    const er = el.getBoundingClientRect(), cy = er.top + er.height / 2;
+    let best = this.state.sel, bd = 1e9; const hits = [];
+    el.querySelectorAll("[data-si]").forEach(sp => { for (const r of sp.getClientRects()) { const d = cy < r.top ? r.top - cy : cy > r.bottom ? cy - r.bottom : 0; if (d === 0) hits.push(+sp.dataset.si); if (d < bd) { bd = d; best = +sp.dataset.si; } } });
+    if (hits.length) { const s = this.state.sel; return hits.includes(s) ? s : hits.reduce((a, b) => Math.abs(b - s) < Math.abs(a - s) ? b : a); }
+    return best;
+  }
+  renderVals() {
+    const st = this.state, m = this.cur(), all = this.allSess(), curS = all.find(x => x.id === st.sid) || all[0];
+    const firstQ = (mm) => { const u = mm.find(x => x.role === "user"); return u ? u.text : ""; };
+    return {
+      hist: st.hist, chat: !st.hist,
+      histOp: st.hist ? 1 : 0, histPE: st.hist ? "auto" : "none", histY: st.hist ? "0px" : "-10px",
+      hBtnBg: st.hist ? "#e9e9e6" : "transparent", chevRot: st.hist ? "180deg" : "0deg",
+      hBtnLabel: "历史 " + all.length,
+      closeHist: () => this.setState({ hist: false }),
+      headCh: curS.ch,
+      headTitle: curS.title || firstQ(m) || "新对话",
+      toggleHist: () => this.setState(s => ({ hist: !s.hist })),
+      sessions: all.map(x => { const mm = st.sm[x.id] || x.msgs; return { id: x.id, title: x.title || firstQ(mm) || "新对话", when: x.when, quote: x.quote || this.sents[x.sel], meta: x.ch + " · " + mm.filter(y => y.role !== "typing").length + " 条", dot: x.id === st.sid ? 1 : 0, bg: x.id === st.sid ? "rgba(0,0,0,.035)" : "transparent" }; }),
+      pickSess: e => { const id = e.currentTarget.dataset.sid, x = all.find(y => y.id === id); this.setState({ sid: id, hist: false, sel: x && x.ch === "Ch.3 · The Treeline" ? x.sel : st.sel }); },
+      newSess: () => { const id = "n" + Date.now(); this.setState(s => ({ extra: [{ id, title: "", ch: "Ch.3 · The Treeline", when: "刚刚", sel: s.sel, msgs: [] }, ...s.extra], sid: id, hist: false, used: [] })); },
+      paras: [[0], [1, 2], [3, 4, 5, 6]].map((ids, k) => ({ k, ind: k ? "1em" : "0", ss: ids.map(i => ({ i, t: this.sents[i], op: i === st.sel ? 1 : .42, bg: i === st.sel ? "rgba(0,0,0,.06)" : "transparent", ul: i === st.sel ? "inset 0 -1.5px 0 #111" : "none" })) })),
+      pickRef: el => { if (el) { this._pick = el; if (!el.__init) { el.__init = 1; this._tapLock = true; clearTimeout(this._tl); this._tl = setTimeout(() => { this._tapLock = false; }, 300); requestAnimationFrame(() => this.scrollPick(this.state.sel, false)); } } },
+      onPick: e => { if (this._tapLock) return; const i = this.centerIdx(e.currentTarget); if (i !== this.state.sel) this.setState({ sel: i }); },
+      tapSent: e => { const i = +e.currentTarget.dataset.si; this._tapLock = true; clearTimeout(this._tl); this._tl = setTimeout(() => { this._tapLock = false; }, 500); this.setState({ sel: i, att: null }); this.scrollPick(i, true); },
+      rlines: (this._rl || (this._rl = this.rlines())).map(ln => {
+        const a = st.selA, b = st.selB, has = a != null;
+        let hit = false;
+        const segs = ln.segs.map(sg => ({ ...sg, tk: sg.tk.map(t => { const s = has && t.i >= a && t.i <= b; if (s) hit = true; return { ...t, bg: s ? "rgba(34,31,27,.16)" : "transparent" }; }) }));
+        const half = Math.floor(13 * st.band / 200), f0 = 9 - half, f1 = 9 + half, kb = st.bmax / 7;
+        const d = ln.k < f0 ? f0 - ln.k : ln.k > f1 ? ln.k - f1 : 0, fx = st.blurOn && !hit && d > 0;
+        return { ...ln, segs, blur: fx ? Math.min(3, .7 + d * .45) * kb + "px" : "0px", op: fx ? Math.max(.28, 1 - d * .16) : 1 };
+      }),
+      fadeOp: st.blurOn ? 1 : 0,
+      openSet: e => { e.stopPropagation(); this.setState({ set: true, selA: null, selB: null }); },
+      closeSet: e => { e.stopPropagation(); this.setState({ set: false }); },
+      setPE: st.set ? "auto" : "none", setY: st.set ? "0%" : "104%", setMs: st.set ? "330ms" : "250ms",
+      toggleBlur: () => this.setState(s => ({ blurOn: !s.blurOn })),
+      blurSub: st.blurOn ? "中央清晰，上下渐隐模糊" : "已关闭 · 全文清晰",
+      swBg: st.blurOn ? "#f2ead9" : "rgba(242,234,217,.16)", knBg: st.blurOn ? "#2c2620" : "rgba(242,234,217,.7)", knX: st.blurOn ? "18px" : "0px",
+      depOp: st.blurOn ? 1 : .32, depPE: st.blurOn ? "auto" : "none",
+      band: st.band, bandLbl: st.band + "%", bmax: st.bmax,
+      setBand: e => this.setState({ band: +e.currentTarget.value }),
+      setBmax: e => this.setState({ bmax: +e.currentTarget.value }),
+      toggleSent: () => this.setState(s => ({ sentMode: !s.sentMode })),
+      sBg: st.sentMode ? "#f2ead9" : "rgba(242,234,217,.16)", sKn: st.sentMode ? "#2c2620" : "rgba(242,234,217,.7)", sX: st.sentMode ? "16px" : "0px",
+      fsOpts: [13, 15.5, 18].map((sz, i) => ({ i, sz: sz + "px", fg: i === st.fs ? "#2c2620" : "rgba(242,234,217,.75)", bg: i === st.fs ? "#f2ead9" : "rgba(242,234,217,.08)" })),
+      setFs: e => this.setState({ fs: +e.currentTarget.dataset.fs }),
+      hasAtt: !!st.att, att: st.att || "",
+      clearAtt: () => this.setState({ att: null }),
+      inPh: st.att ? "就这段文字提问" : "在页边写下你的问题",
+      noAtt: !st.att,
+      askSel: e => { e.stopPropagation(); const t = this.selText(); if (!t) return; this.setState({ att: t, selA: null, selB: null, hist: false }); this.setOpen(true); setTimeout(() => { const i = document.querySelector("[data-ag-panel] input"); if (i) i.focus({ preventScroll: true }); }, 460); },
+      demoSel: () => { this.ph = this.ph || (document.querySelector("[data-ag-phone]") || {}).__ph; if (this.ph && this.ph.open) this.setOpen(false); const T = (this._tok || []).map(t => t.s); this.setState({ selA: T.lastIndexOf("very"), selB: T.lastIndexOf("wind.") }); },
+      msgs: m.map((x, k) => ({ k, u: x.role === "user", a: x.role === "agent", t: x.role === "typing", text: x.text || "", cite: x.cite || "", hasCite: !!x.cite, quote: x.quote || "", hasQuote: !!x.quote })),
+      chips: Object.keys(st.att ? this.selReplies : this.replies).filter(q => !this.state.used.includes(q)).map(q => ({ q })),
+      ask: e => this.send(e.currentTarget.dataset.q),
+      onKey: e => { const v = e.currentTarget.value.trim(); if (e.key === "Enter" && v) { this.send(v); e.currentTarget.value = ""; } },
+      sendBtn: e => { const inp = e.currentTarget.parentNode.querySelector("input"); if (inp && inp.value.trim()) { this.send(inp.value.trim()); inp.value = ""; } },
+      demo: () => { const r = document.querySelector("[data-ag-phone]"); if (r && r.__ph) { r.__self = this; this.ph = r.__ph; if (this.state.selA != null) this.setState({ selA: null, selB: null }); this.setOpen(!this.ph.open); } }
+    };
+  }
+  mount() { this.bind(); this.iv = setInterval(() => this.bind(), 400); }
+  unmount() { clearInterval(this.iv); }
+  selText() { const { selA: a, selB: b } = this.state; if (a == null) return ""; return (this._tok || []).filter(t => t.i >= a && t.i <= b).map(t => t.s).join("").replace(/\s+/g, " ").trim(); }
+  nearest(x, y) {
+    const R = this.ph && this.ph.reader; if (!R) return null; let best = null, bd = 1e9;
+    R.querySelectorAll('[data-word="1"]').forEach(sp => { for (const r of sp.getClientRects()) { const dy = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0, dx = x < r.left ? r.left - x : x > r.right ? x - r.right : 0, d = dy * 4 + dx; if (d < bd) { bd = d; best = +sp.dataset.tk; } } });
+    return best;
+  }
+  layoutSel() {
+    const ph = this.ph || (document.querySelector("[data-ag-phone]") || {}).__ph; if (!ph) return;
+    const R = ph.reader, hs = R.querySelector("[data-ag-hs]"), he = R.querySelector("[data-ag-he]"), ask = R.querySelector("[data-ag-ask]");
+    if (!hs || !he || !ask) return;
+    const { selA: a, selB: b } = this.state;
+    const hide = () => { ask.style.opacity = 0; ask.style.pointerEvents = "none"; ask.style.transform = "translate(-50%,6px) scale(.96)"; };
+    if (a == null) { hs.style.display = he.style.display = "none"; hide(); return; }
+    const rr = R.getBoundingClientRect(), k = rr.width / (R.offsetWidth || 1) || 1, X = v => (v - rr.left) / k, Y = v => (v - rr.top) / k;
+    const rs = []; for (let i = a; i <= b; i++) { const sp = R.querySelector('[data-tk="' + i + '"][data-word="1"]'); if (sp) rs.push(...sp.getClientRects()); }
+    if (!rs.length) return;
+    const ra = rs[0], rb = rs[rs.length - 1];
+    Object.assign(hs.style, { display: "block", left: X(ra.left) + "px", top: Y(ra.top) - 6 + "px", height: ra.height / k + 6 + "px" });
+    Object.assign(he.style, { display: "block", left: X(rb.right) + "px", top: Y(rb.top) + "px", height: rb.height / k + 6 + "px" });
+    const top = Math.min(...rs.map(r => Y(r.top))), bot = Math.max(...rs.map(r => Y(r.bottom))), l = Math.min(...rs.map(r => X(r.left))), r = Math.max(...rs.map(r => X(r.right)));
+    const W = R.offsetWidth, cx = Math.max(72, Math.min(W - 72, (l + r) / 2));
+    let ty = top - 56; if (ty < 84) ty = bot + 20;
+    ask.style.left = cx + "px"; ask.style.top = ty + "px";
+    if (this._dragSel) hide(); else { ask.style.opacity = 1; ask.style.pointerEvents = "auto"; ask.style.transform = "translate(-50%,0) scale(1)"; }
+  }
+  update(pp, ps) {
+    this.layoutSel();
+    const key = this.state.sid + ":" + this.cur().length + ":" + this.state.hist;
+    if (key !== this._lk) { this._lk = key; document.querySelectorAll("[data-ag-list]").forEach(l => { l.scrollTop = l.scrollHeight; }); }
+    if (ps && ps.sid !== this.state.sid) { if (this._pick) this._pick.__init = 0; requestAnimationFrame(() => this.scrollPick(this.state.sel, false)); }
+  }
+  apply(p, anim) {
+    const ph = this.ph = this.ph || document.querySelector("[data-ag-phone]").__ph, c = this.cfg, W = ph.root.clientWidth || 402;
+    const ez = "420ms cubic-bezier(.22,.8,.24,1)";
+    ph.reader.style.transition = anim ? `transform ${ez}, border-radius ${ez}, box-shadow ${ez}` : "none";
+    ph.reader.style.transform = `translateX(${-p * W * c.k}px) scale(${1 - p * (1 - c.s)})`;
+    ph.reader.style.borderRadius = p * c.r + "px";
+    ph.reader.style.boxShadow = `0 ${10 * p}px ${40 * p}px rgba(0,0,0,${c.sh * p})`;
+    ph.panel.style.transition = anim ? `transform ${ez}, opacity ${ez}` : "none";
+    ph.panel.style.transform = `translateX(${(1 - p) * c.par * 100}%)`;
+    ph.panel.style.opacity = .3 + .7 * p;
+    ph.dim.style.transition = anim ? `opacity ${ez}` : "none";
+    ph.dim.style.opacity = p * c.dim;
+    ph.p = p;
+  }
+  setOpen(open) { if (!open && this.state.att) this.setState({ att: null }); this.ph = this.ph || document.querySelector("[data-ag-phone]").__ph; this.ph.open = open; this.ph.shield.style.pointerEvents = open ? "auto" : "none"; this.apply(open ? 1 : 0, true); }
+  bind() {
+    const root = document.querySelector("[data-ag-phone]");
+    if (!root) return;
+    root.__self = this;
+    if (root.__agb) { this.ph = root.__ph; return; }
+    const q = s => root.querySelector(s);
+    const reader = q("[data-ag-reader]"), panel = q("[data-ag-panel]"), dim = q("[data-ag-dim]"), shield = q("[data-ag-shield]");
+    if (!reader || !panel || !dim || !shield) return;
+    root.__agb = true;
+    this.ph = root.__ph = { root, reader, panel, dim, shield, p: 0, open: false };
+    let g = null, justDragged = false, sl = null, lp = 0;
+    const self = () => root.__self;
+    const capture = id => { try { root.setPointerCapture(id); } catch (_) {} };
+    root.addEventListener("contextmenu", e => e.preventDefault());
+    root.addEventListener("selectstart", e => { if (e.target.closest && e.target.closest("[data-ag-reader]")) e.preventDefault(); });
+    root.addEventListener("pointerdown", e => {
+      if (e.target.closest("input")) return;
+      const S = self();
+      if (e.target.closest("[data-ag-ask],[data-ag-set]")) { g = null; return; }
+      const h = !root.__ph.open && e.target.closest("[data-ag-hs],[data-ag-he]");
+      if (h && S.state.selA != null) { sl = { an: h.hasAttribute("data-ag-hs") ? S.state.selB : S.state.selA }; S._dragSel = 1; S.layoutSel(); capture(e.pointerId); e.preventDefault(); g = null; return; }
+      g = { sx: e.clientX, sy: e.clientY, p0: root.__ph.p, drag: false, lx: e.clientX, lt: e.timeStamp, v: 0, pid: e.pointerId, rd: !root.__ph.open && !!e.target.closest("[data-ag-reader]") };
+      clearTimeout(lp);
+      if (g.rd) { const w = e.target.closest('[data-word="1"]'), g0 = g; lp = setTimeout(() => { if (g !== g0 || g.drag) return; const t = w ? +w.dataset.tk : S.nearest(g.sx, g.sy); if (t == null) return; sl = { an: t }; g = null; S._dragSel = 1; S.setState({ selA: t, selB: t }); capture(g0.pid); if (navigator.vibrate) navigator.vibrate(8); }, 380); }
+    });
+    root.addEventListener("pointermove", e => {
+      if (sl) { const S = self(), t = S.nearest(e.clientX, e.clientY); if (t != null) { const a = Math.min(sl.an, t), b = Math.max(sl.an, t); if (S.state.selA !== a || S.state.selB !== b) S.setState({ selA: a, selB: b }); } e.preventDefault(); return; }
+      if (!g) return;
+      const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+      if (Math.hypot(dx, dy) > 8) clearTimeout(lp);
+      if (!g.drag) {
+        if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2 && ((g.p0 < .5 && dx < 0) || (g.p0 >= .5 && dx > 0))) { g.drag = true; capture(g.pid); const S = self(); if (S.state.selA != null) S.setState({ selA: null, selB: null }); if (g.p0 < .5 && S.state.att) S.setState({ att: null }); }
+        else if (Math.abs(dy) > 12) { g = null; return; } else return;
+      }
+      const W = root.clientWidth || 402;
+      const p = Math.max(0, Math.min(1, g.p0 - dx / (W * self().cfg.k)));
+      g.v = (e.clientX - g.lx) / Math.max(1, e.timeStamp - g.lt); g.lx = e.clientX; g.lt = e.timeStamp;
+      self().apply(p, false); e.preventDefault();
+    });
+    const end = () => {
+      clearTimeout(lp);
+      if (sl) { sl = null; self()._dragSel = 0; self().layoutSel(); justDragged = true; setTimeout(() => { justDragged = false; }, 60); return; }
+      if (!g) return;
+      if (!g.drag && g.rd) { const S = self(); if (S.state.selA != null) S.setState({ selA: null, selB: null }); else { const rr = root.__ph.reader.getBoundingClientRect(); if (g.sy - rr.top < rr.height * .3) S.setState({ set: true }); } }
+      if (g.drag) { self().setOpen(g.v < -.35 ? true : g.v > .35 ? false : root.__ph.p > .45); justDragged = true; setTimeout(() => { justDragged = false; }, 60); }
+      g = null;
+    };
+    root.addEventListener("pointerup", end);
+    root.addEventListener("pointercancel", end);
+    root.addEventListener("click", e => { if (justDragged) { e.stopPropagation(); e.preventDefault(); } }, true);
+    shield.addEventListener("click", () => { if (!justDragged) self().setOpen(false); });
+  }
+
+  })(this);
+  agVals() { const v = this.agc.renderVals(), o = {}; for (const k in v) o["ag_" + k] = v[k]; return o; }
+
+  get lines() {
+    return ["\u2003The train crossed the second pass","at four in the afternoon, and that","was when the snow began. At first only","a few dry grains, striking the window","and melting into short wet streaks, as","if someone had drawn a fingernail down","the glass.","\u00a0",
+"\u2003I closed the book on my knees and","realized I had been reading for two","hours without keeping a single whole","sentence. The old man across from me","dozed, but his hand never left the","battered leather case beside him.","\u00a0",
+"\u2003The loudspeaker said the line ahead","was heavy with snow and that we would","hold at the next station for forty","minutes. A thin sigh went through the","carriage, and then it was quiet again.","\u00a0",
+"\u2003I stood by the door with my forehead","against the cold glass. There was","nothing to see out there — only snow,","slanting all one way.","\u00a0",
+"\u2003I thought of the treeline my father","walked me up to as a boy. Past this, he","said, nothing grows. I asked what was","past it. He thought for a long while,","then said: very clean wind."];
+  }
+
+  get linesNf() {
+    return ["\u2003The eye does not glide evenly","across a line of text. It advances in","short jumps, pausing for roughly 200 to","250 milliseconds, and information is","taken in only during those pauses.","\u00a0",
+"\u2003More telling still, the fovea","resolves a narrow window — seven or","eight characters per fixation.","Everything else sits in low-resolution","peripheral vision; the brain simply","supplies the illusion of a page in","focus.","\u00a0",
+"\u2003Blurring what falls outside","attention, then, withholds nothing. It","aligns the interface with how the","visual system already works: what lies","beyond the focus band was never really","being read.","\u00a0",
+"\u2003The cost is scanning. Readers double","back a line, or jump to the end of a","paragraph for the conclusion. Any","focused reader must keep one gesture","that clears the blur instantly."];
+  }
+
+  renderVals() {
+    const sp = this.state.speed;
+    return {
+      ...this.agVals(),
+      lines: this.lines,
+      linesNf: this.linesNf,
+      wlines: this._w || (this._w = this.splitWords(this.lines)),
+      tap: (e) => this.tap(e),
+      closePop: () => this.closePop(),
+      pressStart: (e) => this.pressStart(e),
+      pressEnd: () => this.pressEnd(),
+      closeSent: () => this.closeSent(),
+      lines3a: this.sentLines("3a"),
+      lines3b: this.sentLines("3b"),
+      lines3c: this.sentLines("3c"),
+      ...this.sentVals(),
+      ...this.popVals(),
+      ...this.shelfVals(),
+      ...this.homeVals(),
+      snap: (e) => this.snapTo(e.currentTarget),
+      toggle: () => this.setState(s => ({ playing: !s.playing }), () => this.loop()),
+      playIcon: this.state.playing ? "❚❚" : "▶",
+      playBg: this.state.playing ? "#f2ede4" : "rgba(255,255,255,.12)",
+      playFg: this.state.playing ? "#0e0e10" : "#f2ede4",
+      setSpeed: (e) => this.setState({ speed: parseFloat(e.currentTarget.dataset.sp) }),
+      speeds: [0.6, 1, 1.6].map(v => ({
+        v, label: v + "×",
+        bg: v === sp ? "rgba(242,237,228,.92)" : "transparent",
+        fg: v === sp ? "#0e0e10" : "rgba(242,237,228,.55)"
+      }))
+    };
+  }
+
+  get ease() {
+    const m = {
+      "拟物 iOS Skeuomorphic": "cubic-bezier(.42,0,.58,1)",
+      "柔和 Smooth": "cubic-bezier(.2,.8,.3,1)",
+      "弹性回弹 Springy": "cubic-bezier(.34,1.56,.42,1)",
+      "重阻尼 Damped": "cubic-bezier(.45,.02,.2,1)",
+      "急停 Snap": "cubic-bezier(.16,1,.3,1)",
+      "匀速 Linear": "linear"
+    };
+    return m[this.props.openEasing] || m["拟物 iOS Skeuomorphic"];
+  }
+
+  sentVals() {
+    const s = this.state.sent;
+    const e = s ? this.sents[s.sid] : null;
+    const closing = !!s && s.phase === "closing";
+    const openMs = this.props.openMs ?? 340;
+    return {
+      show3a: !!s && s.opt === "3a", show3b: !!s && s.opt === "3b", show3c: !!s && s.opt === "3c",
+      sentEn: e ? e.en : "", sentZh: e ? e.zh : "", sentNote: e ? e.note : "",
+      sentChips: e ? e.en.replace(/[—]/g, " ").split(/\s+/).filter(Boolean).slice(0, 14).map((w, i) => ({ k: i, w })) : [],
+      sentDrawerAnim: closing ? "collapseTall " + this.closeMs + "ms " + this.ease + " both"
+        : "splitTall " + openMs + "ms " + this.ease + " both",
+      sentFadeAnim: closing ? "fadeOut " + Math.round(this.closeMs * 0.7) + "ms " + this.ease + " both"
+        : "riseIn " + Math.round(openMs * 0.9) + "ms " + this.ease + " both",
+      sentSheetAnim: closing ? "sheetDown " + this.closeMs + "ms " + this.ease + " both"
+        : "sheetUp " + openMs + "ms " + this.ease + " both"
+    };
+  }
+
+  get zh() {
+    return {
+      treeline: "林线", loudspeaker: "广播", fingernail: "指甲", battered: "破旧", carriage: "车厢",
+      slanting: "斜", grains: "颗粒", sigh: "叹息", dozed: "小睡", streaks: "条痕", forehead: "额头",
+      pass: "山口", realized: "察觉", thin: "微弱", train: "列车", crossed: "穿过", second: "第二",
+      four: "四", afternoon: "午后", snow: "雪", began: "开始", first: "起初", only: "仅", few: "少许",
+      dry: "干", striking: "敲打", window: "窗", melting: "融化", into: "进入", short: "短",
+      wet: "湿", someone: "某人", drawn: "画", down: "向下", glass: "玻璃", closed: "合上",
+      book: "书", knees: "膝", been: "曾", reading: "阅读", two: "二", hours: "小时",
+      without: "没有", keeping: "保持", single: "单个", whole: "整个", sentence: "句子",
+      old: "年老", man: "男人", across: "横过", hand: "手", never: "从未", left: "离开",
+      leather: "皮革", case: "盒", beside: "旁边", said: "说", line: "线路", ahead: "前方",
+      heavy: "大", would: "将", hold: "停住", next: "下个", station: "车站", forty: "四十",
+      minutes: "分钟", went: "去", through: "穿过", quiet: "安静", again: "再次", stood: "站着",
+      door: "门", against: "靠着", cold: "冷", nothing: "无", see: "看见", way: "方向",
+      thought: "想起", father: "父亲", walked: "走", boy: "男孩", past: "经过", grows: "生长",
+      asked: "问", long: "久", while: "片刻", very: "很", clean: "洁净", wind: "风",
+      the: "那", that: "那", when: "当时", and: "和", was: "是", at: "在",
+      in: "在内", as: "如同", if: "如果", had: "有", on: "在上", my: "我的",
+      for: "为了", from: "自", me: "我", but: "但", his: "他的", him: "他",
+      with: "带着", we: "我们", then: "然后", it: "它", by: "旁", there: "那儿",
+      to: "向", out: "向外", all: "全部", one: "一", of: "的", up: "向上",
+      this: "这", he: "他", what: "什么", i: "我", a: "一"
+    };
+  }
+
+  glossLines(opt, p, seen, src) {
+    const base = src === "nf"
+      ? (this._wnf || (this._wnf = this.splitWords(this.linesNf)))
+      : (this._w || (this._w = this.splitWords(this.lines)));
+    const gloss = true;
+    const zh = this.zhAll;
+    return base.map(l => {
+      const line = { ...l, open: !!p && p.opt === opt && p.li === l.k };
+      if (!gloss) return line;
+      const marks = [];
+      line.w = l.w.map(w => {
+        const key = (w.t || "").toLowerCase();
+        const g = key && seen.has(key) ? (zh[key] || "") : "";
+        if (g) marks.push(g);
+        return { ...w, g };
+      });
+      line.lg = marks.join(" ");
+      return line;
+    });
+  }
+
+  animSet(closing, p) {
+    const ez = this.ease;
+    const om = this.props.openMs ?? 330;
+    const cms = this.closeMs;
+    const out = {
+      drawerAnimF: closing
+        ? "collapseG " + cms + "ms " + ez + " both"
+        : "splitG " + om + "ms " + ez + " both",
+      contentAnimF: closing
+        ? "fadeOut " + Math.round(cms * 0.55) + "ms " + ez + " both"
+        : "riseIn " + (this.props.contentMs ?? 250) + "ms " + (this.props.contentDelayMs ?? 0) + "ms " + ez + " both"
+    };
+    const seen = new Set(this.state.seen || []);
+    out.wlines4a = this.glossLines("4a", p, seen);
+    out.ready4a = !!p && p.opt === "4a";
+    out.wlines1c = this.glossLines("1c", p, seen, "nf");
+    out.ready1c = !!p && p.opt === "1c";
+    return out;
+  }
+
+  popVals() {
+    const p = this.state.pop;
+    const e = p ? (this.dict[p.key] || ["", "", "No offline entry for this word — tap ⌕ to search."]) : null;
+    const closing = !!p && p.phase === "closing";
+    return {
+      show2a: !!p && p.opt === "2a", show2b: !!p && p.opt === "2b", show2c: !!p && p.opt === "2c",
+      ready2a: !!p && p.opt === "2a",
+      drawerMax: p && p.phase === "ready" ? "200px" : "0px",
+      drawerOp: p && p.phase === "ready" ? "1" : "0.35",
+      drawerTrans: "max-height " + (closing ? this.closeMs : (this.props.openMs ?? 340)) + "ms " + this.ease
+        + ", opacity " + Math.round((closing ? this.closeMs : (this.props.openMs ?? 340)) * 0.8) + "ms " + this.ease,
+      load2a: !!p && p.opt === "2a" && p.phase === "loading",
+      ready2b: !!p && p.opt === "2b" && (p.phase === "ready" || (p.phase === "closing" && p.was !== "loading")),
+      load2b: !!p && p.opt === "2b" && (p.phase === "loading" || (p.phase === "closing" && p.was === "loading")),
+      ready2c: !!p && p.opt === "2c" && (p.phase === "ready" || (p.phase === "closing" && p.was !== "loading")),
+      load2c: !!p && p.opt === "2c" && (p.phase === "loading" || (p.phase === "closing" && p.was === "loading")),
+      popWord: p ? p.word : "",
+      popPh: e ? e[0] : "", popPos: e ? e[1] : "", popDef: e ? e[2] : "",
+      wlinesA: (this._w || this.splitWords(this.lines)).map(l => ({ ...l, open: !!p && p.opt === "2a" && p.li === l.k })),
+      popTop: p ? p.below + "px" : "0px",
+      popLeft: p ? p.left + "px" : "0px",
+      caretLeft: p ? p.caret + "px" : "0px",
+      ...this.animSet(closing, p),
+      caretAnim2: closing
+        ? "notchShut " + this.closeMs + "ms " + this.ease + " both"
+        : "notchOpen " + (this.props.openMs ?? 340) + "ms " + this.ease + " both",
+      sheetAnim: closing
+        ? "sheetDown " + this.closeMs + "ms " + this.ease + " both"
+        : "sheetUp .34s cubic-bezier(.22,.9,.3,1) both",
+      bubbleAnim: closing
+        ? "popOut " + Math.round(this.closeMs * 0.8) + "ms " + this.ease + " both"
+        : "popIn .22s ease both",
+      phA: "/ˈsæmp(ə)l/", posA: "n.",
+      defA: "Placeholder definition — one concise sense line sits here, in the voice the real dictionary entry will use.",
+      exA: "“Past the treeline, nothing grows.”"
+    };
+  }
+
+  componentDidMount() {
+    this.readers = {};
+    this.bind();
+    this.warm = setInterval(() => this.bind(), 300);
+    setTimeout(() => clearInterval(this.warm), 3000);
+    this._onResize = () => this.paintAll();
+    window.addEventListener("resize", this._onResize);
+    this.agc.mount();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.warm);
+    cancelAnimationFrame(this.raf);
+    cancelAnimationFrame(this.pr);
+    clearTimeout(this.rv);
+    clearTimeout(this.q);
+    clearTimeout(this.c);
+    window.removeEventListener("resize", this._onResize);
+    this.agc.unmount();
+  }
+
+  componentDidUpdate(pp, ps) {
+    this.agc.update(pp, (ps && ps.ag) || this.agc.def);
+    this.loop();
+    const p = this.state.pop;
+    const s = this.state.sent;
+    const k = (p ? p.opt + "/" + p.li + "/" + p.phase : "") + "|" + (s ? s.opt + "/" + s.sid + "/" + s.phase : "");
+    if (k === this._pk) return;
+    this._pk = k;
+    const openMs = this.props.openMs ?? 340;
+    this.trackPaint(Math.max(this.closeMs, openMs) + 120);
+    if (p && p.opt === "2a" && p.phase === "ready") {
+      clearTimeout(this.rv);
+      this.rv = setTimeout(() => this.revealDrawer(), openMs + 40);
+    }
+  }
+
+  trackPaint(ms) {
+    cancelAnimationFrame(this.pr);
+    const t0 = performance.now();
+    const step = () => {
+      this.paintAll();
+      if (performance.now() - t0 < ms) this.pr = requestAnimationFrame(step);
+    };
+    this.pr = requestAnimationFrame(step);
+  }
+
+  revealDrawer() {
+    const el = document.querySelector("[data-drawer]");
+    if (!el) return;
+    const r = el.closest("[data-reader]");
+    if (!r) return;
+    const rb = r.getBoundingClientRect();
+    const db = el.getBoundingClientRect();
+    const over = db.bottom - (rb.bottom - 70);
+    if (over > 8) r.scrollTo({ top: r.scrollTop + over, behavior: "smooth" });
+  }
+
+  bind() {
+    document.querySelectorAll("[data-reader]").forEach(r => {
+      if (!r.__bound) {
+        r.__bound = true;
+        let tick = false;
+        const guard = (ev) => {
+          const p = this.state.pop;
+          clearTimeout(this.lp);
+          if (p && p.opt === r.dataset.reader) {
+            ev.preventDefault();
+            if (p.phase !== "closing") this.closePop();
+            return;
+          }
+          if (Date.now() < (this.lockUntil || 0)) { ev.preventDefault(); return; }
+          this.userScroll = Date.now();
+        };
+        r.addEventListener("wheel", guard, { passive: false });
+        r.addEventListener("touchmove", guard, { passive: false });
+        r.addEventListener("scroll", () => {
+          if (tick) return;
+          tick = true;
+          requestAnimationFrame(() => {
+            tick = false;
+            this.paint(r);
+            if (Date.now() - (this.userScroll || 0) < 500) {
+              if (this.state.pop) this.closePop();
+              if (this.state.sent) { clearTimeout(this.lp); this.closeSent(); }
+            }
+          });
+        }, { passive: true });
+      }
+      this.readers[r.dataset.reader] = r;
+    });
+    this.paintAll();
+  }
+
+  paintAll() { Object.values(this.readers || {}).forEach(r => this.paint(r)); }
+
+  paint(r) {
+    const key = r.dataset.reader;
+    const mode = r.dataset.mode || key;
+    const box = r.getBoundingClientRect();
+    if (!box.height) return;
+    const pctBand = Math.min(90, Math.max(10, this.props.focusPct ?? 30));
+    const half = box.height * pctBand / 200;
+    const ramp = Math.max(1, box.height / 2 - half);
+    const bmax = this.props.blurMax ?? (mode === "c" ? 9 : 7);
+    const mid = box.top + box.height / 2;
+    r.querySelectorAll("[data-line]").forEach(el => {
+      const b = el.getBoundingClientRect();
+      if (!el.textContent.trim() || !b.height) { el.style.opacity = 0; el.style.filter = "none"; return; }
+      const d = Math.abs(b.top + b.height / 2 - mid);
+      let t = Math.min(1, Math.max(0, (d - half) / ramp));
+      const st = this.state.sent;
+      if (st && st.opt === key && st.phase !== "closing") {
+        if (el.dataset.hi === "true") { el.style.filter = "none"; el.style.opacity = 1; return; }
+        t = Math.min(1, t + 0.18);
+      }
+      if (mode === "a") {
+        el.style.filter = "blur(" + (bmax * t).toFixed(2) + "px)";
+        el.style.opacity = (1 - 0.85 * t).toFixed(3);
+      } else if (mode === "b") {
+        el.style.transform = "scale(" + (1 - 0.14 * t).toFixed(3) + ")";
+        el.style.filter = "blur(" + (bmax * 0.75 * t).toFixed(2) + "px)";
+        el.style.opacity = (1 - 0.8 * t).toFixed(3);
+        el.style.fontWeight = t === 0 ? 500 : 400;
+      } else {
+        el.style.filter = "blur(" + (bmax * t).toFixed(2) + "px)";
+        el.style.opacity = (1 - 0.92 * t).toFixed(3);
+        el.style.color = t === 0 ? (this.props.accent ?? "#f7f2e7") : "#f2ede4";
+      }
+    });
+    const pct = Math.round(100 * r.scrollTop / Math.max(1, r.scrollHeight - r.clientHeight));
+    const shown = Math.max(1, pct);
+    const bar = document.querySelector('[data-bar="' + key + '"]');
+    if (bar) bar.style.width = shown + "%";
+    const lab = document.querySelector('[data-pct="' + key + '"]');
+    if (lab) lab.textContent = shown + "%";
+    const rail = document.querySelector('[data-rail="' + key + '"]');
+    if (rail) rail.style.top = "calc(" + shown + "% - " + (shown / 100 * 56) + "px)";
+  }
+
+  get dict() {
+    if (this._d) return this._d;
+    const d = {
+      treeline: ["/ˈtriːlaɪn/", "n.", "The altitude above which trees stop growing."],
+      loudspeaker: ["/ˈlaʊdˌspiːkə/", "n.", "A device that converts a signal into audible sound."],
+      fingernail: ["/ˈfɪŋɡəneɪl/", "n.", "The horny covering at the tip of a finger."],
+      battered: ["/ˈbætəd/", "adj.", "Worn and damaged by long, hard use."],
+      carriage: ["/ˈkærɪdʒ/", "n.", "A passenger car of a railway train."],
+      slanting: ["/ˈslɑːntɪŋ/", "adj.", "Sloping away from the vertical or horizontal."],
+      grains: ["/ɡreɪnz/", "n. pl.", "Very small hard particles of a substance."],
+      sigh: ["/saɪ/", "n.", "A long, audible breath expressing relief or weariness."],
+      dozed: ["/dəʊzd/", "v.", "Slept lightly, especially in the daytime."],
+      streaks: ["/striːks/", "n. pl.", "Long thin marks of a different texture or colour."],
+      forehead: ["/ˈfɔːhed/", "n.", "The part of the face above the eyebrows."],
+      pass: ["/pɑːs/", "n.", "A route through a gap between mountains."],
+      realized: ["/ˈrɪəlaɪzd/", "v.", "Became fully aware of something as a fact."],
+      thin: ["/θɪn/", "adj.", "Faint or weak in sound or substance."],
+      train: ["/treɪn/", "n.", "A series of railway carriages pulled by an engine."],
+      crossed: ["/krɒst/", "v.", "Went over or through from one side to the other."],
+      second: ["/ˈsekənd/", "adj.", "Coming next after the first in order."],
+      four: ["/fɔː/", "num.", "The number 4."],
+      afternoon: ["/ˌɑːftəˈnuːn/", "n.", "The time from noon until evening."],
+      snow: ["/snəʊ/", "n.", "Frozen water vapour falling in soft white flakes."],
+      began: ["/bɪˈɡæn/", "v.", "Started; past tense of begin."],
+      first: ["/fɜːst/", "adv.", "Before anything else; at the beginning."],
+      only: ["/ˈəʊnli/", "adv.", "No more than; merely."],
+      few: ["/fjuː/", "det.", "A small number of."],
+      dry: ["/draɪ/", "adj.", "Free from moisture."],
+      striking: ["/ˈstraɪkɪŋ/", "v.", "Hitting forcibly against something."],
+      window: ["/ˈwɪndəʊ/", "n.", "An opening fitted with glass in a wall or vehicle."],
+      melting: ["/ˈmeltɪŋ/", "v.", "Turning from solid to liquid through heat."],
+      into: ["/ˈɪntuː/", "prep.", "Expressing movement or change towards something."],
+      short: ["/ʃɔːt/", "adj.", "Small in length or duration."],
+      wet: ["/wet/", "adj.", "Covered or saturated with liquid."],
+      someone: ["/ˈsʌmwʌn/", "pron.", "An unspecified or unknown person."],
+      drawn: ["/drɔːn/", "v.", "Pulled or traced along a surface."],
+      down: ["/daʊn/", "prep.", "From a higher to a lower point."],
+      glass: ["/ɡlɑːs/", "n.", "A hard transparent material used in windows."],
+      closed: ["/kləʊzd/", "v.", "Shut; moved so as to cover an opening."],
+      book: ["/bʊk/", "n.", "A written or printed work of bound pages."],
+      knees: ["/niːz/", "n. pl.", "The joints between the thigh and lower leg."],
+      been: ["/biːn/", "v.", "Past participle of be."],
+      reading: ["/ˈriːdɪŋ/", "v.", "Taking in the meaning of written words."],
+      two: ["/tuː/", "num.", "The number 2."],
+      hours: ["/ˈaʊəz/", "n. pl.", "Periods of sixty minutes."],
+      without: ["/wɪˈðaʊt/", "prep.", "Not having or experiencing something."],
+      keeping: ["/ˈkiːpɪŋ/", "v.", "Retaining or holding on to."],
+      single: ["/ˈsɪŋɡl/", "adj.", "Only one; not one of several."],
+      whole: ["/həʊl/", "adj.", "Complete; entire."],
+      sentence: ["/ˈsentəns/", "n.", "A set of words expressing a complete thought."],
+      old: ["/əʊld/", "adj.", "Having lived for a long time."],
+      man: ["/mæn/", "n.", "An adult male human being."],
+      across: ["/əˈkrɒs/", "prep.", "From one side to the other of."],
+      hand: ["/hænd/", "n.", "The end part of the arm beyond the wrist."],
+      never: ["/ˈnevə/", "adv.", "At no time in the past or future."],
+      left: ["/left/", "v.", "Went away from; past tense of leave."],
+      leather: ["/ˈleðə/", "n.", "A material made from treated animal skin."],
+      case: ["/keɪs/", "n.", "A container for carrying or protecting things."],
+      beside: ["/bɪˈsaɪd/", "prep.", "At the side of; next to."],
+      said: ["/sed/", "v.", "Spoke words; past tense of say."],
+      line: ["/laɪn/", "n.", "A railway track or route."],
+      ahead: ["/əˈhed/", "adv.", "Further forward in space or time."],
+      heavy: ["/ˈhevi/", "adj.", "Great in amount, force or intensity."],
+      would: ["/wʊd/", "modal", "Used to express a future in the past."],
+      hold: ["/həʊld/", "v.", "To remain stationary; to wait."],
+      next: ["/nekst/", "adj.", "Coming immediately after in order or time."],
+      station: ["/ˈsteɪʃn/", "n.", "A stopping place on a railway line."],
+      forty: ["/ˈfɔːti/", "num.", "The number 40."],
+      minutes: ["/ˈmɪnɪts/", "n. pl.", "Units of time equal to sixty seconds."],
+      went: ["/went/", "v.", "Moved or travelled; past tense of go."],
+      through: ["/θruː/", "prep.", "Moving from one side or end to the other."],
+      quiet: ["/ˈkwaɪət/", "adj.", "Making little or no noise."],
+      again: ["/əˈɡen/", "adv.", "Once more; another time."],
+      stood: ["/stʊd/", "v.", "Was in an upright position on the feet."],
+      door: ["/dɔː/", "n.", "A hinged barrier at the entrance to a space."],
+      against: ["/əˈɡenst/", "prep.", "In contact with and pressing on."],
+      cold: ["/kəʊld/", "adj.", "Of low temperature."],
+      nothing: ["/ˈnʌθɪŋ/", "pron.", "Not anything; no single thing."],
+      see: ["/siː/", "v.", "To perceive with the eyes."],
+      way: ["/weɪ/", "n.", "A direction or course taken."],
+      thought: ["/θɔːt/", "v.", "Considered or remembered; past tense of think."],
+      father: ["/ˈfɑːðə/", "n.", "A male parent."],
+      walked: ["/wɔːkt/", "v.", "Went on foot, or led someone on foot."],
+      boy: ["/bɔɪ/", "n.", "A male child."],
+      past: ["/pɑːst/", "prep.", "Beyond in place or time."],
+      grows: ["/ɡrəʊz/", "v.", "Develops and increases in size, of a living thing."],
+      asked: ["/ɑːskt/", "v.", "Put a question to someone."],
+      long: ["/lɒŋ/", "adj.", "Lasting a great amount of time."],
+      while: ["/waɪl/", "n.", "A period of time."],
+      very: ["/ˈveri/", "adv.", "To a high degree."],
+      clean: ["/kliːn/", "adj.", "Free from dirt or pollution."],
+      wind: ["/wɪnd/", "n.", "Air moving naturally over the earth."],
+      the: ["/ðə/", "art.", "Definite article, marking a specific thing."],
+      that: ["/ðæt/", "conj.", "Introducing a clause of statement or result."],
+      when: ["/wen/", "adv.", "At or during the time at which."],
+      and: ["/ænd/", "conj.", "Joining words or clauses together."],
+      was: ["/wɒz/", "v.", "Past tense of be, first and third person singular."],
+      at: ["/æt/", "prep.", "Marking a point in space or time."],
+      in: ["/ɪn/", "prep.", "Enclosed or surrounded by."],
+      as: ["/æz/", "conj.", "Used to indicate comparison or manner."],
+      if: ["/ɪf/", "conj.", "Introducing a condition or supposition."],
+      had: ["/hæd/", "v.", "Past tense of have."],
+      on: ["/ɒn/", "prep.", "Supported by or covering a surface."],
+      my: ["/maɪ/", "det.", "Belonging to the speaker."],
+      for: ["/fɔː/", "prep.", "Indicating purpose or duration."],
+      from: ["/frɒm/", "prep.", "Indicating a starting point."],
+      me: ["/miː/", "pron.", "Object form of I."],
+      but: ["/bʌt/", "conj.", "Introducing a contrast."],
+      his: ["/hɪz/", "det.", "Belonging to a male person."],
+      him: ["/hɪm/", "pron.", "Object form of he."],
+      with: ["/wɪð/", "prep.", "Accompanied by; in the company of."],
+      we: ["/wiː/", "pron.", "The speaker together with others."],
+      then: ["/ðen/", "adv.", "At that time; next in sequence."],
+      it: ["/ɪt/", "pron.", "Referring to a thing already mentioned."],
+      by: ["/baɪ/", "prep.", "Beside; near to."],
+      there: ["/ðeə/", "adv.", "In or at that place."],
+      to: ["/tuː/", "prep.", "Expressing direction or a goal."],
+      out: ["/aʊt/", "adv.", "Away from the inside of a place."],
+      all: ["/ɔːl/", "det.", "The whole quantity or extent of."],
+      one: ["/wʌn/", "num.", "A single unit or thing."],
+      of: ["/ɒv/", "prep.", "Expressing the relationship of a part to a whole."],
+      up: ["/ʌp/", "adv.", "Towards a higher place or position."],
+      this: ["/ðɪs/", "det.", "Referring to the thing nearby or just mentioned."],
+      he: ["/hiː/", "pron.", "A male person previously mentioned."],
+      what: ["/wɒt/", "pron.", "Asking for information about something."],
+      i: ["/aɪ/", "pron.", "The person speaking or writing."],
+      a: ["/ə/", "art.", "Indefinite article, marking one unspecified thing."]
+    };
+    Object.keys(this.nfTable).forEach(k => { if (!d[k]) d[k] = this.nfTable[k].slice(0, 3); });
+    this._d = d;
+    return d;
+  }
+
+  get shelves() {
+    const b = (t, a, c, w, h) => ({ t, a, c, w, h, k: t });
+    return [
+      { k: 0, label: "Reading", books: [
+        b("The Treeline", "R. Kapuś", "#6b4f3a", 32, 188),
+        b("Fixation", "A. Merrow", "#2f4a46", 26, 172),
+        b("Snowline", "J. Petrov", "#7a3a34", 36, 196),
+        b("Quiet Hours", "M. Vance", "#3b3f55", 24, 164),
+        b("Grain", "L. Ostrom", "#8a6a3a", 30, 180)
+      ] },
+      { k: 1, label: "Shelf II", books: [
+        b("The Second Pass", "H. Lindqvist", "#4a3b52", 34, 192),
+        b("Peripheral", "D. Roche", "#2c3a2c", 25, 168),
+        b("Paper Lantern", "S. Iida", "#7d5b3f", 29, 184),
+        b("Wire & Wool", "T. Abernathy", "#394a5a", 31, 174),
+        b("Marginalia", "C. Byrne", "#5b2f2f", 23, 160)
+      ] },
+      { k: 2, label: "Shelf III", books: [
+        b("The Loudspeaker", "V. Tam", "#3f4636", 33, 186),
+        b("Nightwatch", "E. Sorrel", "#23283a", 27, 170),
+        b("Ashfall", "P. Nkemdirim", "#6d3f2a", 35, 194),
+        b("Slow Reader", "Y. Kaneko", "#4a4a52", 24, 162),
+        b("Woodsmoke", "F. Alaoui", "#7b6134", 30, 178)
+      ] }
+    ];
+  }
+
+  get th() {
+    const d = !!this.state.shelfDark;
+    const chips = d
+      ? { lightChipBg: "transparent", lightChipInk: "rgba(242,237,228,.5)", darkChipBg: "rgba(242,237,228,.92)", darkChipInk: "#14120f" }
+      : { lightChipBg: "#221f1b", lightChipInk: "#f7f3ea", darkChipBg: "transparent", darkChipInk: "rgba(34,31,27,.5)" };
+    return d
+      ? { ...chips, wall: "#0e0e10", board: "linear-gradient(#3a2f26,#231c16)", lip: "#171310", ink: "#f2ede4", sub: "rgba(242,237,228,.42)", chip: "rgba(255,255,255,.08)", chipOn: "rgba(242,237,228,.92)", chipOnInk: "#14120f", paper: "#14131a", paperInk: "#e9e4da", vig: "radial-gradient(130% 60% at 50% 42%,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 100%)" }
+      : { ...chips, wall: "#efe9de", board: "linear-gradient(#bb9160,#8c6941)", lip: "#7d5c39", ink: "#221f1b", sub: "rgba(34,31,27,.45)", chip: "rgba(34,31,27,.08)", chipOn: "#221f1b", chipOnInk: "#f7f3ea", paper: "#faf8f3", paperInk: "#221f1b", vig: "radial-gradient(130% 60% at 50% 42%,rgba(0,0,0,0) 45%,rgba(60,44,28,.22) 100%)" };
+  }
+
+  homeVals() {
+    const f = this.state.fly;
+    const ez = "cubic-bezier(.42,0,.58,1)";
+    const flat = this.shelves.reduce((a, sh) => a.concat(sh.books), []);
+    const pcts = [38, 64, 12, 81, 27, 55, 9, 43];
+    const rows = (from) => flat.slice(from, from + 3).map((bk, i) => ({
+      ...bk, pct: pcts[from + i], bar: pcts[from + i] + "%"
+    }));
+    const wf = this.state.wf || {};
+    const pairs = [["treeline", "林线"], ["carriage", "车厢"], ["forehead", "额头"], ["melting", "融化"], ["realized", "察觉"], ["loudspeaker", "广播"]];
+    const chip = (opt, sk) => pairs.map(([en, zh]) => {
+      const on = !!wf[opt + "|" + en];
+      return {
+        k: en, en, face: on ? zh : en,
+        font: on ? "'Noto Sans SC',sans-serif" : "'IBM Plex Sans',system-ui,sans-serif",
+        ...(sk === "dark"
+          ? { bg: on ? "rgba(240,180,41,.12)" : "#15171c", bd: on ? "rgba(240,180,41,.4)" : "rgba(255,255,255,.07)", fg: on ? "#f0b429" : "rgba(236,238,242,.82)" }
+          : { bg: on ? "rgba(193,69,47,.07)" : "#fff", bd: on ? "rgba(193,69,47,.35)" : "rgba(22,21,15,.14)", fg: on ? "#c1452f" : "#16150f" })
+      };
+    });
+    const nav = (opt, sk) => {
+      const act = (this.state.nav || {})[opt] || "today";
+      const defs = opt === "7a"
+        ? [["today", "阅读"], ["study", "书房"], ["words", "生词"], ["me", "我"]]
+        : [["today", "今天"], ["shelf", "书架"], ["words", "生词"], ["me", "我"]];
+      return defs.map(([id, label]) => {
+        const on = id === act;
+        return sk === "dark"
+          ? { k: id, id, label, pill: on ? "rgba(240,180,41,.14)" : "transparent", fg: on ? "#f0b429" : "rgba(236,238,242,.6)" }
+          : { k: id, id, label, dot: on ? "#c1452f" : "transparent", fg: on ? "#16150f" : "rgba(22,21,15,.62)" };
+      });
+    };
+    const pageOp = (opt) => (f && f.opt === opt && f.phase === "page" ? 1 : 0);
+
+    const tabOf = (opt) => (this.state.nav || {})[opt] || "today";
+    const meta = [
+      { st: "reading", pct: 38, note: "第 7 章 · 还剩 42 分" },
+      { st: "reading", pct: 64, note: "第 12 章 · 还剩 26 分" },
+      { st: "want", pct: 0, note: "未开始" },
+      { st: "done", pct: 100, note: "9 月 4 日读完" },
+      { st: "reading", pct: 27, note: "第 3 章 · 还剩 68 分" },
+      { st: "done", pct: 100, note: "7 月 19 日读完" },
+      { st: "want", pct: 0, note: "未开始" },
+      { st: "reading", pct: 43, note: "第 9 章 · 还剩 51 分" }
+    ];
+    const fil = this.state.hfil || {};
+    const filOf = (opt) => fil[opt] || "reading";
+    const filDefs = [["reading", "在读"], ["done", "读完"], ["want", "想读"]];
+    const shelfFor = (opt) => flat.map((bk, i) => ({ ...bk, ...meta[i] }))
+      .filter(b => b.st === filOf(opt))
+      .map(b => ({
+        ...b, bar: (b.pct || 2) + "%",
+        tint: b.st === "done" ? "rgba(22,21,15,.3)" : "#c1452f",
+        tintD: b.st === "done" ? "rgba(236,238,242,.35)" : "rgba(240,180,41,.8)"
+      }));
+    const filFor = (opt, sk) => filDefs.map(([id, label]) => {
+      const on = id === filOf(opt);
+      return sk === "dark"
+        ? { k: id, id, label, pill: on ? "rgba(240,180,41,.13)" : "#15171c", pbd: on ? "rgba(240,180,41,.4)" : "rgba(255,255,255,.06)", pfg: on ? "#f0b429" : "rgba(236,238,242,.62)" }
+        : { k: id, id, label, bd: on ? "#c1452f" : "transparent", fg: on ? "#16150f" : "rgba(22,21,15,.62)" };
+    });
+
+    const vs = [
+      ["treeline", "/ˈtriːlaɪn/", "林线，树木生长的海拔上限", "Above the treeline the wind went quiet.", flat[0].t],
+      ["carriage", "/ˈkærɪdʒ/", "车厢；马车", "The carriage smelled of wet wool.", flat[0].t],
+      ["forehead", "/ˈfɔːhed/", "前额", "She pressed her forehead to the glass.", flat[1].t],
+      ["melting", "/ˈmeltɪŋ/", "融化的；令人心软的", "A melting light came off the ice.", flat[1].t],
+      ["realized", "/ˈriːəlaɪzd/", "意识到，明白过来", "Only later did he realize what she meant.", flat[4].t],
+      ["loudspeaker", "/ˈlaʊdspiːkə/", "扬声器，广播喇叭", "The loudspeaker repeated the station name.", flat[4].t]
+    ];
+    const vm = this.state.vm || {};
+    const vocabFor = (opt, sk) => vs.map(([en, ph, zh, src, book]) => {
+      const ok = !!vm[opt + "|" + en];
+      return {
+        k: en, en, ph, zh, src, book, ok,
+        mkBd: ok ? "#c1452f" : "rgba(22,21,15,.25)",
+        mkBg: ok ? "#c1452f" : "transparent",
+        enFg: ok ? "rgba(22,21,15,.5)" : "#16150f",
+        enFgD: ok ? "rgba(236,238,242,.5)" : "#eceef2",
+        cbd: ok ? "rgba(240,180,41,.32)" : "rgba(255,255,255,.055)",
+        tag: ok ? "已掌握" : "待复习",
+        tagFg: ok ? "#f0b429" : "rgba(236,238,242,.6)"
+      };
+    });
+    const masteredN = vs.filter(([en]) => vm["7b|" + en]).length;
+    const mins = [12, 34, 0, 26, 41, 18, 24];
+    const dayN = ["一", "二", "三", "四", "五", "六", "日"];
+    const week = (sk) => mins.map((m, i) => ({
+      k: i, n: m || "–", label: dayN[i],
+      h: Math.max(3, Math.round(m / 41 * 58)),
+      tint: sk === "dark"
+        ? (i === 6 ? "#f0b429" : "rgba(236,238,242,.22)")
+        : (i === 6 ? "#c1452f" : "rgba(22,21,15,.18)")
+    }));
+
+    const seg = this.state.sseg || "memory";
+    const segDefs = [["memory", "记忆"], ["threads", "会话"], ["agent", "档案员"]];
+    const ap = this.state.agp || { record: true, words: true, quote: true, cross: false, share: false };
+
+    return {
+      studySeg: segDefs.map(([id, label]) => ({
+        k: id, id, label,
+        bd: id === seg ? "#c1452f" : "transparent",
+        fg: id === seg ? "#16150f" : "rgba(22,21,15,.62)"
+      })),
+      segMemory: seg === "memory", segThreads: seg === "threads", segAgent: seg === "agent",
+      setStudySeg: (e) => this.setState({ sseg: e.currentTarget.dataset.s }),
+      memories: [
+        { k: 0, when: "今天 21:14", kind: "阅读位置", text: "在 " + flat[0].t + " 第 7 章停了 14 分钟，同一段回读了两次。", src: "“Above the treeline the wind went quiet.”", dot: "#c1452f" },
+        { k: 1, when: "今天 20:58", kind: "查词", text: "查了 treeline、carriage 两个词，都与高海拔的行进场景相关。", src: flat[0].t + " · 第 7 章", dot: "rgba(22,21,15,.25)" },
+        { k: 2, when: "昨天 22:40", kind: "你说的话", text: "你说主角决定折返那段“读着像在替别人认输”。", src: "会话 · 关于折返的那一章", dot: "rgba(22,21,15,.25)" },
+        { k: 3, when: "9 月 20 日", kind: "偏好", text: "连续三晚只在 21:00 后阅读，每次 20–40 分钟。已据此把提醒定在 21:30。", src: "跨 3 本书", dot: "rgba(22,21,15,.25)" },
+        { k: 4, when: "9 月 18 日", kind: "读完", text: "读完 " + flat[3].t + "，最后一章读得比全书平均慢 40%。", src: flat[3].t, dot: "rgba(22,21,15,.25)" },
+        { k: 5, when: "9 月 14 日", kind: "主题线索", text: "你划线的段落里反复出现“等待”与“天气”，三本书都有。", src: "跨 3 本书", dot: "rgba(22,21,15,.25)" }
+      ],
+      threads: [
+        { k: 0, title: "关于折返的那一章", last: "你问他为什么在营地掉头；我把第 7 章和第 3 章的两处天气描写并排给了你。", book: flat[0].t, when: "今天", n: 12 },
+        { k: 1, title: "这几个词是不是一组", last: "treeline、carriage、loudspeaker —— 都出现在移动途中的场景里，我按场景而不是词性归了类。", book: flat[0].t, when: "今天", n: 6 },
+        { k: 2, title: "读完之后想确认结局", last: "你要我只回答问到的部分、别扩写；已记为默认。", book: flat[3].t, when: "9 月 18 日", n: 9 },
+        { k: 3, title: "帮我按夜读时间排一下", last: "按你每晚 25 分钟的节奏，剩下 4 本大约要到 11 月中。", book: "跨书", when: "9 月 12 日", n: 4 }
+      ],
+      artifacts: [
+        { k: 0, title: "第 7 章摘要", sub: "你要过一次，之后每章自动生成但不推送。", st: "已备好", stFg: "rgba(22,21,15,.62)", tint: "#c1452f" },
+        { k: 1, title: "生词整理 · 本周 18 个", sub: "按出现场景分了 4 组，等你在生词本里打开。", st: "已备好", stFg: "rgba(22,21,15,.62)", tint: "#c1452f" },
+        { k: 2, title: "进度周报", sub: "只在你进书房时显示，不发通知。", st: "待你查看", stFg: "#c1452f", tint: "rgba(22,21,15,.2)" }
+      ],
+      agentRows: [
+        { id: "record", label: "记录阅读位置与时长", sub: "停顿、回读、每晚时段" },
+        { id: "words", label: "记录查词", sub: "词、例句与所在章节" },
+        { id: "quote", label: "记录你说过的话", sub: "会话里的判断与偏好" },
+        { id: "cross", label: "跨书归纳主题", sub: "把多本书的线索连起来" },
+        { id: "share", label: "允许主动提示", sub: "关闭时它只在被问到才开口" }
+      ].map(r => {
+        const on = !!ap[r.id];
+        return {
+          k: r.id, ...r,
+          trackBg: on ? "#c1452f" : "transparent",
+          trackBd: on ? "#c1452f" : "rgba(22,21,15,.22)",
+          knob: on ? "#fff" : "rgba(22,21,15,.3)",
+          knobX: on ? "18px" : "3px"
+        };
+      }),
+      toggleAgent: (e) => {
+        const p = e.currentTarget.dataset.p;
+        this.setState(s => {
+          const cur = s.agp || { record: true, words: true, quote: true, cross: false, share: false };
+          return { agp: { ...cur, [p]: !cur[p] } };
+        });
+      },
+      tab7aToday: tabOf("7a") === "today", tab7aStudy: tabOf("7a") === "study",
+      tab7aWords: tabOf("7a") === "words", tab7aMe: tabOf("7a") === "me",
+      tab7bToday: tabOf("7b") === "today", tab7bShelf: tabOf("7b") === "shelf",
+      tab7bWords: tabOf("7b") === "words", tab7bMe: tabOf("7b") === "me",
+      filters7a: filFor("7a", "light"), filters7b: filFor("7b", "dark"),
+      shelfList7a: shelfFor("7a"), shelfList7b: shelfFor("7b"),
+      vocab7a: vocabFor("7a", "light"), vocab7b: vocabFor("7b", "dark"),
+      vocabLine: "142 个词 · 本周新增 18 · 今日待复习 6",
+      masteredN, masteryPct: Math.round(masteredN / 6 * 100),
+      week7a: week("light"), week7b: week("dark"),
+      lifetime: [
+        { k: 0, n: "14.2", unit: "小时", cap: "本月阅读" },
+        { k: 1, n: "6", unit: "本", cap: "今年读完" },
+        { k: 2, n: "142", unit: "个", cap: "生词累计" },
+        { k: 3, n: "31", unit: "分", cap: "日均时长" }
+      ],
+      settings: [
+        { k: 0, label: "字号与行距", val: "18.5 / 1.8" },
+        { k: 1, label: "聚焦强度", val: "中央 30%" },
+        { k: 2, label: "查词词典", val: "简明英汉" },
+        { k: 3, label: "阅读提醒", val: "每晚 21:30" },
+        { k: 4, label: "数据与同步", val: "已开启" }
+      ],
+      setFilter: (e) => {
+        const d = e.currentTarget.dataset;
+        this.setState(s => ({ hfil: { ...(s.hfil || {}), [d.opt]: d.f } }));
+      },
+      toggleMastered: (e) => {
+        const d = e.currentTarget.dataset, key = d.opt + "|" + d.w;
+        this.setState(s => ({ vm: { ...(s.vm || {}), [key]: !(s.vm || {})[key] } }));
+      },
+      cur: flat[0],
+      rows7a: rows(1),
+      rows7b: rows(4),
+      words7a: chip("7a", "light"),
+      words7b: chip("7b", "dark"),
+      stats7b: [
+        { k: 0, cap: "Today", n: "24", unit: "分", bar: "60%", tint: "#f0b429" },
+        { k: 1, cap: "New words", n: "7", unit: "个", bar: "45%", tint: "rgba(236,238,242,.55)" },
+        { k: 2, cap: "Streak", n: "12", unit: "天", bar: "80%", tint: "#f0b429" },
+        { k: 3, cap: "Weekly goal", n: "68", unit: "%", bar: "68%", tint: "rgba(236,238,242,.55)" }
+      ],
+      nav7a: nav("7a", "light"),
+      nav7b: nav("7b", "dark"),
+      flipWord: (e) => {
+        const d = e.currentTarget.dataset, key = d.opt + "|" + d.w;
+        this.setState(s => ({ wf: { ...(s.wf || {}), [key]: !(s.wf || {})[key] } }));
+      },
+      setNav: (e) => {
+        const d = e.currentTarget.dataset;
+        this.setState(s => ({ nav: { ...(s.nav || {}), [d.opt]: d.n } }));
+      },
+      flyOn7a: !!f && f.opt === "7a",
+      flyOn7b: !!f && f.opt === "7b",
+      flyPageLight: "position:absolute;inset:0;background:#fbfaf8;opacity:" + pageOp("7a") + ";transition:opacity 320ms " + ez,
+      flyPageDark: "position:absolute;inset:0;background:#0f1114;opacity:" + pageOp("7b") + ";transition:opacity 320ms " + ez
+    };
+  }
+
+  shelfVals() {
+    const f = this.state.fly;
+    const th = this.th;
+    const ez = "cubic-bezier(.42,0,.58,1)";
+    let flyStyle = "display:none";
+    if (f) {
+      const base = "position:absolute;z-index:40;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.5);transition:left 460ms " + ez + ",top 460ms " + ez + ",width 460ms " + ez + ",height 460ms " + ez + ",border-radius 460ms " + ez + ";";
+      if (f.phase === "spine" || f.phase === "back") {
+        flyStyle = base + "left:" + f.x + "px;top:" + f.y + "px;width:" + f.w + "px;height:" + f.h + "px;border-radius:2px 3px 3px 2px;transition-duration:300ms";
+      } else if (f.phase === "out") {
+        flyStyle = base + "left:" + f.x + "px;top:" + (f.y - 30) + "px;width:" + f.w + "px;height:" + f.h + "px;border-radius:2px 3px 3px 2px;transition-duration:220ms";
+      } else {
+        flyStyle = base + "left:0px;top:0px;width:402px;height:812px;border-radius:0px";
+      }
+    }
+    const lw = (bk, i) => Math.round(214 + ((bk.h - 160) * 2.6) + (i % 3) * 9);
+    const dress = (opt) => this.shelves.map(sh => ({
+      ...sh,
+      books: sh.books.map((bk, i) => ({
+        ...bk, lw: lw(bk, i),
+        vis: f && f.opt === opt && f.t === bk.t ? "hidden" : "visible"
+      }))
+    }));
+    const flatOf = (opt) => dress(opt).reduce((a, sh) => a.concat(sh.books), []);
+    const f6b = flatOf("6b");
+    const f6c = flatOf("6c");
+    return {
+      shelves5a: dress("5a"),
+      shelves6a: dress("6a"),
+      facing: [
+        { k: 0, books: f6b.slice(0, 3) },
+        { k: 1, books: f6b.slice(3, 6) },
+        { k: 2, books: f6b.slice(6, 9) }
+      ].map(sh => ({ ...sh, books: sh.books.map((bk, i) => ({ ...bk, rot: [-2.5, 1.5, -1][i] })) })),
+      hero: f6c[0],
+      restShelves: [
+        { k: 0, books: f6c.slice(1, 5) },
+        { k: 1, books: f6c.slice(5, 9) }
+      ],
+      th,
+      shelfDark: !!this.state.shelfDark,
+      flyOn5a: !!f && f.opt === "5a",
+      flyOn6a: !!f && f.opt === "6a",
+      flyOn6b: !!f && f.opt === "6b",
+      flyOn6c: !!f && f.opt === "6c",
+      flyStyle,
+      flyCloth: f ? f.c : "#6b4f3a",
+      flyTitle: f ? f.t : "",
+      flyAuthor: f ? f.a : "",
+      flyCoverOn: !!f && f.phase !== "page",
+      flyPageOn: !!f && (f.phase === "full" || f.phase === "page"),
+      flyPageStyle: "position:absolute;inset:0;background:" + th.paper + ";opacity:" + (f && f.phase === "page" ? 1 : 0) + ";transition:opacity 320ms " + ez,
+      flyCoverStyle: "position:absolute;inset:0;opacity:" + (f && f.phase === "page" ? 0 : 1) + ";transition:opacity 300ms " + ez,
+      pageLines: this.lines.slice(0, 15),
+      setTheme: (e) => this.setState({ shelfDark: e.currentTarget.dataset.tm === "dark" }),
+      openBook: (e) => this.openBook(e),
+      closeBook: () => this.closeBook()
+    };
+  }
+
+  openBook(e) {
+    if (this.state.fly) return;
+    const el = e.currentTarget;
+    const phone = el.closest("[data-phone]");
+    if (!phone) return;
+    const pr = phone.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    const d = el.dataset;
+    const f = { opt: phone.dataset.phone, t: d.bt, a: d.ba, c: d.bc, x: Math.round(r.left - pr.left), y: Math.round(r.top - pr.top), w: Math.round(r.width), h: Math.round(r.height), phase: "spine" };
+    this.setState({ fly: f }, () => {
+      requestAnimationFrame(() => {
+        this.setState(s => ({ fly: s.fly && { ...s.fly, phase: "out" } }));
+        this.fT1 = setTimeout(() => this.setState(s => ({ fly: s.fly && { ...s.fly, phase: "full" } })), 240);
+        this.fT2 = setTimeout(() => this.setState(s => ({ fly: s.fly && { ...s.fly, phase: "page" } })), 700);
+      });
+    });
+  }
+
+  closeBook() {
+    clearTimeout(this.fT1); clearTimeout(this.fT2);
+    this.setState(s => ({ fly: s.fly && { ...s.fly, phase: "full" } }), () => {
+      this.fT1 = setTimeout(() => this.setState(s => ({ fly: s.fly && { ...s.fly, phase: "back" } })), 30);
+      this.fT2 = setTimeout(() => this.setState({ fly: null }), 400);
+    });
+  }
+
+  get nfTable() {
+    return this._nft || (this._nft = {
+      eye: ["/aɪ/", "n.", "The organ of sight.", "眼"],
+      does: ["/dʌz/", "aux.", "Third-person form of do.", "做"],
+      not: ["/nɒt/", "adv.", "Used to form a negative.", "不"],
+      glide: ["/ɡlaɪd/", "v.", "To move smoothly and continuously.", "滑行"],
+      evenly: ["/ˈiːvnli/", "adv.", "In a regular, uniform way.", "均匀"],
+      text: ["/tekst/", "n.", "Written or printed words.", "文本"],
+      advances: ["/ədˈvɑːnsɪz/", "v.", "Moves forward.", "前进"],
+      jumps: ["/dʒʌmps/", "n.", "Sudden movements from one place to another.", "跳跃"],
+      pausing: ["/ˈpɔːzɪŋ/", "v.", "Stopping briefly before continuing.", "停顿"],
+      roughly: ["/ˈrʌfli/", "adv.", "Approximately.", "大约"],
+      milliseconds: ["/ˈmɪlisekəndz/", "n.", "Thousandths of a second.", "毫秒"],
+      information: ["/ˌɪnfəˈmeɪʃn/", "n.", "Facts taken in or conveyed.", "信息"],
+      taken: ["/ˈteɪkən/", "v.", "Received or absorbed.", "摄取"],
+      during: ["/ˈdjʊərɪŋ/", "prep.", "Throughout the course of.", "期间"],
+      those: ["/ðəʊz/", "det.", "Plural of that.", "那些"],
+      pauses: ["/ˈpɔːzɪz/", "n.", "Brief stops.", "停顿"],
+      more: ["/mɔː/", "adv.", "To a greater degree.", "更"],
+      telling: ["/ˈtelɪŋ/", "adj.", "Revealing; significant.", "有力"],
+      still: ["/stɪl/", "adv.", "Even now; nevertheless.", "仍"],
+      fovea: ["/ˈfəʊviə/", "n.", "The small central pit of the retina, where vision is sharpest.", "中央凹"],
+      resolves: ["/rɪˈzɒlvz/", "v.", "Distinguishes fine detail.", "分辨"],
+      narrow: ["/ˈnærəʊ/", "adj.", "Of small width.", "窄"],
+      seven: ["/ˈsevn/", "num.", "The number 7.", "七"],
+      eight: ["/eɪt/", "num.", "The number 8.", "八"],
+      characters: ["/ˈkærəktəz/", "n.", "Written letters or symbols.", "字符"],
+      per: ["/pɜː/", "prep.", "For each.", "每"],
+      fixation: ["/fɪkˈseɪʃn/", "n.", "A pause of the eye on one point of text.", "注视"],
+      everything: ["/ˈevriθɪŋ/", "pron.", "All things.", "一切"],
+      else: ["/els/", "adv.", "Other than what is mentioned.", "其余"],
+      sits: ["/sɪts/", "v.", "Rests in a place or state.", "处于"],
+      lowresolution: ["/ləʊ rezəˈluːʃn/", "adj.", "Lacking fine detail.", "低清"],
+      peripheral: ["/pəˈrɪfərəl/", "adj.", "At the outer edge of the visual field.", "周边"],
+      vision: ["/ˈvɪʒn/", "n.", "The faculty of seeing.", "视觉"],
+      brain: ["/breɪn/", "n.", "The organ of thought.", "大脑"],
+      simply: ["/ˈsɪmpli/", "adv.", "Merely; just.", "只是"],
+      supplies: ["/səˈplaɪz/", "v.", "Provides.", "提供"],
+      illusion: ["/ɪˈluːʒn/", "n.", "A false impression of reality.", "错觉"],
+      page: ["/peɪdʒ/", "n.", "One side of a leaf of a book.", "页"],
+      focus: ["/ˈfəʊkəs/", "n.", "The state of sharp definition.", "焦点"],
+      blurring: ["/ˈblɜːrɪŋ/", "v.", "Making indistinct.", "模糊"],
+      falls: ["/fɔːlz/", "v.", "Comes to lie; belongs.", "落在"],
+      outside: ["/aʊtˈsaɪd/", "prep.", "Beyond the limits of.", "之外"],
+      attention: ["/əˈtenʃn/", "n.", "Mental focus directed at something.", "注意"],
+      withholds: ["/wɪðˈhəʊldz/", "v.", "Keeps back; refuses to give.", "扣留"],
+      aligns: ["/əˈlaɪnz/", "v.", "Brings into agreement.", "对齐"],
+      interface: ["/ˈɪntəfeɪs/", "n.", "The point of interaction with a system.", "界面"],
+      how: ["/haʊ/", "adv.", "In what way.", "如何"],
+      visual: ["/ˈvɪʒuəl/", "adj.", "Relating to sight.", "视觉"],
+      system: ["/ˈsɪstəm/", "n.", "A set of connected parts.", "系统"],
+      already: ["/ɔːlˈredi/", "adv.", "Before now.", "已经"],
+      works: ["/wɜːks/", "v.", "Functions; operates.", "运作"],
+      lies: ["/laɪz/", "v.", "Is situated.", "位于"],
+      beyond: ["/bɪˈjɒnd/", "prep.", "On the far side of.", "之外"],
+      band: ["/bænd/", "n.", "A strip or zone.", "带"],
+      really: ["/ˈrɪəli/", "adv.", "In actual fact.", "真正"],
+      being: ["/ˈbiːɪŋ/", "v.", "Present participle of be.", "正被"],
+      read: ["/riːd/", "v.", "To take in written words.", "读"],
+      cost: ["/kɒst/", "n.", "What must be given up.", "代价"],
+      scanning: ["/ˈskænɪŋ/", "n.", "Looking over quickly for something.", "扫读"],
+      readers: ["/ˈriːdəz/", "n.", "People who read.", "读者"],
+      double: ["/ˈdʌbl/", "v.", "To go back the way one came.", "折回"],
+      back: ["/bæk/", "adv.", "To an earlier place.", "回"],
+      jump: ["/dʒʌmp/", "v.", "To move suddenly to another place.", "跳"],
+      end: ["/end/", "n.", "The final part.", "末尾"],
+      paragraph: ["/ˈpærəɡrɑːf/", "n.", "A distinct block of text.", "段落"],
+      conclusion: ["/kənˈkluːʒn/", "n.", "The closing statement or judgement.", "结论"],
+      any: ["/ˈeni/", "det.", "One or some, no matter which.", "任何"],
+      focused: ["/ˈfəʊkəst/", "adj.", "Concentrated on one thing.", "专注"],
+      reader: ["/ˈriːdə/", "n.", "One who reads.", "读者"],
+      must: ["/mʌst/", "modal.", "Expressing necessity.", "必须"],
+      keep: ["/kiːp/", "v.", "To retain; to hold on to.", "保留"],
+      gesture: ["/ˈdʒestʃə/", "n.", "A movement of the hand used as input.", "手势"],
+      clears: ["/klɪəz/", "v.", "Removes; makes free of.", "清除"],
+      blur: ["/blɜː/", "n.", "Indistinctness of image.", "模糊"],
+      instantly: ["/ˈɪnstəntli/", "adv.", "At once.", "立刻"]
+    });
+  }
+
+  get nfZh() {
+    if (!this._nfz) {
+      this._nfz = {};
+      Object.keys(this.nfTable).forEach(k => { this._nfz[k] = this.nfTable[k][3]; });
+    }
+    return this._nfz;
+  }
+
+  get zhAll() { return this._zha || (this._zha = Object.assign({}, this.nfZh, this.zh)); }
+
+  splitWords(lines) {
+    return lines.map((l, i) => ({
+      k: i,
+      w: (l.match(/\S+\s*|\s+/g) || [" "]).map((s, j) => ({
+        k: j, s, t: s.trim().replace(/[^A-Za-z'-]/g, "").toLowerCase()
+      }))
+    }));
+  }
+
+  get closeMs() { return this.props.closeMs ?? 240; }
+
+  get sents() {
+    return [
+      { a: 0, b: 2, en: "The train crossed the second pass at four in the afternoon, and that was when the snow began.", zh: "列车在下午四点越过第二道山口，雪就是那时开始下的。", note: "that was when… 把时间点和事件焊在一起，比 then 更强调「正是那一刻」。" },
+      { a: 2, b: 6, en: "At first only a few dry grains, striking the window and melting into short wet streaks, as if someone had drawn a fingernail down the glass.", zh: "起初只有几粒干雪，打在车窗上化成一道道短短的水痕，像谁用指甲在玻璃上划过。", note: "无谓语的片段句 + as if 虚拟语气，写成速写式的观察。" },
+      { a: 8, b: 11, en: "I closed the book on my knees and realized I had been reading for two hours without keeping a single whole sentence.", zh: "我合上膝上的书，才发觉自己读了两个小时，却没记住一个完整的句子。", note: "had been reading：过去完成进行时，强调持续到「发觉」那一刻。" },
+      { a: 11, b: 13, en: "The old man across from me dozed, but his hand never left the battered leather case beside him.", zh: "对面的老人打着盹，手却始终没离开身边那只破旧的皮箱。", note: "but 前后是「松」与「紧」的对照，never left 暗示戒备。" },
+      { a: 15, b: 18, en: "The loudspeaker said the line ahead was heavy with snow and that we would hold at the next station for forty minutes.", zh: "广播说前方线路风雪很大，列车将在下一站停靠四十分钟。", note: "间接引语中的时态后移：was / would。" },
+      { a: 18, b: 19, en: "A thin sigh went through the carriage, and then it was quiet again.", zh: "一阵轻微的叹息掠过车厢，随后又安静下来。", note: "thin 修饰声音，意为「细弱」，是感官形容词的迁移用法。" },
+      { a: 21, b: 22, en: "I stood by the door with my forehead against the cold glass.", zh: "我站在车门边，把额头贴着冰冷的玻璃。", note: "with + 名词 + 介词短语：伴随状语，描写姿态。" },
+      { a: 22, b: 24, en: "There was nothing to see out there — only snow, slanting all one way.", zh: "外面什么也看不见——只有雪，全都斜向同一个方向。", note: "破折号作补充；slanting 是现在分词作后置定语。" },
+      { a: 26, b: 27, en: "I thought of the treeline my father walked me up to as a boy.", zh: "我想起小时候父亲带我走上去看的那条林线。", note: "省略关系代词的定语从句：(that) my father walked me up to。" },
+      { a: 27, b: 28, en: "Past this, he said, nothing grows.", zh: "他说，过了这里，什么都不长了。", note: "插入语 he said 把直接引语切开，模拟口语节奏。" },
+      { a: 28, b: 29, en: "I asked what was past it.", zh: "我问他，那再往上有什么。", note: "宾语从句用陈述语序：what was past it。" },
+      { a: 29, b: 30, en: "He thought for a long while, then said: very clean wind.", zh: "他想了很久，说：很干净的风。", note: "句末冒号引出短语式回答，留白收尾。" }
+    ];
+  }
+
+  pressStart(e) {
+    const line = e.currentTarget;
+    const phone = line.closest("[data-phone]");
+    if (!phone) return;
+    const opt = phone.dataset.phone;
+    const li = parseInt(line.dataset.li ?? "-1", 10);
+    clearTimeout(this.lp);
+    this.lp = setTimeout(() => {
+      const s = this.state.sent;
+      const sid = this.sents.findIndex(x => li >= x.a && li <= x.b);
+      if (sid < 0) return;
+      if (s && s.opt === opt && s.sid === sid && s.phase !== "closing") { this.closeSent(); return; }
+      if (s && s.phase !== "closing") {
+        this.closeSent();
+        clearTimeout(this.sq);
+        this.sq = setTimeout(() => this.setState({ sent: { opt, sid, phase: "ready" } }), this.closeMs);
+        return;
+      }
+      this.setState({ sent: { opt, sid, phase: "ready" } });
+    }, 420);
+  }
+
+  pressEnd() { clearTimeout(this.lp); }
+
+  closeSent() {
+    const s = this.state.sent;
+    if (!s || s.phase === "closing") return;
+    this.setState({ sent: { ...s, phase: "closing" } });
+    clearTimeout(this.sc);
+    this.sc = setTimeout(() => this.setState(st => (st.sent && st.sent.phase === "closing" ? { sent: null } : null)), this.closeMs);
+  }
+
+  sentLines(opt) {
+    const s = this.state.sent;
+    const act = s && s.opt === opt && s.phase !== "closing" ? this.sents[s.sid] : null;
+    const on = s && s.opt === opt ? this.sents[s.sid] : null;
+    return this.lines.map((t, k) => {
+      const hi = !!act && k >= act.a && k <= act.b;
+      return {
+        k, t, hi,
+        last: !!on && k === on.b,
+        bg: hi ? (opt === "3a" ? "rgba(255,206,110,.34)" : opt === "3b" ? "rgba(34,31,27,.05)" : "#ffffff") : "transparent",
+        sh: hi && opt === "3c" ? "0 1px 0 rgba(255,255,255,.9)" : "none"
+      };
+    });
+  }
+
+  tap(e) {
+    const el = e.currentTarget;
+    if (!el.dataset.w) return;
+    const cur = this.state.pop;
+    clearTimeout(this.q);
+    if (cur && cur.phase !== "closing") {
+      const li = parseInt((el.closest("[data-line]") || {}).dataset?.li ?? -1, 10);
+      const word = el.textContent.trim().replace(/[^A-Za-z'’-]/g, "");
+      const same = cur.li === li && cur.word === word;
+      this.closePop();
+      if (!same) this.q = setTimeout(() => this.openPop(el), this.closeMs);
+      return;
+    }
+    this.openPop(el);
+  }
+
+  openPop(el) {
+    const key = el.dataset.w;
+    if (!key) return;
+    const phone = el.closest("[data-phone]");
+    if (!phone) return;
+    const opt = phone.dataset.phone;
+    const pr = phone.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (this.markEl) { this.markEl.style.background = ""; this.markEl.style.color = ""; this.markEl.style.borderRadius = ""; }
+    el.style.background = opt === "1c" ? "rgba(255,180,180,.2)" : "rgba(34,31,27,.09)";
+    if (opt === "1c") el.style.color = this.props.accent ?? "#ffb4b4";
+    el.style.borderRadius = "3px";
+    this.markEl = el;
+    clearTimeout(this.t);
+    this.userScroll = 0;
+    if (opt === "2c") this.snapTo(el.closest("[data-line]"));
+    const mid = pr.height / 2;
+    this.setState(st => ({
+      seen: [...new Set([...(st.seen || []), key.toLowerCase()])],
+      pop: {
+        opt,
+        word: el.textContent.trim().replace(/[^A-Za-z'’-]/g, ""),
+        key,
+        phase: (opt === "2b" || opt === "2c") ? "loading" : "ready",
+        li: parseInt((el.closest("[data-line]") || {}).dataset?.li ?? -1, 10),
+        caret: Math.min(Math.max(16, r.left + r.width / 2 - pr.left), pr.width - 16),
+        below: (opt === "2c" ? mid + 26 : r.bottom - pr.top + 10),
+        left: Math.min(Math.max(12, r.left - pr.left - 20), pr.width - 240)
+      }
+    }), () => {
+      if (opt !== "2b" && opt !== "2c") return;
+      this.t = setTimeout(() => this.setState(s => ({ pop: s.pop && { ...s.pop, phase: "ready" } })), 3000);
+    });
+  }
+
+  closePop() {
+    clearTimeout(this.t);
+    const p = this.state.pop;
+    if (!p || p.phase === "closing") return;
+    if (this.markEl) { this.markEl.style.background = ""; this.markEl.style.borderRadius = ""; this.markEl = null; }
+    const stamp = Date.now();
+    this.closeStamp = stamp;
+    if (p.opt === "2a") this.lockUntil = stamp + this.closeMs;
+    this.setState({ pop: { ...p, phase: "closing", was: p.phase } });
+    clearTimeout(this.c);
+    this.c = setTimeout(() => {
+      if (this.closeStamp === stamp) this.setState(s => (s.pop && s.pop.phase === "closing" ? { pop: null } : null));
+    }, this.closeMs);
+  }
+
+  snapTo(el) {
+    const r = el.closest("[data-reader]");
+    if (!r) return;
+    const box = r.getBoundingClientRect();
+    const b = el.getBoundingClientRect();
+    r.scrollTo({ top: r.scrollTop + (b.top + b.height / 2) - (box.top + box.height / 2), behavior: "smooth" });
+  }
+
+  loop() {
+    cancelAnimationFrame(this.raf);
+    if (!this.state.playing) return;
+    this.acc = this.acc || 0;
+    const step = () => {
+      const r = this.readers && this.readers.c;
+      if (!r || !this.state.playing) return;
+      this.acc += 0.55 * this.state.speed;
+      if (this.acc >= 1) { r.scrollTop += Math.floor(this.acc); this.acc %= 1; }
+      this.raf = requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  }
+}
+</script>
+</body>
+</html>

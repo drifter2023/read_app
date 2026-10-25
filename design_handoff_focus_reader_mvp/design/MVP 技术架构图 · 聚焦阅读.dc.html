@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"><style>body{margin:0;background:#efede8}a{color:#c1452f}a:hover{color:#16150f}</style></helmet>
+
+<div data-screen-label="MVP 技术架构" style="width:1600px;box-sizing:border-box;padding:64px 64px 72px;background:#fbfaf8;color:#16150f;font-family:'Noto Sans SC',system-ui,sans-serif">
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end;padding-bottom:22px;border-bottom:2px solid #16150f">
+<div>
+<div style="font:600 11px 'IBM Plex Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#c1452f">MVP technical architecture · v0.1</div>
+<h1 style="margin:10px 0 8px;font:500 44px/1.1 'Newsreader',Georgia,serif;letter-spacing:-.01em">聚焦阅读 MVP · 技术架构</h1>
+<p style="margin:0;font:400 14px/1.7 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62);max-width:800px;text-wrap:pretty">只做「阅读」：首页书架 + 阅读页。全离线，没有网络层。四层结构，一列对应一项能力；焦点带渲染管线与查词链路是本图的重点。配套文档：<a href="MVP 方案 · 聚焦阅读.dc.html">MVP 方案</a>。</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;font:400 12px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:30px;height:16px;background:#fff;border:1px solid rgba(22,21,15,.16);border-top:3px solid #c1452f;box-sizing:border-box"></span>核心模块</div>
+<div style="display:flex;align-items:center;gap:10px"><span style="width:30px;height:16px;background:#fff;border:1px solid rgba(22,21,15,.16);box-sizing:border-box"></span>P0</div>
+<div style="display:flex;align-items:center;gap:10px"><span style="width:30px;height:16px;border:1px dashed rgba(22,21,15,.5);box-sizing:border-box"></span>P1 / 降级方案</div>
+</div>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 32px;font:400 12px/24px 'IBM Plex Mono',monospace;color:#16150f">
+<span style="padding:0 10px;border:1px solid rgba(22,21,15,.2);background:#fff">React + TypeScript</span>
+<span style="padding:0 10px;border:1px solid rgba(22,21,15,.2);background:#fff">Vite</span>
+<span style="padding:0 10px;border:1px solid rgba(22,21,15,.2);background:#fff">Capacitor · iOS / Android</span>
+<span style="padding:0 10px;border:1px solid rgba(22,21,15,.2);background:#fff">SQLite plugin</span>
+<span style="padding:0 10px;border:1px solid rgba(22,21,15,.2);background:#fff">Web Worker · JSZip</span>
+<span style="padding:0 10px;border:1px solid rgba(22,21,15,.2);background:#fff">ECDICT 精简包</span>
+<span style="padding:0 10px;border:1px solid #c1452f;color:#c1452f">无网络请求</span>
+</div>
+
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:0 24px">
+
+<div style="padding-top:4px">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">L1</div>
+<div style="margin-top:6px;font:500 17px 'Noto Sans SC',sans-serif">界面层</div>
+<div style="margin-top:3px;font:400 11px 'IBM Plex Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,21,15,.62)">React views</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px">
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);padding:14px 16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 14px 'Noto Sans SC',sans-serif">首页</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">HomeView</span></div>
+<div style="margin-top:6px;font:400 12px/1.65 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">继续阅读 · 书架列表 · 在读 / 读完 · 空态</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);padding:14px 16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 14px 'Noto Sans SC',sans-serif">导入</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">ImportSheet</span></div>
+<div style="margin-top:6px;font:400 12px/1.65 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">文件选择 · 解析进度 · 失败原因</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);border-top:3px solid #c1452f;padding:12px 16px 14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 14px 'Noto Sans SC',sans-serif">阅读页</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:#c1452f">ReaderView</span></div>
+<div style="margin-top:6px;font:400 12px/1.65 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">4a 纸白 · 章节眉 · 渐隐遮罩 · 返回栏 · 工具条 · 飞行层</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);border-top:3px solid #c1452f;padding:12px 16px 14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 14px 'Noto Sans SC',sans-serif">查词抽屉</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:#c1452f">WordDrawer</span></div>
+<div style="margin-top:6px;font:400 12px/1.65 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">上下尖角 · 皮革面 · loading / 命中 / 未收录</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);padding:14px 16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 14px 'Noto Sans SC',sans-serif">设置面板</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">SettingsSheet</span></div>
+<div style="margin-top:6px;font:400 12px/1.65 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">字号 · 清晰带 · 模糊 · 整句</div>
+</div>
+</div>
+
+<div></div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;padding:8px 0;font:400 11px/20px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62);text-align:center">
+<div>↓ list() · open(id)</div>
+<div>↓ import(file)</div>
+<div>↓ mount(el, book, pos)</div>
+<div>↓ lookup(hit) · save()</div>
+<div>↓ set(key, v)</div>
+</div>
+
+<div style="padding-top:4px">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">L2</div>
+<div style="margin-top:6px;font:500 17px 'Noto Sans SC',sans-serif">领域模块</div>
+<div style="margin-top:3px;font:400 11px 'IBM Plex Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,21,15,.62)">Framework-free TS</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;align-items:stretch">
+
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);padding:16px 16px 10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 16px 'Noto Sans SC',sans-serif">书架</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">library</span></div>
+<div style="margin-top:10px;display:flex;flex-direction:column">
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">按 openedAt 排序，status 自动流转</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">剩余分钟 = 剩余词 ÷ 230</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">无封面 → 书名 hash 取 8 色</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">首启写入 3 本内置书</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">删除书（连带 Lookup） <span style="margin-left:4px;padding:0 5px;border:1px dashed rgba(22,21,15,.45);font:500 10px/16px 'Noto Sans SC',sans-serif">P1</span></div>
+</div>
+</div>
+
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);padding:16px 16px 10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 16px 'Noto Sans SC',sans-serif">导入解析</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">ingest · Worker</span></div>
+<div style="margin-top:10px;display:flex;flex-direction:column">
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">EPUB：JSZip 解包 → OPF / spine</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">XHTML → 纯段落（剥离样式与图片）</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">TXT：按空行切段，按「Chapter」切章</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">断句 · 分词 · 统计 wordCount</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">首章先落库可读，其余后台处理</div>
+</div>
+</div>
+
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);border-top:3px solid #c1452f;padding:14px 16px 10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 16px 'Noto Sans SC',sans-serif">阅读引擎</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:#c1452f">reader</span></div>
+<div style="margin-top:10px;display:flex;flex-direction:column">
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">分行：Range 测量出视觉行，建立行表</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">焦点带：t 值计算，见下方管线</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">整句模式</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">位置：焦点带内首句 → Position（防抖 1s）</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">章节虚拟化：只挂载前后 1 章</div>
+</div>
+</div>
+
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);border-top:3px solid #c1452f;padding:14px 16px 10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 16px 'Noto Sans SC',sans-serif">词典与脚注</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:#c1452f">dict · annot</span></div>
+<div style="margin-top:10px;display:flex;flex-direction:column">
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">命中测试：caretRangeFromPoint → 词边界与所在句</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">词形还原：forms 反查表 + 规则兜底</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">查询：LRU 内存缓存 → dict.db</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">写入 Lookup，把 lemma 加进 seen</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">脚注：可见段内给 seen 中的词挂 9px 注</div>
+</div>
+</div>
+
+<div style="background:#fff;border:1px solid rgba(22,21,15,.16);padding:16px 16px 10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:500 16px 'Noto Sans SC',sans-serif">设置</span><span style="font:400 10.5px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">prefs</span></div>
+<div style="margin-top:10px;display:flex;flex-direction:column">
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">订阅式 store，变更实时推给阅读引擎</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">字号变更：记下句锚点 → 重新分行 → 回到锚点</div>
+<div style="padding:7px 0;border-top:1px solid rgba(22,21,15,.08);font:400 12.5px/1.55 'Noto Sans SC',sans-serif">设备分级：探针结果决定是否开启 blur</div>
+</div>
+</div>
+</div>
+
+<div></div>
+<div style="margin:16px 0;padding:16px 18px;background:#16150f;color:#fbfaf8;display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:center">
+<div>
+<div style="font:500 15px 'Noto Sans SC',sans-serif">焦点带渲染管线</div>
+<div style="margin-top:3px;font:400 11px 'IBM Plex Mono',monospace;color:rgba(251,250,248,.66)">每帧 ≤ 4ms 预算</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 12px/24px 'IBM Plex Mono',monospace">
+<span style="padding:0 9px;border:1px solid rgba(251,250,248,.28)">scroll</span><span style="color:#e0826f">→</span>
+<span style="padding:0 9px;border:1px solid rgba(251,250,248,.28)">rAF 合帧</span><span style="color:#e0826f">→</span>
+<span style="padding:0 9px;border:1px solid rgba(251,250,248,.28)">取可见行 ±1 屏</span><span style="color:#e0826f">→</span>
+<span style="padding:0 9px;border:1px solid #e0826f;color:#f4b7a9">t = clamp((d − half) / ramp)</span><span style="color:#e0826f">→</span>
+<span style="padding:0 9px;border:1px solid rgba(251,250,248,.28)">整句 +0.18</span><span style="color:#e0826f">→</span>
+<span style="padding:0 9px;border:1px solid rgba(251,250,248,.28)">blur 量化 0.5px</span><span style="color:#e0826f">→</span>
+<span style="padding:0 9px;border:1px solid rgba(251,250,248,.28)">差量写 filter / opacity</span>
+</div>
+<div style="font:400 12px/1.6 'Noto Sans SC',sans-serif;color:rgba(251,250,248,.72)">行表在分行时一次算好（每行的 top 和 height），滚动时只做数值比较，不读 DOM 布局。降级路径：关掉逐行 blur，改成上下两层静态 backdrop 模糊加逐行 opacity。</div>
+</div>
+</div>
+
+<div style="padding-top:4px">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">L3</div>
+<div style="margin-top:6px;font:500 17px 'Noto Sans SC',sans-serif">本地存储</div>
+<div style="margin-top:3px;font:400 11px 'IBM Plex Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,21,15,.62)">On-device</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">Book</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">title · author · cover · color · wordCount · status · pct · openedAt · finishedAt</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">Chapter</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">bookId · idx · title · paras[] · wordStart</div></div>
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">files/</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">原始 EPUB / TXT · 封面图</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">Position</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">bookId · chapter · para · sentence · updatedAt</div></div>
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">log</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">会话时长 · 查词 · 抽屉关闭后行为 → 手动导出</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="background:#f3f1ec;padding:10px 12px;border-left:2px solid #c1452f"><div style="font:500 12px 'IBM Plex Mono',monospace">dict.db · 只读</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">entry(word, phonetic, pos, gloss) · forms(form → lemma)</div></div>
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">Lookup</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">bookId · surface · lemma · zh · sentence · loc · at · saved</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="background:#f3f1ec;padding:10px 12px"><div style="font:500 12px 'IBM Plex Mono',monospace">Settings · KV</div><div style="margin-top:4px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62)">fontSize · focusPct · blurMax · sentenceMode · tier</div></div>
+</div>
+</div>
+
+<div></div>
+<div style="padding:12px 0;font:400 11px/20px 'IBM Plex Mono',monospace;color:rgba(22,21,15,.62);text-align:center">↕ Capacitor 插件桥</div>
+
+<div style="padding-top:4px">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">L4</div>
+<div style="margin-top:6px;font:500 17px 'Noto Sans SC',sans-serif">平台能力</div>
+<div style="margin-top:3px;font:400 11px 'IBM Plex Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,21,15,.62)">Native · 无云端</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px">
+<div style="padding:13px 15px;border:1px solid rgba(22,21,15,.16);background:#fff"><div style="font:500 14px 'Noto Sans SC',sans-serif">SQLite</div><div style="margin-top:5px;font:400 12px/1.6 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">user.db 可写 · dict.db 只读，分开存放</div></div>
+<div style="padding:13px 15px;border:1px solid rgba(22,21,15,.16);background:#fff"><div style="font:500 14px 'Noto Sans SC',sans-serif">文件系统</div><div style="margin-top:5px;font:400 12px/1.6 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">系统文件选择器 · 「用本 App 打开」</div></div>
+<div style="padding:13px 15px;border:1px solid rgba(22,21,15,.16);background:#fff"><div style="font:500 14px 'Noto Sans SC',sans-serif">触感</div><div style="margin-top:5px;font:400 12px/1.6 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">抽屉展开时轻触反馈一次</div></div>
+<div style="padding:13px 15px;border:1px solid rgba(22,21,15,.16);background:#fff"><div style="font:500 14px 'Noto Sans SC',sans-serif">分享</div><div style="margin-top:5px;font:400 12px/1.6 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">内测日志导出（系统分享面板）</div></div>
+</div>
+</div>
+
+<sc-if value="{{ showFlows }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:56px;padding-top:20px;border-top:2px solid #16150f">
+<div style="display:flex;align-items:baseline;gap:16px"><h2 style="margin:0;font:500 26px/1.2 'Newsreader',Georgia,serif">关键链路</h2><span style="font:400 13px 'Noto Sans SC',sans-serif;color:rgba(22,21,15,.62)">朱红框 = 性能关键点</span></div>
+
+<div style="margin-top:22px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px 24px;align-items:start">
+<div><div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">F1</div><div style="margin-top:5px;font:500 15px 'Noto Sans SC',sans-serif">导入</div></div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 12.5px/1.5 'Noto Sans SC',sans-serif">
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">选择文件</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">复制进 files/</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">Worker 解析元数据 + 首章</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid #c1452f;color:#c1452f">写 Book + Chapter[0]（≤ 3s 可读）</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">书架出现新行</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">后台解析其余章节</span>
+</div>
+
+<div><div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">F2</div><div style="margin-top:5px;font:500 15px 'Noto Sans SC',sans-serif">打开书</div></div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 12.5px/1.5 'Noto Sans SC',sans-serif">
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">点书架行</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">记录封面几何位置</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">飞行层：抽出 220 · 展开 460</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid #c1452f;color:#c1452f">同时：读 Position、挂载章节、分行</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">封面淡出 300 · 正文淡入 320</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">锚点句落在焦点带</span>
+</div>
+
+<div><div style="font:500 12px 'IBM Plex Mono',monospace;color:#c1452f">F3</div><div style="margin-top:5px;font:500 15px 'Noto Sans SC',sans-serif">查词</div></div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:400 12.5px/1.5 'Noto Sans SC',sans-serif">
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">点击</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">命中测试：词 + 句</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">lemma 还原</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid #c1452f;color:#c1452f">LRU → dict.db（≤ 100ms）</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">抽屉 330ms 展开 · 入屏补滚动</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">写 Lookup · seen += lemma</span><span style="color:#c1452f">→</span>
+<span style="padding:8px 11px;background:#fff;border:1px solid rgba(22,21,15,.18)">关闭 250ms → 全书同词挂 9px 注</span>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showFlows&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;显示&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { showFlows: this.props.showFlows ?? true };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# 聚焦阅读 MVP — rules for Claude Code
+
+Read `README.md` (in the handoff folder) before any work. It is the implementation spec. Then read `CHANGES_2026-10-14.md` — it overrides the README where they conflict, and its tasks C1–C6 come after `TASKS.md`. Then `NIGHT_MODE_1c.md` (tasks N1–N7, acceptance N-xx) — after C1–C6.
+
+## Scope guard
+- Build only: Home (continue reading + shelf + import), Reader 4a, word drawer, 9px footnotes, settings sheet, open-book transition.
+- Do NOT build:
+  - tabs 书房 / 生词 / 我 or a tab bar;
+  - today stats or streak;
+  - review cards or spaced repetition;
+  - ~~night mode 1c or auto guided reading~~ — now in scope via `NIGHT_MODE_1c.md` (reader only; home/shelf stay paper);
+  - pronunciation / TTS, or the Examples button;
+  - any LLM or agent, sync, push, accounts, analytics SDKs;
+  - long-press sentence translation.
+- **Zero network requests at runtime.** Fonts, dictionary and books are all bundled.
+- If a design doc and the README disagree, the README wins. If the README is silent, follow `MVP 设计与范围` B3 (Reader 4a) exactly.
+
+## Stack
+- React + TypeScript (strict) + Vite.
+- Capacitor for iOS and Android.
+- SQLite via the Capacitor plugin: separate `user.db` and a read-only `dict.db`.
+- EPUB and TXT parsing in a Web Worker (JSZip + DOMParser).
+
+## Architecture rules
+- Keep domain modules framework-free TS under `src/core/`:
+  - `library`, `ingest`, `reader`, `dict`, `annot`, `prefs`.
+  - React views live under `src/views/` and only call module APIs.
+- The reader engine owns the scroll container and writes line styles directly (`style.filter`, `style.opacity`). Never re-render body-text lines through React on scroll.
+- Build the line table once per layout. Do not call `getBoundingClientRect` per line per frame.
+- One easing curve for the whole app: `cubic-bezier(.42,0,.58,1)`.
+- Footnotes are `position:absolute` children of the word span. Line height must never change.
+
+## Quality bar
+- Every task in `TASKS.md` cites an acceptance ID (R-xx / H-xx / S-xx). Write a test or a measurable check for it.
+- Performance: 60fps reader scroll on a mid-range device. Tap-to-drawer ≤ 100ms. A 300-page book is readable within 3s of import.
+- Minimum hit target 44px. Small text contrast ≥ 4.5:1.
