@@ -6,7 +6,13 @@ export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 60_000,
   use: { baseURL: 'http://localhost:4173' },
-  webServer: { command: 'npm run build && npm run preview', url: 'http://localhost:4173', reuseExistingServer: true, timeout: 180_000 },
+  // CI already ran `npm run build` (dictionary included). Starting preview only avoids building it again.
+  webServer: {
+    command: process.env.CI ? 'npm run preview' : 'npm run build && npm run preview',
+    url: 'http://localhost:4173',
+    reuseExistingServer: !process.env.CI,
+    timeout: 180_000,
+  },
   projects: [
     { name: 'webkit-phone', use: { browserName: 'webkit', ...phone }, testIgnore: /offline-reload/ },
     // Playwright's WebKit build hangs reloading a service-worker page with the server gone; the

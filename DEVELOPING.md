@@ -2,7 +2,7 @@
 
 ## One-time setup
 
-- **Node 22+** (the build scripts run `.ts` files directly with Node).
+- **Node 22** (`.nvmrc`; the build scripts run `.ts` files directly with Node).
 - **Xcode 27** with the iOS simulator installed, and `xcode-select` pointing at Xcode.
 
 ```bash
@@ -38,11 +38,29 @@ In Xcode, pick an iPhone simulator and press ▶. `npm run build:ios:dev` builds
 
 ## Publish the mobile web build (Cloudflare)
 
-```bash
-npm run deploy:web
-```
+Production is https://spotlight-reader.ai-core.workers.dev (`wrangler.jsonc`, Worker name `spotlight-reader`). One deploy updates the static site and `POST /api/fetch` together. `public/_headers` makes `index.html` and `sw.js` revalidate on every visit, so phones pick up new deploys.
 
-This builds `dist/` and uploads it as a static-assets Worker (`wrangler.jsonc`, name `spotlight-reader`), live at https://spotlight-reader.ai-core.workers.dev. The first time, run `npx wrangler login`. `public/_headers` makes `index.html` and `sw.js` revalidate on every visit, so phones pick up new deploys.
+The delivery path is GitHub Actions, not a laptop:
+
+1. Open a pull request. `.github/workflows/ci.yml` runs `npm run build`, `npm test`, and `npm run e2e` on Node 22. The dictionary sources are cached from `.cache/dict`. In CI, Playwright serves the `dist/` that job just built (`npm run preview` only).
+2. When those checks pass, the same workflow uploads a Worker **version** with alias `pr-<number>`. That preview does not take production traffic. The URL is commented on the pull request (`preview_urls` in `wrangler.jsonc`).
+3. Merge to `main`. CI runs again on that commit. When it succeeds, `.github/workflows/deploy-web.yml` deploys the **same** `dist/` artifact with `npx wrangler deploy`. It does not rebuild the dictionary.
+
+`npm run deploy:web` still builds and deploys from a machine where `npx wrangler login` has been done. Use it only when Actions cannot run. Do not use `build:ios:dev` for the web production build (`VITE_DEV_TOOLS=1`).
+
+### GitHub settings (once)
+
+Repository → Settings → Secrets and variables → Actions. Both the preview upload and the production deploy read these. The test job does not. Do not add a DeepSeek key or any `VITE_*` secret; reader keys stay on the device, and the Worker stores no URLs.
+
+- `CLOUDFLARE_API_TOKEN` — Workers Scripts edit on this account only.
+- `CLOUDFLARE_ACCOUNT_ID` — the account whose `workers.dev` subdomain is `ai-core`.
+
+Repository → Settings → Rules → Rulesets (or Branches). Protect `main`:
+
+- Require a pull request before merging. Do not allow direct pushes.
+- Require the status check **CI** (job `CI` in `.github/workflows/ci.yml`). Also require **Preview** so a pull request cannot merge without a preview upload.
+
+`deploy-web.yml` is read from `main`. The merge that adds these workflows runs CI on that commit, and a green result deploys it.
 
 ## Tests
 
