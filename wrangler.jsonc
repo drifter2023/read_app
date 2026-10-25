@@ -1,11 +1,13 @@
 // Mobile web build on Cloudflare: static files from dist/, plus server/worker.ts for /api/* only
-// (link import, docs/plans/2026-10-12-link-import.md). Deploy with `npm run deploy:web`.
-// Headers (service-worker caching) come from public/_headers.
+// (link import, docs/plans/2026-10-12-link-import.md).
+// Production deploys from .github/workflows/deploy-web.yml. `npm run deploy:web` is the local fallback.
+// preview_urls serves a PR alias without moving production traffic. Headers come from public/_headers.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "spotlight-reader",
   "main": "server/worker.ts",
   "compatibility_date": "2026-09-25",
+  "preview_urls": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
