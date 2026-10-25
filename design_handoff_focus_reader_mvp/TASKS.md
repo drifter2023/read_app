@@ -1,5 +1,7 @@
 # Tasks — in order
 
+**Status (2026-10-25):** M1–M4 below are built, and so are the later pieces in the README **As built** section (撤回, grammar drawer, predicted words, 旁注, link import, 问旁注, 夜读, 带读). This list is the original build order, kept so the acceptance IDs stay attached to the pixel spec. It is not a backlog. Account sync and moving books between devices are still out of scope.
+
 Each task lists its acceptance ID from `design/MVP 设计与范围 · 聚焦阅读.dc.html` A3.
 
 ## M1 · Reader core

@@ -1,7 +1,13 @@
 # Night reading 1c · 夜读聚光 — dev handoff (2026-10-20)
 
-Adds the night theme and auto guided reading (带读) to Reader 4a. Implement **after** `TASKS.md` and `CHANGES_2026-10-14.md` (C1–C6).
-This file **lifts** the "night mode 1c / auto guided reading" exclusion in `CLAUDE.md` and README *Out of scope*. Everything else in the scope guard stays.
+> **As built (2026-10-25).** Night reading and 带读 shipped. These decisions replace the lines they name:
+> - **N1.** There is no 夜读 row in the settings sheet. The Home capsule (纸白 / 夜读) is the only switch, and it themes the **whole app** (1c in the reader, night colours on the Home layout). Manual only.
+> - **N2 layout.** Padding stays `45% 34px` and the body size stays the reader's font setting. Night changes colours only, so lines do not move.
+> - **N5.** The 带读 bar steps aside while the top bar and capsule are up, and returns when they hide. It does not sit under the capsule.
+> - **Open questions at the bottom of this file are closed:** Home follows the theme; no auto night mode; the first touch while guiding pauses, and the normal tap rules still run.
+> - **Blur default at night** is 9px until the reader moves 模糊强度. The vignette replaces the fade masks while 聚焦模糊 is on. With 聚焦模糊 off, the thin 4a strips stay and there is no accent unless 带读 is lighting the current sentence.
+
+Adds the night theme and auto guided reading (带读) to Reader 4a. The box above wins where this file disagrees with it.
 
 References:
 - Prototype: `design/聚焦阅读 App.dc.html` → turn 1, option **1c** (markup ~L476–541; play loop `loop()` at the end of the logic class).
@@ -140,7 +146,8 @@ export function startGuide(r: ReaderEngine, s: Settings) {
 }
 ```
 
-## Open (decide before shipping)
-1. Should home/shelf follow the night theme? (Default here: no.)
-2. Auto-switch to night by system dark mode or time of day? (Default: manual only.)
-3. Should a word tap during guiding open the drawer immediately, or only pause on first tap? (Default: first touch pauses **and** normal tap rules run.)
+## Open questions — closed 2026-10-20
+
+1. Home and the shelf follow the theme. The capsule on Home is the switch.
+2. Manual only. No switch by system appearance or time of day.
+3. The first touch pauses, and the normal tap rules still run.
