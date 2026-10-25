@@ -1,39 +1,63 @@
-# Handoff: 聚焦阅读 (Focus Reader) — MVP
+# Handoff: 聚焦阅读 (Focus Reader)
 
-> **Latest changes (2026-10-14):** see `CHANGES_2026-10-14.md` — select-to-ask (问旁注), settings sheet entry/direction, new 聚焦模糊 toggle. It overrides anything below that conflicts.
-> **Night reading (2026-10-20):** see `NIGHT_MODE_1c.md` — night theme + auto guided reading, now in scope (overrides the *Out of scope* line below for those two items).
+> **For Claude Design (updated 2026-10-25).** This folder is the design handoff of the app as it is built. Read this README first. `CHANGES_2026-10-14.md`, `NIGHT_MODE_1c.md` and `AGENT_DRAWER.md` keep the original pixel notes; each file starts with an **As built** box. Where an older paragraph, an HTML prototype, or `spec.mvp.json` disagrees with **As built** below, **As built** wins.
+>
+> The files in `design/` are HTML prototypes, not the app. They still show removed ideas (a tab bar, today stats, a top-30% tap that opens settings, a 夜读 row inside the reader settings). Use them for colour, type and motion. Use this README for what the product does.
+
+## As built (2026-10-25)
+
+Two screens. Display name **Spotlight**. Targets: **iOS (Capacitor) and a mobile web app. No Android.**
+
+1. **Home** — date, a 纸白 / 夜读 capsule, continue reading, a shelf (在读 / 读完, import), then a predicted-vocabulary card and a DeepSeek key card. No tab bar, no streak, no today stats, no review cards.
+2. **Reader** — paper-white focus band (4a). At night the same layout uses 1c colours, and a 带读 bar can step through sentences. A sharp word opens a tear-paper drawer. Looked-up words, and words the device predicts the reader does not know, get a 9px Chinese footnote with **zero change to line height**.
+
+**The only theme switch** is the 纸白 / 夜读 capsule on Home. It changes the whole app: 1c colours in the reader, night colours on the 7a Home layout. Layout, type size and padding do not change. There is no 夜读 row in the reader settings sheet, and no automatic switch by clock or system appearance.
+
+**Reader chrome** stays: a top bar (`‹ 书架` and the title) and a capsule (`目录 · Aa`). They are hidden until a tap shows them. `Aa` opens the settings sheet from the bottom. There is no always-on button and no scroll indicator on the page edge.
+
+**Tap order** on the reader:
+1. A text selection exists → clear it.
+2. A drawer or the settings sheet is open → close it.
+3. The tap is in the title area (the top of the page down to 22px below the chapter eyebrow), even on a word → show or hide the top bar and capsule.
+4. The tap hits a word on sharp text (the focus band, or any line while 聚焦模糊 is off) and the tap is below the title area → open the word drawer. Blurred text opens nothing.
+5. Blank space or the page edge (side margins, gaps between paragraphs, after a short line, the faded bottom edge) → show or hide the top bar and capsule.
+6. A tap on text, blurred or sharp, that did not open a drawer → hide the top bar and capsule if they are showing.
+
+**Also on the reader**
+- **聚焦模糊** in settings (default on). Off: every line sharp, fade masks shrink to a thin strip behind the eyebrow, and 清晰带 / 模糊强度 / 整句模式 are greyed out. Grammar droplets and predicted-word exposure still follow the focus band.
+- **撤回** on the word drawer. The book forgets that lemma (lookup rows, saved state, footnotes) and the drawer closes.
+- **Grammar droplet** after each sentence end, only on lines in the focus band. It opens a grammar drawer: the sentence's translation on top, then a short pattern and points. DeepSeek, with the reader's own key. The only sentence translation in the app.
+- **Long-press** (380ms) on sharp text selects words. Two handles adjust the range. A 问旁注 pill sends the selection to the Agent drawer as an attachment. No system edit menu.
+- **Agent drawer:** a left swipe pushes the page aside into a card (about 60px of the page stays visible) and reveals a per-book chat, 旁注. DeepSeek, the reader's own key. No tools, no memory across books. 当前句 and a 问旁注 attachment share one slot above the input.
+- **带读** (夜读 only): the bar plays, pauses, shows chapter progress, and steps 0.6× / 1× / 1.6×. Any touch pauses it. Only Play resumes it. The bar steps aside while the top bar and capsule are up.
+
+**Home, besides the shelf**
+- **预测生词:** a one-minute calibration test, then footnotes ahead of time for words the reader probably does not know. Learned on the device from lookups, 撤回 and reading. Settings: 关 / 少 / 多. Default 少.
+- **Import:** a file (EPUB 2/3 without DRM, or UTF-8 TXT) or a pasted link. A link is fetched by our own worker, then stored as a book.
+- **DeepSeek key card:** enter, check, show, clear the key used by the grammar drawer and 旁注.
+
+**Network.** Everything else is offline (fonts, dictionary, bundled books). The only requests are `https://api.deepseek.com` after a tap on a grammar droplet or a question in 旁注, and our worker's `POST /api/fetch` after a link is submitted. No accounts, sync, push or analytics SDK.
+
+**Still out of scope:** tabs 书房 / 生词 / 我 and a tab bar; today stats and streak; review cards and spaced repetition; pronunciation / TTS; the Examples button; any LLM other than the grammar drawer and 旁注; theme editing; long-press sentence translation (translation lives only at the top of the grammar drawer); account sync and moving books between devices.
 
 ## Overview
-A focus-first English reader for Chinese-speaking learners. The MVP contains exactly two screens:
-
-1. **Home** — "continue reading" + a basic bookshelf, with import.
-2. **Reader (4a, paper-white)** — a fixed sharp "focus band" in the vertical centre of the screen, with lines blurring and fading by distance from it. Tapping any word tears the page open into a "drawer" with a definition. Every looked-up word then gets a 9px Chinese footnote under it throughout the book, with **zero change to line height**.
-
-Fully offline. No account, no network requests, no analytics SDK.
-
-**Out of scope (do not build):** tabs 书房 / 生词 / 我 and the bottom tab bar; today stats and streak; review word cards and spaced repetition; night mode 1c and auto guided reading; pronunciation / TTS; the Examples button; the archivist agent / LLM; sync, push, accounts; theme editing; the long-press sentence translation that exists in the prototype.
+A focus-first English reader for Chinese-speaking learners. The original MVP was Home plus Reader 4a. The sections below keep that pixel spec. The **As built** section above is what shipped on top of it.
 
 ## About the design files
-Everything in `design/` is a **design reference built in HTML**. It shows the intended look and behaviour; it is not production code. Recreate it in a real app. The recommended stack, since no codebase exists yet, is:
-
-- **React + TypeScript + Vite**, wrapped with **Capacitor** for iOS and Android.
-- **SQLite** through the Capacitor plugin: `user.db` is read/write, `dict.db` is read-only and bundled.
-- **JSZip + DOMParser inside a Web Worker** for EPUB and TXT import.
-- **ECDICT** (open-source English–Chinese dictionary, MIT; confirm the licence before release), trimmed by word frequency to about 60k entries, with a `forms → lemma` reverse table built from its inflection field.
-
-The reason for Web + shell: the prototype already implements per-line CSS blur, the grid-rows drawer and the clip-path notches, and these port 1:1. The one real risk is scroll performance, and it gets measured first (see M1 in `TASKS.md`).
+Everything in `design/` is a **design reference built in HTML**. It is not production code. The app is React + TypeScript + Vite, wrapped with Capacitor for iOS and the mobile web (no Android). `user.db` is read/write; `dict.db` is read-only and bundled. EPUB and TXT parsing runs in a Web Worker.
 
 ## Fidelity
-**High fidelity.** Colours, type, spacing, timings and easing are final. Match them exactly.
+**High fidelity** for colour, type, spacing and the one easing curve `cubic-bezier(.42,0,.58,1)`. Match the 4a / 7a / 1c / drawer measurements in the sections below, then apply **As built** where the product moved on.
 
 ## Source-of-truth order
-1. `design/MVP 设计与范围 · 聚焦阅读.dc.html` — one document. **Part A** scope, acceptance criteria (IDs R-xx / H-xx / S-xx), data model, open decisions. **Part B** pixel spec — use only B2 design language, B3 Reader 4a, B5 figure 5.1 (Home), B6 motion, B7 parameters; ignore 1c, 书房, 生词, 我 and the full-product JSON appendix. **Part C** Agent drawer, select-to-ask, settings entry.
-2. `design/MVP 技术架构图 · 聚焦阅读.dc.html` — module split, render pipeline, key flows.
-3. `AGENT_DRAWER.md` — Agent drawer dev handoff.
-4. `design/聚焦阅读 App.dc.html` — the working prototype. Relevant parts: turn 4 (**4a**) reader, turn 7 (**7a**, "阅读" tab) home, turn 10 (**10a**) Agent drawer + select-to-ask + top-tap settings. `reference/reader-prototype.ts` extracts the logic worth porting.
-5. `spec.mvp.json` — machine-readable summary of this README.
+1. **As built**, at the top of this file.
+2. The **As built** boxes in `CHANGES_2026-10-14.md`, `NIGHT_MODE_1c.md` and `AGENT_DRAWER.md`.
+3. The rest of this README (4a type, drawer, footnotes, motion).
+4. `design/MVP 设计与范围 · 聚焦阅读.dc.html` — Part B pixel spec (B2, B3 Reader 4a, B5 figure 5.1 Home, B6 motion). Ignore the tab bar, 书房, 生词, 我, and any behaviour **As built** replaces.
+5. `design/聚焦阅读 App.dc.html` — prototype. Turn 4 is 4a, turn 7 is 7a, turn 1 option 1c is night reading, turn 10 is the Agent drawer. `reference/reader-prototype.ts` extracts the early reader logic.
+6. `spec.mvp.json` — a machine-readable summary. Prefer this README if they differ.
 
-Open the `.dc.html` files directly in a browser; `support.js` must sit next to them.
+Open the `.dc.html` files in a browser; `support.js` must sit next to them.
 
 ---
 
@@ -43,7 +67,7 @@ Open the `.dc.html` files directly in a browser; `support.js` must sit next to t
 Artboard 402 × 812 @1x. Background `#fbfaf8`. Side padding 24px. Sections are separated by 1px rules in `#16150f` at 10% opacity, never by card borders. Reference image: `design/screens/fig-7a-read.png`. **Remove** the streak, today stats, review cards and tab bar shown there.
 
 Top to bottom:
-- **Date eyebrow**: IBM Plex Sans 11px, uppercase, letter-spacing .14em, `#16150f` at 62%, e.g. `TUE · 9月22日`. Left half only; no streak.
+- **Date eyebrow**: IBM Plex Sans 11px, uppercase, letter-spacing .14em, `#16150f` at 62%, e.g. `TUE · 9月22日`. Left side; no streak. On the right, the 纸白 / 夜读 capsule (the only theme switch; see **As built**).
 - **Continue reading** (the whole block is tappable and opens the book):
   - Label `CONTINUE`: 11px, uppercase, .14em, 62%.
   - Title: Newsreader 36px, line-height 1.1, `#16150f`.
@@ -74,7 +98,8 @@ References: `design/screens/fig-4a-focus.png` and `fig-4a-drawer.png`.
   - Fixed in screen coordinates (not document coordinates), centred vertically.
   - Height = viewport height × `focusPct` (default 30%, about 3 lines).
   - Lines inside the band are perfectly sharp. Formula in *Interactions*.
-- **No persistent buttons on the page.** A tap in the top 30% of the reader raises the settings sheet from the bottom (see §3). There is no bottom toolbar and no `Aa` button.
+- **Top bar:** 44px, `‹ 书架` on the left, the book title in the middle. Hidden until a tap in the title area, on blank space, or on the page edge shows it (see **As built**). The same kind of tap hides it again; a tap on text only hides it. Fades after 3s idle or on scroll (220ms).
+- **Capsule:** `目录` and `Aa`, shown and hidden with the top bar. `Aa` opens settings. There is no scroll indicator on the right edge.
 
 **Word highlight while its drawer is open:** background `rgba(34,31,27,.09)`, radius 3px.
 
@@ -108,7 +133,7 @@ The footnote is out of normal flow, so line height must not change. Acceptance R
   - Phonetic: IBM Plex Sans 11px, `rgba(242,234,217,.5)`.
   - Part of speech: Newsreader italic 12px, 45% opacity.
 - **Definition**: IBM Plex Sans 13px/20px, `rgba(242,234,217,.8)`. One sense, one line.
-- **Button**: **Save only**.
+- **Buttons**: **保存** and **撤回**. 保存 switches to 已存. 撤回 forgets the lemma for this book and closes the drawer.
   - `padding:6px 12px; border-radius:5px`; IBM Plex Sans 11px, `#f2ead9`.
   - `background:linear-gradient(#574d42,#3b342c)`.
   - `box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 1px 2px rgba(0,0,0,.55)`.
@@ -128,21 +153,25 @@ The footnote is out of normal flow, so line height must not change. Acceptance R
   - `not-found`: one line, "词典未收录这个词".
   - `closing`.
 
-### 3. Settings sheet (`SettingsSheet`, new)
-- Opened by a tap in the top 30% of the reader. **Rises from the bottom**; closes on a tap outside or on the top handle. Uses the drawer's leather surface and the same 330 / 250ms motion.
-- Max height 44% of the viewport, so the focus band always stays visible above it.
+### 3. Settings sheet (`SettingsSheet`)
+- Opened by `Aa` on the capsule (a tap in the title area shows the capsule). **Rises from the bottom**; closes on a tap outside (transparent scrim) or on the top handle. Leather surface, 330 / 250ms, the app easing curve.
+- Max height 42% of the viewport, so the focus band stays visible above it. Radius 14. The owner restored this MVP look on 2026-10-15 (字号 first, red switches).
 - Changes apply live.
-- First row: **聚焦模糊 toggle** (`blurOn`, default on). Off → every line `blur 0, opacity 1`, top/bottom fade masks hidden, the whole page sharp; Focus band / Blur / Sentence mode are greyed out. On → the original focus-band formula.
+- **聚焦模糊** (`focusBlur`, default on). Off → every line blur 0 and opacity 1, masks shrink to a thin strip behind the eyebrow, the page is sharp; 清晰带 / 模糊强度 / 整句模式 grey out. Hint: 关闭后整页清晰.
 
 | Item | Control | Default | Mapping |
 |---|---|---|---|
 | Font size | 3 steps | M 19.5 / 34 | S 17.5 / 30 · L 22 / 38; keep the sentence anchor |
+| 聚焦模糊 | switch | on | see above |
 | Focus band | slider | 30% | `focusPct` 20–80, step 5 |
-| Blur | slider | 7 | `blurMax` 2–14 px |
+| Blur | slider | 7 | `blurMax` 2–14 px. At night, 9px until the reader moves this slider |
+| 预测生词 | 关 / 少 / 多 | 少 | how many predicted footnotes |
 | Sentence mode | toggle | off | non-current sentences get t += 0.18 |
 
+Row order: 字号, 聚焦模糊, 清晰带, 模糊强度, 预测生词, 整句模式. No 夜读 row.
+
 ### 4. Import (`ImportSheet`)
-System file picker; EPUB 2/3 (no DRM) and UTF-8 TXT. Show parse progress and a readable failure reason.
+文件 or 链接. File: EPUB 2/3 (no DRM) and UTF-8 TXT. Link: a pasted http(s) URL, fetched by our worker, stored as a book. Show progress and a readable failure reason.
 
 ---
 
@@ -186,8 +215,8 @@ sentenceMode: t = min(1, t + 0.18) for lines outside the current sentence
   - Fire one light haptic.
 
 ### Footnotes (R-06)
-- On book open: `seen` = all distinct `lemma` values in `Lookup` for this `bookId`. Scope is **per book** (open decision; see the MVP doc §7).
-- Every word whose lemma is in `seen` gets a footnote.
+- On book open: `seen` = all distinct `lemma` values in `Lookup` for this `bookId`. Scope is **per book**.
+- Every word whose lemma is in `seen`, and every word predicted for this reader (unless 预测生词 is 关), gets a footnote. 撤回 removes that lemma from `seen`.
 - Text = the first sense of `gloss` for that part of speech, truncated with an ellipsis to the word's width.
 - Only render footnotes for paragraphs currently mounted.
 
@@ -207,10 +236,7 @@ A flight layer takes off from the shelf row's cover rectangle. Shadow: `0 18px 4
 Meanwhile, load `Position`, mount the chapter and build the line table. Going back reverses the flight to the original rectangle (300ms).
 
 ### Tap arbitration in the reader
-1. A text selection exists → clear it.
-2. A drawer or the settings sheet is open → close it.
-3. The tap is in the top 30% → open the settings sheet.
-4. The tap hits a word → open the word drawer.
+The order in **As built** is the one to follow. The 2026-10-14 note that a tap in the top 30% opens settings is superseded.
 
 ---
 
@@ -301,19 +327,18 @@ Keyframes, copied from the prototype:
 - **Covers**: from the EPUB, or generated colour blocks.
 - **Icons**: only `‹`, a TOC icon and `Aa`. Use any consistent line-icon set; the design has no custom icons.
 - **Dictionary**: ECDICT → `dict.db`, built at build time by `scripts/build-dict`.
-- **Bundled books**: 3 public-domain English titles, still to be chosen.
+- **Bundled books:** *A Farewell to Arms*, *The Maltese Falcon*, *The Great Gatsby*. Public domain in the US and China. Hemingway and Hammett are not public domain in the EU until 2032.
 
 ## Files
 
 ```
-README.md                  this file
-CLAUDE.md                  rules for Claude Code in the target repo (copy to repo root)
-TASKS.md                   milestone-ordered tasks, each tied to an acceptance ID
-spec.mvp.json              machine-readable spec
-reference/reader-prototype.ts   prototype logic worth porting (focus band, drawer, footnotes)
-design/MVP 设计与范围 · 聚焦阅读.dc.html      (Part A scope · Part B spec: B2, B3, B5 fig 5.1, B6, B7 · Part C Agent)
-design/MVP 技术架构图 · 聚焦阅读.dc.html
-design/聚焦阅读 App.dc.html                  (prototype; turn 4 → 4a, turn 7 → 7a, turn 10 → 10a)
-design/support.js, doc-page.js, ios-frame.jsx  runtime for opening the .dc.html files
-design/screens/fig-4a-focus.png, fig-4a-drawer.png, fig-7a-read.png
+README.md                  this file — start here (As built, 2026-10-25)
+CLAUDE.md                  scope rules that match the built app
+TASKS.md                   original build order; status at the top
+CHANGES_2026-10-14.md      select-to-ask, settings, 聚焦模糊 — As built box first
+NIGHT_MODE_1c.md           夜读 and 带读 — As built box first
+AGENT_DRAWER.md            旁注 drawer — As built box first
+spec.mvp.json              machine-readable summary
+reference/reader-prototype.ts   early prototype logic (focus band, drawer, footnotes)
+design/                    HTML prototypes and screens. Visual reference; behaviour follows this README
 ```

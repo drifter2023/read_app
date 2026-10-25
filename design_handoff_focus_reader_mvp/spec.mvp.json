@@ -1,17 +1,21 @@
 {
   "product": "聚焦阅读 Focus Reader",
-  "release": "MVP",
-  "offline": true,
-  "network": "none",
+  "displayName": "Spotlight",
+  "release": "as built 2026-10-25",
+  "note": "README.md As built wins if this file disagrees. HTML prototypes in design/ are visual reference only.",
+  "platforms": ["ios", "mobile-web"],
+  "offline": "except DeepSeek (grammar drawer, 旁注) and POST /api/fetch for a pasted link",
+  "network": "api.deepseek.com and own worker POST /api/fetch only",
   "artboard": { "w": 402, "h": 812, "minTouch": 44 },
-  "screens": ["home", "reader.4a", "sheet.word", "sheet.settings", "sheet.import"],
-  "outOfScope": ["tab.study", "tab.words", "tab.me", "tabBar", "todayStats", "streak", "reviewCards", "srs", "theme.1c", "guidedReading", "tts", "examples", "agent", "llm", "sync", "push", "account", "themeEditor", "sentenceTranslate"],
+  "screens": ["home", "reader.4a", "reader.1c", "sheet.word", "sheet.grammar", "sheet.settings", "sheet.import", "sheet.agent", "guideBar"],
+  "outOfScope": ["tab.study", "tab.words", "tab.me", "tabBar", "todayStats", "streak", "reviewCards", "srs", "android", "tts", "examples", "agentTools", "crossBookMemory", "sync", "push", "account", "themeEditor", "longPressSentenceTranslate", "nightRowInReaderSettings"],
   "ease": "cubic-bezier(.42,0,.58,1)",
   "motion": { "drawerOpen": 330, "drawerClose": 250, "contentIn": 250, "contentOut": 138, "bookOut": 220, "bookExpand": 460, "coverFade": 300, "pageFade": 320, "bookBack": 300, "chrome": 220 },
   "palette": {
     "home": { "bg": "#fbfaf8", "ink": "#16150f", "sub": "rgba(22,21,15,.62)", "rule": "rgba(22,21,15,.10)", "accent": "#c1452f" },
     "reader": { "bg": "#faf8f3", "ink": "#221f1b", "eyebrow": "rgba(34,31,27,.38)", "footnote": "rgba(34,31,27,.60)", "wordMark": "rgba(34,31,27,.09)" },
-    "drawer": { "base": "#2c2620", "grad": ["#332c25", "#241f1a"], "text": "#f2ead9", "button": ["#574d42", "#3b342c"] }
+    "drawer": { "base": "#2c2620", "grad": ["#332c25", "#241f1a"], "text": "#f2ead9", "button": ["#574d42", "#3b342c"] },
+    "readerNight": { "bg": "#0e0e10", "ink": "#f2ede4", "accent": "#ffb4b4", "footnote": "rgba(242,237,228,.6)", "note": "colours only; layout stays 4a" }
   },
   "type": {
     "body": { "family": "Newsreader", "size": 19.5, "lineHeight": 34 },
@@ -40,22 +44,28 @@
       "notch": { "strip": 16, "halfWidth": 12, "offset": -4, "caretClamp": 16 },
       "keepOnScreen": { "bottomInset": 70, "minOverflow": 8 },
       "userScrollWindowMs": 500,
-      "buttons": ["Save"],
+      "buttons": ["保存", "撤回"],
       "hidden": ["Examples", "pronounce", "exampleSentence"],
       "states": ["loading", "ready", "notfound", "closing"]
     },
-    "tapOrder": ["word → open drawer", "drawer open → close", "else → toggle chrome"]
+    "tapOrder": ["selection → clear", "sheet or drawer open → close", "title area → toggle chrome", "sharp word below title area → word drawer", "blank or page edge → toggle chrome", "other text → hide chrome"],
+    "chrome": "top bar ‹ 书架 + capsule 目录 · Aa, hidden until a title-area, blank, or edge tap",
+    "settingsEntry": "Aa on the capsule"
   },
   "settings": {
     "fontSize": { "default": "M", "options": ["S", "M", "L"] },
+    "focusBlur": { "default": true },
     "focusPct": { "default": 30, "min": 20, "max": 80, "step": 5, "runtimeClamp": [10, 90] },
-    "blurMax": { "default": 7, "min": 2, "max": 14 },
+    "blurMax": { "default": 7, "nightUntilSet": 9, "min": 2, "max": 14 },
+    "predict": { "default": "few", "options": ["off", "few", "many"] },
     "sentenceMode": { "default": false },
+    "theme": { "default": "paper", "options": ["paper", "night"], "switch": "Home capsule only, whole app" },
+    "guideSpeed": { "default": 1, "options": [0.6, 1, 1.6], "when": "night only" },
     "tier": { "values": ["full", "fallback"], "source": "first-launch probe" }
   },
   "home": {
     "padding": 24,
-    "sections": ["dateEyebrow", "continue", "shelfHeader", "filter", "shelfRows"],
+    "sections": ["dateEyebrow", "themeCapsule", "continue", "shelfHeader", "filter", "shelfRows", "predictedWords", "deepseekKey"],
     "filter": ["在读", "读完"],
     "shelfRow": { "cover": [46, 64], "sort": "openedAt desc" },
     "readingSpeedWpm": 230,
@@ -66,7 +76,7 @@
     "Chapter": ["bookId", "idx", "title", "paras", "wordStart"],
     "Position": ["bookId", "chapter", "para", "sentence", "updatedAt"],
     "Lookup": ["id", "bookId", "surface", "lemma", "zh", "phonetic", "sentence", "loc", "at", "saved"],
-    "Settings": ["fontSize", "focusPct", "blurMax", "sentenceMode", "tier"],
+    "Settings": ["fontSize", "focusBlur", "focusPct", "blurMax", "predict", "sentenceMode", "theme", "guideSpeed", "tier"],
     "dict.entry": ["word", "phonetic", "pos", "gloss"],
     "dict.forms": ["form", "lemma"]
   },
@@ -84,7 +94,7 @@
     "H-03": "EPUB/TXT; readable ≤3s for 300 pages",
     "H-04": "220/460/300/320ms flight",
     "H-05": "swipe delete (P1)",
-    "S-01": "4 settings live + persisted"
+    "S-01": "settings live + persisted"
   },
-  "openDecisions": ["platform order", "footnote scope book|global", "footnote cap N", "sense selection", "bundled titles", "metrics collection"]
+  "openDecisions": []
 }
